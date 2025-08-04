@@ -1,0 +1,310 @@
+import { Search, Lightbulb, Cog, Factory, TrendingUp } from 'lucide-react'
+import { useLanguage } from '@/contexts/LanguageProvider'
+import { AnimatedSection } from './AnimatedSection'
+import { BackgroundPattern } from './BackgroundPattern'
+import { motion } from 'framer-motion'
+import { useScrollAnimation } from '@/hooks/use-scroll-animation'
+import { useAccessibilityPreferences } from '@/hooks/use-accessibility-preferences'
+import { ContextualLinks } from './ContextualLinks'
+
+export function Process() {
+  const { t } = useLanguage()
+  const { prefersReducedMotion } = useAccessibilityPreferences()
+  const { ref: sectionRef, isInView } = useScrollAnimation({ threshold: 0.2 })
+  
+  const processSteps = [
+    {
+      icon: Search,
+      titleKey: 'process.steps.analysis.title',
+      descriptionKey: 'process.steps.analysis.description',
+      step: '01'
+    },
+    {
+      icon: Lightbulb,
+      titleKey: 'process.steps.design.title',
+      descriptionKey: 'process.steps.design.description',
+      step: '02'
+    },
+    {
+      icon: Cog,
+      titleKey: 'process.steps.development.title',
+      descriptionKey: 'process.steps.development.description',
+      step: '03'
+    },
+    {
+      icon: Factory,
+      titleKey: 'process.steps.production.title',
+      descriptionKey: 'process.steps.production.description',
+      step: '04'
+    },
+    {
+      icon: TrendingUp,
+      titleKey: 'process.steps.followUp.title',
+      descriptionKey: 'process.steps.followUp.description',
+      step: '05'
+    }
+  ]
+
+  // Animation variants for sequential step animation
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: prefersReducedMotion ? 0 : 0.2,
+        delayChildren: prefersReducedMotion ? 0 : 0.1
+      }
+    }
+  }
+
+  const stepVariants = {
+    hidden: { 
+      opacity: 0, 
+      y: 30,
+      scale: 0.9
+    },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      scale: 1,
+      transition: {
+        duration: prefersReducedMotion ? 0.1 : 0.6,
+        ease: [0.25, 0.46, 0.45, 0.94]
+      }
+    }
+  }
+
+  // Connection line animation variants
+  const lineVariants = {
+    hidden: { scaleX: 0, opacity: 0 },
+    visible: { 
+      scaleX: 1, 
+      opacity: 1,
+      transition: {
+        duration: prefersReducedMotion ? 0.1 : 0.8,
+        ease: "easeInOut",
+        delay: prefersReducedMotion ? 0 : 0.3
+      }
+    }
+  }
+  return (
+    <section id="process" className="py-20 bg-white dark:bg-black relative overflow-hidden" ref={sectionRef}>
+      {/* Background Pattern */}
+      <BackgroundPattern 
+        config={{
+          type: 'pattern',
+          theme: 'light',
+          intensity: 'subtle',
+          animated: true
+        }}
+        className="absolute inset-0"
+      />
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <AnimatedSection animation="fadeInUp" className="text-center mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+            {t('process.title')}
+          </h2>
+          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            {t('process.description')}
+          </p>
+        </AnimatedSection>
+        
+        <div className="relative">
+          {/* Desktop layout */}
+          <div className="hidden lg:block">
+            <motion.div 
+              className="flex justify-between items-start relative"
+              variants={containerVariants}
+              initial="hidden"
+              animate={isInView ? "visible" : "hidden"}
+            >
+              {/* Connection lines container */}
+              <div className="absolute top-8 left-0 right-0 flex justify-between z-0">
+                {processSteps.slice(0, -1).map((_, index) => (
+                  <motion.div 
+                    key={index} 
+                    className="h-0.5 bg-orange-200 dark:bg-orange-800 origin-left"
+                    style={{ 
+                      width: `${100 / (processSteps.length - 1)}%`,
+                      marginLeft: index === 0 ? '8%' : '0',
+                      marginRight: index === processSteps.length - 2 ? '8%' : '0'
+                    }}
+                    variants={lineVariants}
+                    initial="hidden"
+                    animate={isInView ? "visible" : "hidden"}
+                    transition={{
+                      delay: prefersReducedMotion ? 0 : (index * 0.2 + 0.5)
+                    }}
+                  />
+                ))}
+              </div>
+              
+              {processSteps.map((step, index) => {
+                const Icon = step.icon
+                return (
+                  <motion.div 
+                    key={index} 
+                    className="flex flex-col items-center max-w-xs relative z-10 group cursor-pointer"
+                    variants={stepVariants}
+                    whileHover={prefersReducedMotion ? {} : {
+                      y: -8,
+                      transition: { duration: 0.3, ease: "easeOut" }
+                    }}
+                  >
+                    {/* Step circle with hover effects */}
+                    <motion.div 
+                      className="bg-orange-500 w-16 h-16 rounded-full flex items-center justify-center mb-4 relative overflow-hidden shadow-lg group-hover:shadow-xl transition-shadow duration-300"
+                      whileHover={prefersReducedMotion ? {} : {
+                        scale: 1.1,
+                        boxShadow: "0 20px 25px -5px rgba(249, 115, 22, 0.3), 0 10px 10px -5px rgba(249, 115, 22, 0.2)"
+                      }}
+                    >
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-r from-orange-400 to-orange-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                        initial={{ scale: 0 }}
+                        whileHover={prefersReducedMotion ? {} : { scale: 1 }}
+                        transition={{ duration: 0.3 }}
+                      />
+                      <motion.div
+                        whileHover={prefersReducedMotion ? {} : { rotate: 360 }}
+                        transition={{ duration: 0.6, ease: "easeInOut" }}
+                      >
+                        <Icon className="h-8 w-8 text-white relative z-10" />
+                      </motion.div>
+                    </motion.div>
+                    
+                    {/* Step number with glow effect */}
+                    <motion.div 
+                      className="text-sm font-bold text-orange-500 mb-2 group-hover:text-orange-400 transition-colors duration-300"
+                      whileHover={prefersReducedMotion ? {} : {
+                        textShadow: "0 0 8px rgba(249, 115, 22, 0.6)"
+                      }}
+                    >
+                      {step.step}
+                    </motion.div>
+                    
+                    {/* Content with hover effects */}
+                    <motion.div className="text-center">
+                      <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-orange-500 dark:group-hover:text-orange-400 transition-colors duration-300">
+                        {t(step.titleKey)}
+                      </h3>
+                      <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed group-hover:text-gray-700 dark:group-hover:text-gray-200 transition-colors duration-300">
+                        {t(step.descriptionKey)}
+                      </p>
+                    </motion.div>
+
+                    {/* Hover background effect */}
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-b from-orange-50/50 to-orange-100/30 dark:from-orange-950/30 dark:to-orange-900/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"
+                      initial={{ scale: 0.8 }}
+                      whileHover={prefersReducedMotion ? {} : { scale: 1 }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  </motion.div>
+                )
+              })}
+            </motion.div>
+          </div>
+          
+          {/* Mobile layout */}
+          <motion.div 
+            className="lg:hidden space-y-8"
+            variants={containerVariants}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+          >
+            {processSteps.map((step, index) => {
+              const Icon = step.icon
+              return (
+                <motion.div 
+                  key={index} 
+                  className="flex items-start space-x-4 group cursor-pointer"
+                  variants={stepVariants}
+                  whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
+                >
+                  <div className="flex flex-col items-center">
+                    <motion.div 
+                      className="bg-orange-500 w-12 h-12 rounded-full flex items-center justify-center relative overflow-hidden shadow-lg group-hover:shadow-xl transition-shadow duration-300"
+                      whileHover={prefersReducedMotion ? {} : {
+                        scale: 1.1,
+                        boxShadow: "0 10px 15px -3px rgba(249, 115, 22, 0.3)"
+                      }}
+                    >
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-r from-orange-400 to-orange-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                        initial={{ scale: 0 }}
+                        whileHover={prefersReducedMotion ? {} : { scale: 1 }}
+                        transition={{ duration: 0.3 }}
+                      />
+                      <motion.div
+                        whileHover={prefersReducedMotion ? {} : { rotate: 180 }}
+                        transition={{ duration: 0.4, ease: "easeInOut" }}
+                      >
+                        <Icon className="h-6 w-6 text-white relative z-10" />
+                      </motion.div>
+                    </motion.div>
+                    {index < processSteps.length - 1 && (
+                      <motion.div 
+                        className="w-0.5 h-16 bg-orange-200 dark:bg-orange-800 mt-4 origin-top"
+                        initial={{ scaleY: 0, opacity: 0 }}
+                        animate={isInView ? { scaleY: 1, opacity: 1 } : { scaleY: 0, opacity: 0 }}
+                        transition={{
+                          duration: prefersReducedMotion ? 0.1 : 0.6,
+                          delay: prefersReducedMotion ? 0 : (index * 0.2 + 0.3),
+                          ease: "easeOut"
+                        }}
+                      />
+                    )}
+                  </div>
+                  <motion.div 
+                    className="flex-1 pb-8 relative"
+                    whileHover={prefersReducedMotion ? {} : { x: 4 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <motion.div 
+                      className="text-sm font-bold text-orange-500 mb-1 group-hover:text-orange-400 transition-colors duration-300"
+                      whileHover={prefersReducedMotion ? {} : {
+                        textShadow: "0 0 6px rgba(249, 115, 22, 0.5)"
+                      }}
+                    >
+                      {step.step}
+                    </motion.div>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-orange-500 dark:group-hover:text-orange-400 transition-colors duration-300">
+                      {t(step.titleKey)}
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-300 leading-relaxed group-hover:text-gray-700 dark:group-hover:text-gray-200 transition-colors duration-300">
+                      {t(step.descriptionKey)}
+                    </p>
+
+                    {/* Mobile hover background effect */}
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-orange-50/30 to-transparent dark:from-orange-950/20 dark:to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"
+                      initial={{ x: -20 }}
+                      whileHover={prefersReducedMotion ? {} : { x: 0 }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  </motion.div>
+                </motion.div>
+              )
+            })}
+          </motion.div>
+          
+          {/* Contextual Links */}
+          <AnimatedSection 
+            animation="fadeInUp" 
+            delay={0.8}
+            className="mt-12 flex justify-center"
+          >
+            <ContextualLinks 
+              context="process" 
+              variant="default" 
+              maxLinks={2}
+              className="max-w-md"
+            />
+          </AnimatedSection>
+        </div>
+      </div>
+    </section>
+  )
+}

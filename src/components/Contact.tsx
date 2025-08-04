@@ -1,0 +1,1023 @@
+import { useState, useMemo } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { EnhancedButton } from '@/components/ui/enhanced-button'
+import { EnhancedInput, EnhancedIconContainer, EnhancedListItem } from './HoverEffects'
+import { Textarea } from '@/components/ui/textarea'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Calendar, Mail, Phone, MapPin, CheckCircle, AlertCircle, MessageSquare } from 'lucide-react'
+import { useLanguage } from '@/contexts/LanguageProvider'
+import { AnimatedSection, AnimatedItem } from './AnimatedSection'
+import { BackgroundPattern } from './BackgroundPattern'
+import { useFormValidation, ValidationRules } from '../hooks/use-form-validation'
+import { DateTimePicker } from './DateTimePicker'
+import { AppointmentBookingService, ContactFormData, AppointmentFormData } from '../lib/appointment-booking-service'
+import { BusinessHoursValidator } from '../lib/business-hours-validator'
+import { LoadingIndicator, LoadingPresets, useLoadingState } from './LoadingIndicator'
+import { SuccessFeedback, SuccessPresets, AppointmentDetails, ContactDetails } from './SuccessFeedback'
+import { cn } from '../lib/utils'
+import { SecurityMiddleware } from '../lib/security/security-middleware'
+import { InputSanitizer } from '../lib/security/input-sanitizer'
+import { CSRFProtection } from '../lib/security/csrf-protection'
+
+type SubmissionType = 'message' | 'appointment'
+
+export function Contact() {
+  const { t } = useLanguage()
+  const [formData, setFormData] = useState({
+    nom: '',
+    prenom: '',
+    societe: '',
+    message: ''
+  })
+  const [submissionType, setSubmissionType] = useState<SubmissionType>('message')
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+  const [selectedTime, setSelectedTime] = useState<string | null>(null)
+  const [submitError, setSubmitError] = useState<string | null>(null)
+  const [focusedField, setFocusedField] = useState<string | null>(null)
+  const [appointmentError, setAppointmentError] = useState<string | null>(null)
+  const [appointmentValidationErrors, setAppointmentValidationErrors] = useState<string[]>([])
+  const [isAppointmentValid, setIsAppointmentValid] = useState(false)
+  
+  // Security services - initialized safely
+  const [securityMiddleware] = useState(() => {
+    try {
+      return SecurityMiddleware.getInstance()
+    } catch (error) {
+      console.warn('Failed to initialize SecurityMiddleware:', error)
+      return null
+    }
+  })
+  const [inputSanitizer] = useState(() => {
+    try {
+      return InputSanitizer.getInstance()
+    } catch (error) {
+      console.warn('Failed to initialize InputSanitizer:', error)
+      return null
+    }
+  })
+  const [csrfProtection] = useState(() => {
+    try {
+      return CSRFProtection.getInstance()
+    } catch (error) {
+      console.warn('Failed to initialize CSRFProtection:', error)
+      return null
+    }
+  })
+  const [csrfToken, setCsrfToken] = useState(() => {
+    try {
+      return csrfProtection?.getTokenForForm() || ''
+    } catch (error) {
+      console.warn('Failed to get CSRF token:', error)
+      return ''
+    }
+  })
+  const [securityWarnings, setSecurityWarnings] = useState<string[]>([])
+  
+  // Enhanced loading and success state management
+  const {
+    isLoading,
+    loadingMessage,
+    loadingStep,
+    loadingProgress,
+    startLoading,
+    updateStep,
+    updateProgress,
+    stopLoading
+  } = useLoadingState()
+  
+  // Success feedback state
+  const [successFeedback, setSuccessFeedback] = useState<{
+    isVisible: boolean
+    type: 'message' | 'appointment' | 'email_fallback'
+    message: string
+    contactDetails?: ContactDetails
+    appointmentDetails?: AppointmentDetails
+  }>({
+    isVisible: false,
+    type: 'message',
+    message: '',
+    contactDetails: undefined,
+    appointmentDetails: undefined
+  })
+
+  // Form validation rules - updated for appointment mode
+  const validationRules: ValidationRules = {
+    prenom: {
+      required: true,
+      minLength: 2,
+      maxLength: 50
+    },
+    nom: {
+      required: true,
+      minLength: 2,
+      maxLength: 50
+    },
+    societe: {
+      maxLength: 100
+    },
+    message: {
+      required: true,
+      minLength: 10,
+      maxLength: 1000
+    }
+  }
+
+  const { errors, validateField, validateForm, clearError } = useFormValidation(validationRules)
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    
+    // Apply input sanitization in real-time (if available) - but not for message field to avoid cursor issues
+    let sanitizedValue = value
+    if (inputSanitizer && name !== 'message') {
+      try {
+        const sanitizationResult = inputSanitizer.sanitize(value, {
+          maxLength: name === 'societe' ? 100 : 50,
+          removeSpecialChars: name === 'nom' || name === 'prenom'
+        })
+        
+        sanitizedValue = sanitizationResult.value
+        
+        // Show security warnings if content was sanitized
+        if (sanitizationResult.wasSanitized && sanitizationResult.removedContent) {
+          setSecurityWarnings(prev => [
+            ...prev.filter(w => !w.includes(name)),
+            `Field ${name}: ${sanitizationResult.removedContent?.join(', ')}`
+          ])
+          
+          // Clear warnings after 5 seconds
+          setTimeout(() => {
+            setSecurityWarnings(prev => prev.filter(w => !w.includes(name)))
+          }, 5000)
+        }
+      } catch (error) {
+        console.warn('Input sanitization failed:', error)
+        // Use original value if sanitization fails
+      }
+    }
+    
+    setFormData(prev => ({ ...prev, [name]: sanitizedValue }))
+    
+    // Clear error when user starts typing
+    if (errors[name]) {
+      clearError(name)
+    }
+    
+    // Clear errors when form data changes
+    if (appointmentError) {
+      setAppointmentError(null)
+    }
+    if (submitError) {
+      setSubmitError(null)
+    }
+    if (appointmentValidationErrors.length > 0) {
+      setAppointmentValidationErrors([])
+    }
+  }
+
+  const handleInputBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    validateField(name, value)
+    setFocusedField(null)
+  }
+
+  const handleInputFocus = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFocusedField(e.target.name)
+  }
+
+  const validateAppointmentFields = () => {
+    if (submissionType === 'appointment') {
+      // Check if date is selected
+      if (!selectedDate) {
+        return { isValid: false, error: t('contact.form.appointment.validation.dateRequired') }
+      }
+      
+      // Check if time is selected
+      if (!selectedTime) {
+        return { isValid: false, error: t('contact.form.appointment.validation.timeRequired') }
+      }
+      
+      // Check for validation errors from the DateTimePicker
+      if (appointmentValidationErrors.length > 0) {
+        return { isValid: false, error: appointmentValidationErrors[0] }
+      }
+      
+      // Check overall appointment validity
+      if (!isAppointmentValid) {
+        return { isValid: false, error: t('contact.form.appointment.validation.invalidSlot') }
+      }
+      
+      // Additional client-side validation for business hours
+      try {
+        const validator = BusinessHoursValidator.getInstance()
+        
+        // Validate business day
+        if (!validator.isValidBusinessDay(selectedDate)) {
+          return { isValid: false, error: t('contact.form.appointment.validation.businessDayOnly') }
+        }
+        
+        // Validate business time
+        if (!validator.isValidBusinessTime(selectedTime)) {
+          const config = validator.getConfig()
+          return { isValid: false, error: t('contact.form.appointment.validation.businessTimeOnly', { startTime: config.startTime, endTime: config.endTime }) }
+        }
+        
+        // Validate complete datetime
+        if (!validator.isValidBusinessDateTime(selectedDate, selectedTime)) {
+          return { isValid: false, error: t('contact.form.appointment.validation.businessHoursOnly') }
+        }
+        
+        // Check if appointment is in the past
+        const [hours, minutes] = selectedTime.split(':').map(Number)
+        const appointmentDateTime = new Date(selectedDate)
+        appointmentDateTime.setHours(hours, minutes, 0, 0)
+        
+        if (validator.isInPast(appointmentDateTime)) {
+          return { isValid: false, error: t('contact.form.appointment.validation.noPastAppointments') }
+        }
+        
+      } catch (error) {
+        console.error('Error validating appointment fields:', error)
+        return { isValid: false, error: t('contact.form.appointment.validation.validationFailed') }
+      }
+    }
+    return { isValid: true, error: null }
+  }
+
+  // Handle appointment validation changes from DateTimePicker
+  const handleAppointmentValidationChange = (isValid: boolean, errors: string[]) => {
+    setIsAppointmentValid(isValid)
+    setAppointmentValidationErrors(errors)
+    
+    // Clear appointment error if validation becomes valid
+    if (isValid && appointmentError) {
+      setAppointmentError(null)
+    }
+  }
+
+  // Check if form is valid for submission (memoized to prevent infinite renders)
+  const isFormValid = useMemo(() => {
+    // Basic form validation - check if all required fields are filled and have no errors
+    const hasRequiredFields = formData.prenom.trim() !== '' && 
+                             formData.nom.trim() !== '' && 
+                             formData.message.trim() !== ''
+    const hasNoErrors = Object.keys(errors).length === 0
+    const basicFormValid = hasRequiredFields && hasNoErrors
+    
+    // Appointment validation
+    if (submissionType === 'appointment') {
+      const hasDateAndTime = selectedDate !== null && selectedTime !== null
+      const hasNoAppointmentErrors = appointmentValidationErrors.length === 0
+      return basicFormValid && hasDateAndTime && hasNoAppointmentErrors && isAppointmentValid
+    }
+    
+    return basicFormValid
+  }, [formData, submissionType, selectedDate, selectedTime, appointmentValidationErrors, isAppointmentValid, errors])
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    if (!validateForm(formData)) {
+      return
+    }
+
+    // Additional validation for appointment mode
+    const appointmentValidation = validateAppointmentFields()
+    if (!appointmentValidation.isValid) {
+      setAppointmentError(appointmentValidation.error)
+      return
+    }
+
+    // Security validation (if available)
+    if (securityMiddleware) {
+      try {
+        const endpoint = submissionType === 'appointment' ? 'form-submission-appointment' : 'form-submission-message'
+        const formDataWithCsrf = { ...formData, csrf_token: csrfToken }
+        
+        const securityValidation = await securityMiddleware.validateFormSubmission(
+          formDataWithCsrf,
+          endpoint,
+          {
+            enableCSRF: !!csrfProtection,
+            enableRateLimit: true,
+            enableInputSanitization: !!inputSanitizer,
+            rateLimitConfig: {
+              maxRequests: submissionType === 'appointment' ? 3 : 5,
+              windowMs: 60 * 1000,
+              blockDurationMs: 2 * 60 * 1000
+            }
+          }
+        )
+
+        if (!securityValidation.isValid) {
+          setSubmitError(securityValidation.errors.join('. '))
+          if (securityValidation.csrfToken) {
+            setCsrfToken(securityValidation.csrfToken)
+          }
+          return
+        }
+
+        // Show security warnings if any
+        if (securityValidation.warnings && securityValidation.warnings.length > 0) {
+          setSecurityWarnings(prev => [...prev, ...securityValidation.warnings])
+        }
+      } catch (error) {
+        console.warn('Security validation failed:', error)
+        // Continue without security validation if it fails
+      }
+    }
+
+    // Clear previous errors and start loading
+    setSubmitError(null)
+    setAppointmentError(null)
+    setSuccessFeedback(prev => ({ ...prev, isVisible: false }))
+    
+    try {
+      const bookingService = AppointmentBookingService.getInstance()
+      let result
+
+      if (submissionType === 'appointment' && selectedDate && selectedTime) {
+        // Start appointment booking with detailed progress
+        startLoading('Programmation de votre rendez-vous...')
+        
+        // Step 1: Validation
+        updateStep('validate', 'Validation des informations...')
+        await new Promise(resolve => setTimeout(resolve, 600))
+        
+        // Step 2: Authentication
+        updateStep('auth', 'Connexion au service Microsoft Graph...')
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        
+        // Step 3: Calendar creation
+        updateStep('calendar', 'Création de l\'événement dans votre calendrier...')
+        const appointmentData: AppointmentFormData = {
+          ...formData,
+          appointmentDate: selectedDate,
+          appointmentTime: selectedTime
+        }
+        
+        result = await bookingService.handleAppointmentSubmission(appointmentData)
+        
+        if (result.success) {
+          updateStep('complete', 'Finalisation...')
+          await new Promise(resolve => setTimeout(resolve, 400))
+        }
+      } else {
+        // Handle simple message with progress bar
+        startLoading('Envoi de votre message...')
+        
+        updateProgress(20, 'Préparation du message...')
+        await new Promise(resolve => setTimeout(resolve, 300))
+        
+        updateProgress(50, 'Validation des données...')
+        await new Promise(resolve => setTimeout(resolve, 200))
+        
+        updateProgress(80, 'Envoi en cours...')
+        const messageData: ContactFormData = { ...formData }
+        result = await bookingService.handleMessageSubmission(messageData)
+        
+        if (result.success) {
+          updateProgress(100, 'Message envoyé avec succès !')
+          await new Promise(resolve => setTimeout(resolve, 300))
+        }
+      }
+
+      if (result.success) {
+        // Prepare contact details for success feedback
+        const contactDetails: ContactDetails = {
+          prenom: formData.prenom,
+          nom: formData.nom,
+          societe: formData.societe,
+          message: formData.message
+        }
+
+        // Prepare appointment details if applicable
+        let appointmentDetails: AppointmentDetails | undefined
+        if ((submissionType === 'appointment' || result.type === 'email_fallback') && selectedDate && selectedTime) {
+          appointmentDetails = {
+            date: selectedDate,
+            time: selectedTime,
+            duration: 30, // Default 30 minutes
+            eventId: result.eventId,
+            confirmationNumber: result.eventId ? `RDV-${result.eventId.slice(-8).toUpperCase()}` : `REQ-${Date.now().toString().slice(-8).toUpperCase()}`
+          }
+        }
+
+        // Show success feedback with enhanced details
+        setSuccessFeedback({
+          isVisible: true,
+          type: result.type as 'message' | 'appointment' | 'email_fallback',
+          message: result.message,
+          contactDetails,
+          appointmentDetails
+        })
+        
+        // Reset form after successful submission
+        setFormData({ nom: '', prenom: '', societe: '', message: '' })
+        setSelectedDate(null)
+        setSelectedTime(null)
+        setSubmissionType('message')
+        setAppointmentError(null)
+        setAppointmentValidationErrors([])
+        setIsAppointmentValid(false)
+        
+      } else {
+        // Handle submission errors
+        setSubmitError(result.message)
+        if (result.error) {
+          setAppointmentError(result.error)
+        }
+      }
+      
+    } catch (error) {
+      console.error('Form submission error:', error)
+      setSubmitError('Une erreur inattendue est survenue. Veuillez réessayer.')
+    } finally {
+      stopLoading()
+    }
+  }
+
+  return (
+    <section id="contact" className="relative py-20 overflow-hidden">
+      {/* Background with gradient and particles */}
+      <BackgroundPattern
+        config={{
+          type: 'combined',
+          intensity: 'medium',
+          animated: true,
+          section: 'contact'
+        }}
+        className="absolute inset-0"
+      />
+      
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <AnimatedSection animation="fadeInUp" className="text-center mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+            {t('contact.title')}
+          </h2>
+          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            {t('contact.description')}
+          </p>
+        </AnimatedSection>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          {/* Contact Form */}
+          <AnimatedSection animation="slideInLeft" delay={0.2}>
+            <Card className="border-gray-200 dark:border-gray-800 backdrop-blur-sm bg-white/80 dark:bg-gray-900/80">
+              <CardHeader>
+                <CardTitle className="text-2xl text-gray-900 dark:text-white">
+                  {t('contact.form.title')}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {/* Loading Indicator */}
+                <AnimatePresence>
+                  {isLoading && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      className="mb-6"
+                    >
+                      <LoadingIndicator
+                        {...(submissionType === 'appointment' 
+                          ? LoadingPresets.appointmentBooking(true, loadingStep)
+                          : LoadingPresets.messageSubmission(true, loadingProgress)
+                        )}
+                      />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Success Feedback */}
+                <AnimatePresence>
+                  {successFeedback.isVisible && successFeedback.contactDetails && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      className="mb-6"
+                    >
+                      <SuccessFeedback
+                        isVisible={successFeedback.isVisible}
+                        type={successFeedback.type}
+                        message={successFeedback.message}
+                        contactDetails={successFeedback.contactDetails}
+                        appointmentDetails={successFeedback.appointmentDetails}
+                        onClose={() => setSuccessFeedback(prev => ({ ...prev, isVisible: false }))}
+                        autoClose={true}
+                        autoCloseDelay={successFeedback.type === 'appointment' ? 12000 : 8000}
+                      />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Development Notice */}
+                {(import.meta.env.DEV || window.location.hostname === 'localhost') && (
+                  <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                    <div className="flex items-start space-x-3">
+                      <AlertCircle className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5" />
+                      <div>
+                        <p className="text-blue-800 dark:text-blue-200 font-medium mb-2">
+                          Mode Développement (Localhost)
+                        </p>
+                        <p className="text-sm text-blue-700 dark:text-blue-300 mb-2">
+                          Microsoft Graph ne fonctionne pas depuis localhost à cause des restrictions CORS.
+                        </p>
+                        <p className="text-sm text-blue-700 dark:text-blue-300">
+                          ✅ Les emails et rendez-vous sont simulés<br/>
+                          📋 Consultez la console pour voir le contenu des messages<br/>
+                          🚀 Déployez sur un domaine HTTPS pour activer les vrais emails
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Security Warnings */}
+                <AnimatePresence>
+                  {securityWarnings.length > 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -20, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                      className="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg"
+                    >
+                      <div className="flex items-start space-x-3">
+                        <AlertCircle className="h-5 w-5 text-yellow-600 dark:text-yellow-400 mt-0.5" />
+                        <div>
+                          <p className="text-yellow-800 dark:text-yellow-200 font-medium mb-2">
+                            Security Notice
+                          </p>
+                          <ul className="text-sm text-yellow-700 dark:text-yellow-300 space-y-1">
+                            {securityWarnings.map((warning, index) => (
+                              <li key={index}>• {warning}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* General Error Message */}
+                <AnimatePresence>
+                  {submitError && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -20, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                      className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-center space-x-3"
+                    >
+                      <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
+                      <p className="text-red-800 dark:text-red-200 font-medium">
+                        {submitError}
+                      </p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Submission Type Selection */}
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                    {t('contact.form.submissionTypeTitle')}
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <motion.button
+                      type="button"
+                      onClick={() => {
+                        setSubmissionType('message')
+                        setSelectedDate(null)
+                        setSelectedTime(null)
+                        setAppointmentError(null)
+                        setSubmitError(null)
+                        setAppointmentValidationErrors([])
+                        setIsAppointmentValid(false)
+                      }}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className={cn(
+                        'p-4 rounded-lg border-2 transition-all duration-200 text-left',
+                        'flex items-center space-x-3',
+                        submissionType === 'message'
+                          ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20'
+                          : 'border-gray-200 dark:border-gray-700 hover:border-orange-300 dark:hover:border-orange-600'
+                      )}
+                    >
+                      <div className={cn(
+                        'w-4 h-4 rounded-full border-2 flex items-center justify-center',
+                        submissionType === 'message'
+                          ? 'border-orange-500 bg-orange-500'
+                          : 'border-gray-300 dark:border-gray-600'
+                      )}>
+                        {submissionType === 'message' && (
+                          <div className="w-2 h-2 rounded-full bg-white" />
+                        )}
+                      </div>
+                      <MessageSquare className="h-5 w-5 text-orange-500" />
+                      <div>
+                        <p className="font-medium text-gray-900 dark:text-white">
+                          {t('contact.form.send')}
+                        </p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          {t('contact.form.sendMessageOption')}
+                        </p>
+                      </div>
+                    </motion.button>
+
+                    <motion.button
+                      type="button"
+                      onClick={() => {
+                        setSubmissionType('appointment')
+                        setAppointmentError(null)
+                        setSubmitError(null)
+                        setAppointmentValidationErrors([])
+                        setIsAppointmentValid(false)
+                      }}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className={cn(
+                        'p-4 rounded-lg border-2 transition-all duration-200 text-left',
+                        'flex items-center space-x-3',
+                        submissionType === 'appointment'
+                          ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20'
+                          : 'border-gray-200 dark:border-gray-700 hover:border-orange-300 dark:hover:border-orange-600'
+                      )}
+                    >
+                      <div className={cn(
+                        'w-4 h-4 rounded-full border-2 flex items-center justify-center',
+                        submissionType === 'appointment'
+                          ? 'border-orange-500 bg-orange-500'
+                          : 'border-gray-300 dark:border-gray-600'
+                      )}>
+                        {submissionType === 'appointment' && (
+                          <div className="w-2 h-2 rounded-full bg-white" />
+                        )}
+                      </div>
+                      <Calendar className="h-5 w-5 text-orange-500" />
+                      <div>
+                        <p className="font-medium text-gray-900 dark:text-white">
+                          {t('contact.form.appointmentBtn')}
+                        </p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          {t('contact.form.scheduleAppointmentOption')}
+                        </p>
+                      </div>
+                    </motion.button>
+                  </div>
+                </div>
+
+                <form onSubmit={handleSubmit} className="space-y-6">
+                {/* CSRF Token (if available) */}
+                {csrfProtection && csrfToken && (
+                  <input type="hidden" name="csrf_token" value={csrfToken} />
+                )}
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <AnimatedItem delay={0.1}>
+                    <div>
+                      <label htmlFor="prenom" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        {t('contact.form.firstName')} {t('contact.form.required')}
+                      </label>
+                      <div className="relative">
+                        <EnhancedInput
+                          id="prenom"
+                          name="prenom"
+                          type="text"
+                          required
+                          value={formData.prenom}
+                          onChange={handleInputChange}
+                          onBlur={handleInputBlur}
+                          onFocus={handleInputFocus}
+                          error={!!errors.prenom}
+                          className="border-gray-300 dark:border-gray-600"
+                        />
+                        <AnimatePresence>
+                          {errors.prenom && (
+                            <motion.div
+                              initial={{ opacity: 0, y: -10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -10 }}
+                              className="absolute -bottom-6 left-0 flex items-center space-x-1 text-red-600 dark:text-red-400 text-sm"
+                            >
+                              <AlertCircle className="h-3 w-3" />
+                              <span>{errors.prenom}</span>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    </div>
+                  </AnimatedItem>
+                  <AnimatedItem delay={0.2}>
+                    <div>
+                      <label htmlFor="nom" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        {t('contact.form.lastName')} {t('contact.form.required')}
+                      </label>
+                      <div className="relative">
+                        <EnhancedInput
+                          id="nom"
+                          name="nom"
+                          type="text"
+                          required
+                          value={formData.nom}
+                          onChange={handleInputChange}
+                          onBlur={handleInputBlur}
+                          onFocus={handleInputFocus}
+                          error={!!errors.nom}
+                          className="border-gray-300 dark:border-gray-600"
+                        />
+                        <AnimatePresence>
+                          {errors.nom && (
+                            <motion.div
+                              initial={{ opacity: 0, y: -10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -10 }}
+                              className="absolute -bottom-6 left-0 flex items-center space-x-1 text-red-600 dark:text-red-400 text-sm"
+                            >
+                              <AlertCircle className="h-3 w-3" />
+                              <span>{errors.nom}</span>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    </div>
+                  </AnimatedItem>
+                </div>
+                
+                <AnimatedItem delay={0.3}>
+                  <div>
+                    <label htmlFor="societe" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      {t('contact.form.company')}
+                    </label>
+                    <div className="relative">
+                      <EnhancedInput
+                        id="societe"
+                        name="societe"
+                        type="text"
+                        value={formData.societe}
+                        onChange={handleInputChange}
+                        onBlur={handleInputBlur}
+                        onFocus={handleInputFocus}
+                        error={!!errors.societe}
+                        className="border-gray-300 dark:border-gray-600"
+                      />
+                      <AnimatePresence>
+                        {errors.societe && (
+                          <motion.div
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            className="absolute -bottom-6 left-0 flex items-center space-x-1 text-red-600 dark:text-red-400 text-sm"
+                          >
+                            <AlertCircle className="h-3 w-3" />
+                            <span>{errors.societe}</span>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  </div>
+                </AnimatedItem>
+                
+                <AnimatedItem delay={0.4}>
+                  <div>
+                    <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      {t('contact.form.message')} {t('contact.form.required')}
+                    </label>
+                    <div className="relative">
+                      <Textarea
+                        id="message"
+                        name="message"
+                        rows={6}
+                        required
+                        value={formData.message}
+                        onChange={handleInputChange}
+                        onBlur={handleInputBlur}
+                        onFocus={handleInputFocus}
+                        className={cn(
+                          "border-gray-300 dark:border-gray-600 transition-all duration-300 resize-none",
+                          focusedField === 'message' && "ring-2 ring-orange-500/20 border-orange-500",
+                          errors.message && "border-red-500 ring-2 ring-red-500/20"
+                        )}
+                        placeholder={t('contact.form.placeholder')}
+                      />
+                      <AnimatePresence>
+                        {errors.message && (
+                          <motion.div
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            className="absolute -bottom-6 left-0 flex items-center space-x-1 text-red-600 dark:text-red-400 text-sm"
+                          >
+                            <AlertCircle className="h-3 w-3" />
+                            <span>{errors.message}</span>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  </div>
+                </AnimatedItem>
+
+                {/* Date/Time Picker for Appointments */}
+                <AnimatePresence>
+                  {submissionType === 'appointment' && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="py-4">
+                        <DateTimePicker
+                          selectedDate={selectedDate}
+                          selectedTime={selectedTime}
+                          onDateChange={(date) => {
+                            setSelectedDate(date)
+                            if (appointmentError) setAppointmentError(null)
+                          }}
+                          onTimeChange={(time) => {
+                            setSelectedTime(time)
+                            if (appointmentError) setAppointmentError(null)
+                          }}
+                          onValidationChange={handleAppointmentValidationChange}
+                        />
+                        
+                        {/* Appointment Validation Error */}
+                        <AnimatePresence>
+                          {appointmentError && (
+                            <motion.div
+                              initial={{ opacity: 0, y: -10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -10 }}
+                              className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-center space-x-3"
+                            >
+                              <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
+                              <p className="text-red-800 dark:text-red-200 font-medium">
+                                {appointmentError}
+                              </p>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+                
+                <AnimatedItem delay={0.6}>
+                  <div className="pt-4">
+                    <EnhancedButton
+                      type="submit"
+                      variant="primary"
+                      size="lg"
+                      hoverEffect="glow"
+                      ripple={true}
+                      focusRing={true}
+                      disabled={isLoading || !isFormValid}
+                      className="w-full py-3"
+                    >
+                      <AnimatePresence mode="wait">
+                        {isLoading ? (
+                          <motion.div
+                            key="loading"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="flex items-center justify-center"
+                          >
+                            <motion.div
+                              animate={{ rotate: 360 }}
+                              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                              className="w-5 h-5 border-2 border-white border-t-transparent rounded-full mr-2"
+                            />
+                            {loadingMessage || (submissionType === 'appointment' ? 'Programmation...' : 'Envoi en cours...')}
+                          </motion.div>
+                        ) : (
+                          <motion.div
+                            key="submit"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="flex items-center justify-center"
+                          >
+                            {submissionType === 'appointment' ? (
+                              <>
+                                <Calendar className="mr-2 h-5 w-5" />
+                                {t('contact.form.appointmentBtn')}
+                              </>
+                            ) : (
+                              <>
+                                <MessageSquare className="mr-2 h-5 w-5" />
+                                {t('contact.form.send')}
+                              </>
+                            )}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </EnhancedButton>
+                  </div>
+                </AnimatedItem>
+              </form>
+            </CardContent>
+          </Card>
+          </AnimatedSection>
+          
+          {/* Contact Info */}
+          <AnimatedSection animation="slideInRight" delay={0.4}>
+            <div className="space-y-8">
+              <Card className="border-gray-200 dark:border-gray-800 backdrop-blur-sm bg-white/80 dark:bg-gray-900/80">
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                    {t('contact.info.title')}
+                  </h3>
+                  <div className="space-y-4">
+                    <AnimatedItem delay={0.1}>
+                      <div className="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer group">
+                        <EnhancedIconContainer
+                          size="sm"
+                          variant="default"
+                          glowColor="orange"
+                          className="mt-1"
+                        >
+                          <Mail className="h-4 w-4 text-orange-500" />
+                        </EnhancedIconContainer>
+                        <div>
+                          <p className="font-medium text-gray-900 dark:text-white">{t('contact.form.email')}</p>
+                          <p className="text-gray-600 dark:text-gray-300">contact@kamlease.com</p>
+                        </div>
+                      </div>
+                    </AnimatedItem>
+                    <AnimatedItem delay={0.2}>
+                      <div className="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer group">
+                        <EnhancedIconContainer
+                          size="sm"
+                          variant="default"
+                          glowColor="orange"
+                          className="mt-1"
+                        >
+                          <Phone className="h-4 w-4 text-orange-500" />
+                        </EnhancedIconContainer>
+                        <div>
+                          <p className="font-medium text-gray-900 dark:text-white">{t('contact.form.phone')}</p>
+                          <p className="text-gray-600 dark:text-gray-300">+33 1 23 45 67 89</p>
+                        </div>
+                      </div>
+                    </AnimatedItem>
+                    <AnimatedItem delay={0.3}>
+                      <div className="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer group">
+                        <EnhancedIconContainer
+                          size="sm"
+                          variant="default"
+                          glowColor="orange"
+                          className="mt-1"
+                        >
+                          <MapPin className="h-4 w-4 text-orange-500" />
+                        </EnhancedIconContainer>
+                        <div>
+                          <p className="font-medium text-gray-900 dark:text-white">{t('contact.form.address')}</p>
+                          <p className="text-gray-600 dark:text-gray-300">
+                            123 Rue de l'Innovation<br />
+                            75001 Paris, France
+                          </p>
+                        </div>
+                      </div>
+                    </AnimatedItem>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="border-gray-200 dark:border-gray-800 backdrop-blur-sm bg-white/80 dark:bg-gray-900/80">
+              <CardContent className="p-6">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                  {t('contact.info.whyChoose')}
+                </h3>
+                <ul className="space-y-3 text-gray-600 dark:text-gray-300">
+                  <AnimatedItem delay={0.1}>
+                    <EnhancedListItem interactive={true} accent={true}>
+                      <span>{t('contact.features.experience')}</span>
+                    </EnhancedListItem>
+                  </AnimatedItem>
+                  <AnimatedItem delay={0.2}>
+                    <EnhancedListItem interactive={true} accent={true}>
+                      <span>{t('contact.features.expertise')}</span>
+                    </EnhancedListItem>
+                  </AnimatedItem>
+                  <AnimatedItem delay={0.3}>
+                    <EnhancedListItem interactive={true} accent={true}>
+                      <span>{t('contact.features.solutions')}</span>
+                    </EnhancedListItem>
+                  </AnimatedItem>
+                  <AnimatedItem delay={0.4}>
+                    <EnhancedListItem interactive={true} accent={true}>
+                      <span>{t('contact.features.support')}</span>
+                    </EnhancedListItem>
+                  </AnimatedItem>
+                </ul>
+              </CardContent>
+            </Card>
+            </div>
+          </AnimatedSection>
+        </div>
+      </div>
+    </section>
+  )
+}

@@ -1,21 +1,21 @@
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
-import { initializeConfiguration } from './lib/config-init';
 
-// Render the app immediately
+// Simple test to see if the app renders
+console.log('Starting app...');
+
 const root = createRoot(document.getElementById('root')!);
-root.render(<App />);
 
-// Initialize configuration in the background
-initializeConfiguration().then((result) => {
-  if (!result.success) {
-    console.error('Failed to initialize configuration:', result.error);
-  }
-  
-  if (result.warnings && result.warnings.length > 0) {
-    console.warn('Configuration warnings:', result.warnings);
-  }
-}).catch((error) => {
-  console.error('Unexpected error during app initialization:', error);
-});
+// Render a simple test first
+root.render(
+  <div style={{ padding: '20px', fontSize: '24px', color: 'red' }}>
+    🚀 Test - Site Kamlease Loading...
+  </div>
+);
+
+// Then render the real app after a delay
+setTimeout(() => {
+  console.log('Rendering real app...');
+  root.render(<App />);
+}, 1000);

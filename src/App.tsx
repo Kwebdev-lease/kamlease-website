@@ -98,7 +98,7 @@ const App = () => {
       resourceOptimizer.destroy();
       accessibilityManager.destroy();
     };
-  }, [devicePerformance])
+  }, [devicePerformance]);
 
   return (
     <ErrorBoundary

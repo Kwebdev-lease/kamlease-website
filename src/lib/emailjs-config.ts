@@ -65,22 +65,21 @@ export function loadEmailJSConfig(): EmailJSConfig {
 }
 
 /**
- * Gets EmailJS configuration with fallback values for development
+ * Gets EmailJS configuration with fallback values for development and production
  */
 export function getEmailJSConfig(): EmailJSConfig {
   try {
     return loadEmailJSConfig();
   } catch (error) {
-    // In development, provide fallback configuration
-    if (import.meta.env.DEV) {
-      console.warn('Using fallback EmailJS configuration for development');
-      return {
-        serviceId: 'service_kamlease',
-        templateId: 'template_contact',
-        userId: 'dev_user_id'
-      };
-    }
-    throw error;
+    // Provide fallback configuration for both development and production
+    console.warn('EmailJS configuration not available, using fallback configuration');
+    
+    // Use your actual user ID with placeholder service and template
+    return {
+      serviceId: 'service_kamlease_temp', // Tu devras remplacer par ton vrai service ID
+      templateId: 'template_contact_temp', // Tu devras remplacer par ton vrai template ID
+      userId: 'lwGUqh3EWS-EkkziA' // Ta vraie clé publique
+    };
   }
 }
 

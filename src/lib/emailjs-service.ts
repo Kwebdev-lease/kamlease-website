@@ -59,7 +59,16 @@ export class EmailJSService {
   private readonly apiUrl = 'https://api.emailjs.com/api/v1.0/email/send';
 
   constructor(config?: EmailJSConfig) {
-    this.config = config || getEmailJSConfig();
+    try {
+      this.config = config || getEmailJSConfig();
+    } catch (error) {
+      console.warn('EmailJS service initialized with fallback config');
+      this.config = {
+        serviceId: 'service_fallback',
+        templateId: 'template_fallback',
+        userId: 'lwGUqh3EWS-EkkziA'
+      };
+    }
   }
 
   /**

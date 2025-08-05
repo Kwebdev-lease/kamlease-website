@@ -128,19 +128,44 @@ export const translations = {
         firstName: 'Prénom',
         lastName: 'Nom',
         company: 'Société',
+        email: 'Adresse email',
+        telephone: 'Numéro de téléphone',
         message: 'Message',
         send: 'Envoyer le message',
         appointmentBtn: 'Choisir votre rendez-vous',
         submissionTypeTitle: 'Comment souhaitez-vous nous contacter ?',
         sendMessageOption: 'Envoyez-nous un message simple',
         scheduleAppointmentOption: 'Planifiez un rendez-vous',
-        email: 'Email',
         phone: 'Téléphone',
         address: 'Adresse',
         placeholder: 'Décrivez votre projet, vos besoins et vos objectifs...',
+        emailPlaceholder: 'votre.email@exemple.com',
+        telephonePlaceholder: '+33 1 23 45 67 89',
         required: '*',
         successMessage: 'Votre message a été envoyé ! Nous vous recontacterons bientôt.',
         appointmentMessage: 'Fonctionnalité de rendez-vous à intégrer avec votre système de calendrier',
+        validation: {
+          emailRequired: 'L\'adresse email est obligatoire',
+          emailInvalid: 'Format d\'email invalide',
+          telephoneRequired: 'Le numéro de téléphone est obligatoire',
+          telephoneInvalid: 'Format de téléphone invalide (ex: +33 1 23 45 67 89)'
+        },
+        errors: {
+          sendFailed: 'Erreur lors de l\'envoi de l\'email',
+          invalidConfiguration: 'Configuration du service email invalide',
+          templateNotFound: 'Template email non trouvé',
+          rateLimited: 'Trop de tentatives, veuillez réessayer plus tard',
+          serverError: 'Erreur du serveur email',
+          networkError: 'Erreur de connexion réseau',
+          unexpected: 'Une erreur inattendue est survenue. Veuillez réessayer.'
+        },
+        loading: {
+          sending: 'Envoi de votre message...',
+          preparing: 'Préparation du message...',
+          validating: 'Validation des données...',
+          processing: 'Envoi en cours...',
+          success: 'Message envoyé avec succès !'
+        },
         appointment: {
           selectDate: 'Sélectionnez une date',
           selectTime: 'Choisissez un horaire',
@@ -179,8 +204,8 @@ export const translations = {
           loading: {
             scheduling: 'Programmation de votre rendez-vous...',
             validating: 'Validation des informations...',
-            authenticating: 'Connexion au service Microsoft Graph...',
-            creating: 'Création de l\'événement dans votre calendrier...',
+            preparing: 'Préparation de votre demande...',
+            sending: 'Envoi de votre demande de rendez-vous...',
             finalizing: 'Finalisation...',
             emailFallback: 'Envoi de votre demande par email...'
           },
@@ -440,19 +465,44 @@ export const translations = {
         firstName: 'First Name',
         lastName: 'Last Name',
         company: 'Company',
+        email: 'Email Address',
+        telephone: 'Phone Number',
         message: 'Message',
         send: 'Send message',
         appointmentBtn: 'Schedule your appointment',
         submissionTypeTitle: 'How would you like to contact us?',
         sendMessageOption: 'Send us a simple message',
         scheduleAppointmentOption: 'Schedule an appointment',
-        email: 'Email',
         phone: 'Phone',
         address: 'Address',
         placeholder: 'Describe your project, your needs and your objectives...',
+        emailPlaceholder: 'your.email@example.com',
+        telephonePlaceholder: '+33 1 23 45 67 89',
         required: '*',
         successMessage: 'Your message has been sent! We will contact you soon.',
         appointmentMessage: 'Appointment feature to be integrated with your calendar system',
+        validation: {
+          emailRequired: 'Email address is required',
+          emailInvalid: 'Invalid email format',
+          telephoneRequired: 'Phone number is required',
+          telephoneInvalid: 'Invalid phone format (ex: +33 1 23 45 67 89)'
+        },
+        errors: {
+          sendFailed: 'Failed to send email',
+          invalidConfiguration: 'Invalid email service configuration',
+          templateNotFound: 'Email template not found',
+          rateLimited: 'Too many attempts, please try again later',
+          serverError: 'Email server error',
+          networkError: 'Network connection error',
+          unexpected: 'An unexpected error occurred. Please try again.'
+        },
+        loading: {
+          sending: 'Sending your message...',
+          preparing: 'Preparing message...',
+          validating: 'Validating data...',
+          processing: 'Sending in progress...',
+          success: 'Message sent successfully!'
+        },
         appointment: {
           selectDate: 'Select a date',
           selectTime: 'Choose a time',
@@ -491,8 +541,8 @@ export const translations = {
           loading: {
             scheduling: 'Scheduling your appointment...',
             validating: 'Validating information...',
-            authenticating: 'Connecting to Microsoft Graph service...',
-            creating: 'Creating event in your calendar...',
+            preparing: 'Preparing your request...',
+            sending: 'Sending your appointment request...',
             finalizing: 'Finalizing...',
             emailFallback: 'Sending your request by email...'
           },

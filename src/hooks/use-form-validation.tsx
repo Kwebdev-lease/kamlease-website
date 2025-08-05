@@ -1,10 +1,13 @@
 import { useState, useCallback } from 'react'
+import { validateFormField, FormValidationContext } from '../lib/form-validation-utils'
 
 export interface ValidationRule {
   required?: boolean
   minLength?: number
   maxLength?: number
   pattern?: RegExp
+  emailFormat?: boolean
+  phoneFormat?: boolean
   custom?: (value: string) => string | null
 }
 
@@ -25,16 +28,29 @@ export interface FormValidationReturn {
   clearAllErrors: () => void
 }
 
-export function useFormValidation(rules: ValidationRules): FormValidationReturn {
+export function useFormValidation(rules: ValidationRules, language: 'fr' | 'en' = 'fr'): FormValidationReturn {
   const [errors, setErrors] = useState<ValidationErrors>({})
 
   const validateField = useCallback((name: string, value: string): string | null => {
     const rule = rules[name]
     if (!rule) return null
 
+    // Use enhanced validation for email and phone fields
+    if (rule.emailFormat || rule.phoneFormat || name === 'email' || name === 'telephone') {
+      const context: FormValidationContext = {
+        fieldName: name,
+        value,
+        language,
+        isRequired: rule.required || false
+      }
+      
+      const result = validateFormField(context)
+      return result.error || null
+    }
+
     // Required validation
     if (rule.required && (!value || value.trim() === '')) {
-      return 'Ce champ est requis'
+      return language === 'fr' ? 'Ce champ est requis' : 'This field is required'
     }
 
     // Skip other validations if field is empty and not required
@@ -44,17 +60,21 @@ export function useFormValidation(rules: ValidationRules): FormValidationReturn 
 
     // Min length validation
     if (rule.minLength && value.length < rule.minLength) {
-      return `Minimum ${rule.minLength} caractères requis`
+      return language === 'fr' 
+        ? `Minimum ${rule.minLength} caractères requis`
+        : `Minimum ${rule.minLength} characters required`
     }
 
     // Max length validation
     if (rule.maxLength && value.length > rule.maxLength) {
-      return `Maximum ${rule.maxLength} caractères autorisés`
+      return language === 'fr'
+        ? `Maximum ${rule.maxLength} caractères autorisés`
+        : `Maximum ${rule.maxLength} characters allowed`
     }
 
     // Pattern validation
     if (rule.pattern && !rule.pattern.test(value)) {
-      return 'Format invalide'
+      return language === 'fr' ? 'Format invalide' : 'Invalid format'
     }
 
     // Custom validation
@@ -63,7 +83,7 @@ export function useFormValidation(rules: ValidationRules): FormValidationReturn 
     }
 
     return null
-  }, [rules])
+  }, [rules, language])
 
   const validateForm = useCallback((data: Record<string, string>): boolean => {
     const newErrors: ValidationErrors = {}

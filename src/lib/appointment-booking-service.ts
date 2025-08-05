@@ -13,6 +13,8 @@ export interface ContactFormData {
   nom: string;
   prenom: string;
   societe?: string;
+  email: string;
+  telephone: string;
   message: string;
 }
 
@@ -276,28 +278,41 @@ export class AppointmentBookingService {
         ? `Nouvelle demande de rendez-vous - ${formData.prenom} ${formData.nom}`
         : `Nouveau message depuis le site - ${formData.prenom} ${formData.nom}`;
 
-      // Use Formspree for ultra-simple email sending
-      const formspreeResponse = await fetch('https://formspree.io/f/xpzgkqyw', {
+      // Use EmailJS for reliable email sending
+      const emailJSResponse = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: `${formData.prenom} ${formData.nom}`,
-          email: formData.email || 'contact@kamlease.com',
-          company: formData.societe || 'Non spécifiée',
-          message: `${subject}\n\n${emailContent}`,
-          _subject: subject
+          service_id: 'YOUR_SERVICE_ID', // Remplace par ton Service ID
+          template_id: 'YOUR_TEMPLATE_ID', // Remplace par ton Template ID  
+          user_id: 'YOUR_PUBLIC_KEY', // Remplace par ta Public Key
+          template_params: {
+            from_name: `${formData.prenom} ${formData.nom}`,
+            from_email: formData.email,
+            phone: formData.telephone,
+            company: formData.societe || '',
+            message: formData.message,
+            reply_to: formData.email,
+            time: new Date().toLocaleString('fr-FR', {
+              year: 'numeric',
+              month: 'long', 
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            })
+          }
         })
       });
       
-      if (!formspreeResponse.ok) {
-        const errorText = await formspreeResponse.text();
-        console.error('Formspree error:', errorText);
-        throw new Error(`Formspree error: ${formspreeResponse.status}`);
+      if (!emailJSResponse.ok) {
+        const errorText = await emailJSResponse.text();
+        console.error('EmailJS error:', errorText);
+        throw new Error(`EmailJS error: ${emailJSResponse.status}`);
       }
       
-      console.log('✅ Email envoyé avec succès via Formspree');
+      console.log('✅ Email envoyé avec succès via EmailJS');
       return;
     } catch (error) {
       console.error('Unexpected error in email service:', error);
@@ -309,7 +324,7 @@ export class AppointmentBookingService {
    * Format email content for different submission types
    */
   private formatEmailContent(formData: ContactFormData, isAppointmentRequest = false): string {
-    const { prenom, nom, societe, message } = formData;
+    const { prenom, nom, societe, email, telephone, message } = formData;
     const timestamp = new Date().toLocaleString('fr-FR');
     
     let content = '';
@@ -328,6 +343,8 @@ export class AppointmentBookingService {
     content += `------------------------\n`;
     content += `Prénom: ${prenom}\n`;
     content += `Nom: ${nom}\n`;
+    content += `Email: ${email}\n`;
+    content += `Téléphone: ${telephone}\n`;
     
     if (societe) {
       content += `Société: ${societe}\n`;

@@ -1,21 +1,21 @@
 // Alternative avec EmailJS (plus simple)
 export async function onRequestPost(context: any) {
   const { request } = context;
-  
+
   const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Content-Type': 'application/json'
   };
-  
+
   if (request.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
-  
+
   try {
     const formData = await request.json();
-    
+
     // Utiliser EmailJS API
     const emailJSResponse = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
       method: 'POST',
@@ -35,22 +35,22 @@ export async function onRequestPost(context: any) {
         }
       })
     });
-    
+
     if (!emailJSResponse.ok) {
       throw new Error('EmailJS request failed');
     }
-    
-    return new Response(JSON.stringify({ 
+
+    return new Response(JSON.stringify({
       success: true,
       message: 'Email sent via EmailJS'
     }), {
       headers: corsHeaders
     });
-    
+
   } catch (error) {
     console.error('EmailJS error:', error);
-    return new Response(JSON.stringify({ 
-      success: false, 
+    return new Response(JSON.stringify({
+      success: false,
       error: error.message
     }), {
       status: 500,

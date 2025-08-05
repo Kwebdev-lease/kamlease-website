@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="{{language}}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{#is_french}}Confirmation de réception - Kamlease{{/is_french}}{{#is_english}}Message Received - Kamlease{{/is_english}}</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8fafc;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .logo {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        .header h1 {
+            color: #1e293b;
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        .header .subtitle {
+            color: #64748b;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+        .greeting {
+            font-size: 18px;
+            color: #1e293b;
+            margin-bottom: 20px;
+        }
+        .content {
+            color: #374151;
+            font-size: 16px;
+            line-height: 1.7;
+            margin-bottom: 25px;
+        }
+        .highlight-box {
+            background: #f0f9ff;
+            border: 1px solid #0ea5e9;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        .highlight-title {
+            color: #0c4a6e;
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .highlight-content {
+            color: #0f172a;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        .appointment-info {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        .appointment-title {
+            color: #92400e;
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        .appointment-details {
+            color: #451a03;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        .contact-info {
+            background: #f1f5f9;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 25px;
+        }
+        .contact-title {
+            color: #1e293b;
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        .contact-details {
+            color: #374151;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .contact-details a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+        .contact-details a:hover {
+            text-decoration: underline;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+            color: #64748b;
+            font-size: 12px;
+        }
+        .emoji {
+            font-size: 18px;
+            margin-right: 8px;
+        }
+        .response-time {
+            background: #ecfdf5;
+            border: 1px solid #10b981;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .response-time-text {
+            color: #065f46;
+            font-weight: 600;
+            font-size: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🏢</div>
+            <h1>
+                {{#is_french}}Merci pour votre message !{{/is_french}}
+                {{#is_english}}Thank you for your message!{{/is_english}}
+            </h1>
+            <div class="subtitle">Kamlease</div>
+        </div>
+
+        <div class="greeting">
+            {{#is_french}}Bonjour {{from_name}},{{/is_french}}
+            {{#is_english}}Hello {{from_name}},{{/is_english}}
+        </div>
+        
+        <!-- Variables cachées pour EmailJS -->
+        <div style="display: none;">
+            {{from_email}}
+            {{is_french}}
+            {{is_english}}
+        </div>
+
+        <div class="content">
+            {{#is_french}}
+            Nous avons bien reçu votre message envoyé via notre formulaire de contact. 
+            Nous vous remercions de l'intérêt que vous portez à nos services.
+            {{/is_french}}
+            {{#is_english}}
+            We have successfully received your message sent through our contact form. 
+            Thank you for your interest in our services.
+            {{/is_english}}
+        </div>
+
+        <!-- Section pour les demandes de rendez-vous -->
+        {{#appointment_date}}
+        <div class="appointment-info">
+            <div class="appointment-title">
+                <span class="emoji">🗓️</span>
+                {{#is_french}}Votre demande de rendez-vous{{/is_french}}
+                {{#is_english}}Your appointment request{{/is_english}}
+            </div>
+            <div class="appointment-details">
+                {{#is_french}}
+                Nous avons noté votre souhait de rendez-vous pour le <strong>{{appointment_date}}</strong>
+                {{#appointment_time}}à <strong>{{appointment_time}}</strong>{{/appointment_time}}.
+                <br><br>
+                Notre équipe va examiner votre demande et vous recontactera rapidement pour confirmer 
+                la disponibilité et finaliser les détails de votre rendez-vous.
+                {{/is_french}}
+                {{#is_english}}
+                We have noted your appointment request for <strong>{{appointment_date}}</strong>
+                {{#appointment_time}}at <strong>{{appointment_time}}</strong>{{/appointment_time}}.
+                <br><br>
+                Our team will review your request and contact you shortly to confirm 
+                availability and finalize your appointment details.
+                {{/is_english}}
+            </div>
+        </div>
+        {{/appointment_date}}
+
+        <!-- Section pour les messages simples -->
+        {{^appointment_date}}
+        <div class="highlight-box">
+            <div class="highlight-title">
+                <span class="emoji">📋</span>
+                {{#is_french}}Prochaines étapes{{/is_french}}
+                {{#is_english}}Next steps{{/is_english}}
+            </div>
+            <div class="highlight-content">
+                {{#is_french}}
+                Notre équipe va examiner votre demande et vous recontactera dans les plus brefs délais 
+                pour discuter de vos besoins et vous proposer les meilleures solutions.
+                {{/is_french}}
+                {{#is_english}}
+                Our team will review your request and contact you as soon as possible 
+                to discuss your needs and offer you the best solutions.
+                {{/is_english}}
+            </div>
+        </div>
+        {{/appointment_date}}
+
+        <div class="response-time">
+            <div class="response-time-text">
+                <span class="emoji">⏱️</span>
+                {{#is_french}}Délai de réponse habituel : 24-48 heures{{/is_french}}
+                {{#is_english}}Typical response time: 24-48 hours{{/is_english}}
+            </div>
+        </div>
+
+        <div class="content">
+            {{#is_french}}
+            En attendant, n'hésitez pas à consulter notre site web pour découvrir l'ensemble 
+            de nos services et solutions. Si vous avez des questions urgentes, vous pouvez 
+            nous contacter directement via les coordonnées ci-dessous.
+            {{/is_french}}
+            {{#is_english}}
+            In the meantime, feel free to browse our website to discover our full range 
+            of services and solutions. If you have urgent questions, you can contact us 
+            directly using the contact information below.
+            {{/is_english}}
+        </div>
+
+        <div class="contact-info">
+            <div class="contact-title">
+                <span class="emoji">📞</span>
+                {{#is_french}}Nos coordonnées{{/is_french}}
+                {{#is_english}}Our contact information{{/is_english}}
+            </div>
+            <div class="contact-details">
+                📧 Email : <a href="mailto:contact@kamlease.com">contact@kamlease.com</a><br>
+                🌐 {{#is_french}}Site web{{/is_french}}{{#is_english}}Website{{/is_english}} : <a href="https://kamlease.com">kamlease.com</a><br>
+                📱 {{#is_french}}Téléphone{{/is_french}}{{#is_english}}Phone{{/is_english}} : +33 (0)1 XX XX XX XX<br>
+                📍 {{#is_french}}Adresse{{/is_french}}{{#is_english}}Address{{/is_english}} : [Adresse de Kamlease]
+            </div>
+        </div>
+
+        <div class="content">
+            {{#is_french}}
+            Nous vous remercions encore pour votre confiance et avons hâte de collaborer avec vous.
+            {{/is_french}}
+            {{#is_english}}
+            Thank you again for your trust and we look forward to working with you.
+            {{/is_english}}
+        </div>
+
+        <div class="content">
+            {{#is_french}}
+            Cordialement,<br>
+            <strong>L'équipe Kamlease</strong>
+            {{/is_french}}
+            {{#is_english}}
+            Best regards,<br>
+            <strong>The Kamlease Team</strong>
+            {{/is_english}}
+        </div>
+
+        <div class="footer">
+            {{#is_french}}
+            Cet email a été envoyé automatiquement suite à votre demande de contact. 
+            Merci de ne pas répondre directement à cet email.
+            {{/is_french}}
+            {{#is_english}}
+            This email was sent automatically following your contact request. 
+            Please do not reply directly to this email.
+            {{/is_english}}
+        </div>
+    </div>
+</body>
+</html>

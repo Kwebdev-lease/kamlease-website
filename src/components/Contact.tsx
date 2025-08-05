@@ -10,7 +10,8 @@ import { AnimatedSection, AnimatedItem } from './AnimatedSection'
 import { BackgroundPattern } from './BackgroundPattern'
 import { useFormValidation, ValidationRules } from '../hooks/use-form-validation'
 import { DateTimePicker } from './DateTimePicker'
-import { AppointmentBookingService, ContactFormData, AppointmentFormData } from '../lib/appointment-booking-service'
+import { emailJSService, EmailResult, AppointmentFormData } from '../lib/emailjs-service'
+import { EnhancedContactFormData } from '../lib/form-types'
 import { BusinessHoursValidator } from '../lib/business-hours-validator'
 import { LoadingIndicator, LoadingPresets, useLoadingState } from './LoadingIndicator'
 import { SuccessFeedback, SuccessPresets, AppointmentDetails, ContactDetails } from './SuccessFeedback'
@@ -20,6 +21,7 @@ import { InputSanitizer } from '../lib/security/input-sanitizer'
 import { CSRFProtection } from '../lib/security/csrf-protection'
 
 type SubmissionType = 'message' | 'appointment'
+type ContactFormData = EnhancedContactFormData
 
 export function Contact() {
   const { t } = useLanguage()
@@ -27,6 +29,8 @@ export function Contact() {
     nom: '',
     prenom: '',
     societe: '',
+    email: '',
+    telephone: '',
     message: ''
   })
   const [submissionType, setSubmissionType] = useState<SubmissionType>('message')
@@ -115,6 +119,16 @@ export function Contact() {
     societe: {
       maxLength: 100
     },
+    email: {
+      required: true,
+      emailFormat: true,
+      maxLength: 100
+    },
+    telephone: {
+      required: true,
+      phoneFormat: true,
+      maxLength: 20
+    },
     message: {
       required: true,
       minLength: 10,
@@ -122,7 +136,7 @@ export function Contact() {
     }
   }
 
-  const { errors, validateField, validateForm, clearError } = useFormValidation(validationRules)
+  const { errors, validateField, validateForm, clearError } = useFormValidation(validationRules, t.language)
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -132,7 +146,7 @@ export function Contact() {
     if (inputSanitizer && name !== 'message') {
       try {
         const sanitizationResult = inputSanitizer.sanitize(value, {
-          maxLength: name === 'societe' ? 100 : 50,
+          maxLength: name === 'societe' ? 100 : name === 'email' ? 100 : name === 'telephone' ? 20 : 50,
           removeSpecialChars: name === 'nom' || name === 'prenom'
         })
         
@@ -255,11 +269,39 @@ export function Contact() {
     }
   }
 
+  // Helper function to translate EmailJS error messages
+  const getTranslatedErrorMessage = (error: string): string => {
+    // Handle specific EmailJS error codes
+    if (error.includes('EMAILJS_INVALID_SERVICE') || error.includes('400')) {
+      return t('contact.form.errors.invalidConfiguration')
+    }
+    if (error.includes('EMAILJS_INVALID_TEMPLATE') || error.includes('404')) {
+      return t('contact.form.errors.templateNotFound')
+    }
+    if (error.includes('EMAILJS_RATE_LIMITED') || error.includes('429')) {
+      return t('contact.form.errors.rateLimited')
+    }
+    if (error.includes('EMAILJS_SERVER_ERROR') || error.includes('500')) {
+      return t('contact.form.errors.serverError')
+    }
+    if (error.includes('EMAILJS_NETWORK_ERROR') || error.includes('network') || error.includes('Network')) {
+      return t('contact.form.errors.networkError')
+    }
+    if (error.includes('EMAILJS_SEND_FAILED')) {
+      return t('contact.form.errors.sendFailed')
+    }
+    
+    // Fallback for any other errors
+    return error || t('contact.form.errors.unexpected')
+  }
+
   // Check if form is valid for submission (memoized to prevent infinite renders)
   const isFormValid = useMemo(() => {
     // Basic form validation - check if all required fields are filled and have no errors
     const hasRequiredFields = formData.prenom.trim() !== '' && 
                              formData.nom.trim() !== '' && 
+                             formData.email.trim() !== '' &&
+                             formData.telephone.trim() !== '' &&
                              formData.message.trim() !== ''
     const hasNoErrors = Object.keys(errors).length === 0
     const basicFormValid = hasRequiredFields && hasNoErrors
@@ -333,51 +375,50 @@ export function Contact() {
     setSuccessFeedback(prev => ({ ...prev, isVisible: false }))
     
     try {
-      const bookingService = AppointmentBookingService.getInstance()
-      let result
+      let result: EmailResult
 
       if (submissionType === 'appointment' && selectedDate && selectedTime) {
         // Start appointment booking with detailed progress
-        startLoading('Programmation de votre rendez-vous...')
+        startLoading(t('contact.form.appointment.loading.scheduling'))
         
         // Step 1: Validation
-        updateStep('validate', 'Validation des informations...')
+        updateStep('validate', t('contact.form.appointment.loading.validating'))
         await new Promise(resolve => setTimeout(resolve, 600))
         
-        // Step 2: Authentication
-        updateStep('auth', 'Connexion au service Microsoft Graph...')
-        await new Promise(resolve => setTimeout(resolve, 1000))
+        // Step 2: Email preparation
+        updateStep('auth', t('contact.form.appointment.loading.preparing'))
+        await new Promise(resolve => setTimeout(resolve, 800))
         
-        // Step 3: Calendar creation
-        updateStep('calendar', 'Création de l\'événement dans votre calendrier...')
+        // Step 3: Email sending
+        updateStep('calendar', t('contact.form.appointment.loading.sending'))
         const appointmentData: AppointmentFormData = {
           ...formData,
           appointmentDate: selectedDate,
           appointmentTime: selectedTime
         }
         
-        result = await bookingService.handleAppointmentSubmission(appointmentData)
+        result = await emailJSService.sendAppointmentRequest(appointmentData)
         
         if (result.success) {
-          updateStep('complete', 'Finalisation...')
+          updateStep('complete', t('contact.form.appointment.loading.finalizing'))
           await new Promise(resolve => setTimeout(resolve, 400))
         }
       } else {
         // Handle simple message with progress bar
-        startLoading('Envoi de votre message...')
+        startLoading(t('contact.form.loading.sending'))
         
-        updateProgress(20, 'Préparation du message...')
+        updateProgress(20, t('contact.form.loading.preparing'))
         await new Promise(resolve => setTimeout(resolve, 300))
         
-        updateProgress(50, 'Validation des données...')
+        updateProgress(50, t('contact.form.loading.validating'))
         await new Promise(resolve => setTimeout(resolve, 200))
         
-        updateProgress(80, 'Envoi en cours...')
+        updateProgress(80, t('contact.form.loading.processing'))
         const messageData: ContactFormData = { ...formData }
-        result = await bookingService.handleMessageSubmission(messageData)
+        result = await emailJSService.sendContactMessage(messageData)
         
         if (result.success) {
-          updateProgress(100, 'Message envoyé avec succès !')
+          updateProgress(100, t('contact.form.loading.success'))
           await new Promise(resolve => setTimeout(resolve, 300))
         }
       }
@@ -398,8 +439,8 @@ export function Contact() {
             date: selectedDate,
             time: selectedTime,
             duration: 30, // Default 30 minutes
-            eventId: result.eventId,
-            confirmationNumber: result.eventId ? `RDV-${result.eventId.slice(-8).toUpperCase()}` : `REQ-${Date.now().toString().slice(-8).toUpperCase()}`
+            eventId: result.emailId,
+            confirmationNumber: result.emailId ? `RDV-${result.emailId.slice(-8).toUpperCase()}` : `REQ-${Date.now().toString().slice(-8).toUpperCase()}`
           }
         }
 
@@ -413,7 +454,7 @@ export function Contact() {
         })
         
         // Reset form after successful submission
-        setFormData({ nom: '', prenom: '', societe: '', message: '' })
+        setFormData({ nom: '', prenom: '', societe: '', email: '', telephone: '', message: '' })
         setSelectedDate(null)
         setSelectedTime(null)
         setSubmissionType('message')
@@ -422,16 +463,16 @@ export function Contact() {
         setIsAppointmentValid(false)
         
       } else {
-        // Handle submission errors
-        setSubmitError(result.message)
+        // Handle submission errors with translated messages
+        setSubmitError(getTranslatedErrorMessage(result.error || result.message))
         if (result.error) {
-          setAppointmentError(result.error)
+          setAppointmentError(getTranslatedErrorMessage(result.error))
         }
       }
       
     } catch (error) {
       console.error('Form submission error:', error)
-      setSubmitError('Une erreur inattendue est survenue. Veuillez réessayer.')
+      setSubmitError(t('contact.form.errors.unexpected'))
     } finally {
       stopLoading()
     }
@@ -522,12 +563,12 @@ export function Contact() {
                           Mode Développement (Localhost)
                         </p>
                         <p className="text-sm text-blue-700 dark:text-blue-300 mb-2">
-                          Microsoft Graph ne fonctionne pas depuis localhost à cause des restrictions CORS.
+                          Le formulaire utilise maintenant EmailJS pour l'envoi d'emails.
                         </p>
                         <p className="text-sm text-blue-700 dark:text-blue-300">
-                          ✅ Les emails et rendez-vous sont simulés<br/>
-                          📋 Consultez la console pour voir le contenu des messages<br/>
-                          🚀 Déployez sur un domaine HTTPS pour activer les vrais emails
+                          ✅ Les emails sont envoyés via EmailJS<br/>
+                          📋 Consultez la console pour voir les détails d'envoi<br/>
+                          🚀 Configurez vos templates EmailJS pour recevoir les emails
                         </p>
                       </div>
                     </div>
@@ -777,8 +818,81 @@ export function Contact() {
                     </div>
                   </div>
                 </AnimatedItem>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <AnimatedItem delay={0.35}>
+                    <div>
+                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        {t('contact.form.email')} {t('contact.form.required')}
+                      </label>
+                      <div className="relative">
+                        <EnhancedInput
+                          id="email"
+                          name="email"
+                          type="email"
+                          required
+                          value={formData.email}
+                          onChange={handleInputChange}
+                          onBlur={handleInputBlur}
+                          onFocus={handleInputFocus}
+                          error={!!errors.email}
+                          className="border-gray-300 dark:border-gray-600"
+                          placeholder={t('contact.form.emailPlaceholder')}
+                        />
+                        <AnimatePresence>
+                          {errors.email && (
+                            <motion.div
+                              initial={{ opacity: 0, y: -10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -10 }}
+                              className="absolute -bottom-6 left-0 flex items-center space-x-1 text-red-600 dark:text-red-400 text-sm"
+                            >
+                              <AlertCircle className="h-3 w-3" />
+                              <span>{errors.email}</span>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    </div>
+                  </AnimatedItem>
+                  <AnimatedItem delay={0.4}>
+                    <div>
+                      <label htmlFor="telephone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        {t('contact.form.telephone')} {t('contact.form.required')}
+                      </label>
+                      <div className="relative">
+                        <EnhancedInput
+                          id="telephone"
+                          name="telephone"
+                          type="tel"
+                          required
+                          value={formData.telephone}
+                          onChange={handleInputChange}
+                          onBlur={handleInputBlur}
+                          onFocus={handleInputFocus}
+                          error={!!errors.telephone}
+                          className="border-gray-300 dark:border-gray-600"
+                          placeholder={t('contact.form.telephonePlaceholder')}
+                        />
+                        <AnimatePresence>
+                          {errors.telephone && (
+                            <motion.div
+                              initial={{ opacity: 0, y: -10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -10 }}
+                              className="absolute -bottom-6 left-0 flex items-center space-x-1 text-red-600 dark:text-red-400 text-sm"
+                            >
+                              <AlertCircle className="h-3 w-3" />
+                              <span>{errors.telephone}</span>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    </div>
+                  </AnimatedItem>
+                </div>
                 
-                <AnimatedItem delay={0.4}>
+                <AnimatedItem delay={0.45}>
                   <div>
                     <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       {t('contact.form.message')} {t('contact.form.required')}
@@ -863,7 +977,7 @@ export function Contact() {
                   )}
                 </AnimatePresence>
                 
-                <AnimatedItem delay={0.6}>
+                <AnimatedItem delay={0.65}>
                   <div className="pt-4">
                     <EnhancedButton
                       type="submit"

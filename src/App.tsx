@@ -6,12 +6,13 @@ import { HelmetProvider } from 'react-helmet-async';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { LanguageProvider } from '@/contexts/LanguageProvider';
 import { ErrorBoundary, ThemeErrorBoundary, LanguageErrorBoundary } from '@/components/ErrorBoundary';
-import { initPerformanceMonitoring } from '@/lib/performance';
-import '@/lib/performance-check'; // Auto-runs performance check in dev mode
-import { initializeLazyAnimations } from '@/lib/animation-lazy-loader';
-import { useDevicePerformance } from '@/lib/device-performance';
-import { resourceOptimizer } from '@/lib/resource-optimization';
-import { accessibilityManager } from '@/lib/accessibility-utils';
+// Performance imports - commented out for debugging
+// import { initPerformanceMonitoring } from '@/lib/performance';
+// import '@/lib/performance-check'; // Auto-runs performance check in dev mode
+// import { initializeLazyAnimations } from '@/lib/animation-lazy-loader';
+// import { useDevicePerformance } from '@/lib/device-performance';
+// import { resourceOptimizer } from '@/lib/resource-optimization';
+// import { accessibilityManager } from '@/lib/accessibility-utils';
 import { useEffect } from 'react';
 import { MotionConfig } from 'framer-motion';
 import { MultilingualRouter } from './components/MultilingualRouter';
@@ -36,69 +37,14 @@ const queryClient = new QueryClient({
 });
 
 const App = () => {
-  const devicePerformance = useDevicePerformance();
+  // Simplified version for debugging - performance features temporarily disabled
+  // const devicePerformance = useDevicePerformance();
 
   // Initialize performance monitoring, resource optimization, and accessibility features
   useEffect(() => {
-    const initializeOptimizations = async () => {
-      try {
-        // Initialize performance monitoring
-        initPerformanceMonitoring();
-        
-        // Initialize lazy animations based on device performance
-        initializeLazyAnimations(devicePerformance);
-        
-        // Initialize resource optimization
-        await resourceOptimizer.initialize();
-        
-        // Preload critical resources based on device performance
-        const criticalResources = [
-          '/assets/fonts/inter/Inter-VariableFont_opsz,wght.ttf',
-          '/assets/fonts/space-grotesk/SpaceGrotesk-VariableFont_wght.ttf'
-        ];
-        
-        if (devicePerformance.tier !== 'low') {
-          criticalResources.forEach(url => {
-            resourceOptimizer['preloader'].preload(url, 'font', 8);
-          });
-        }
-        
-        // Log performance recommendations in development
-        if (process.env.NODE_ENV === 'development') {
-          const recommendations = resourceOptimizer.getRecommendations();
-          if (recommendations.length > 0) {
-            console.group('🚀 Performance Recommendations');
-            recommendations.forEach(rec => console.log('•', rec));
-            console.groupEnd();
-          }
-          
-          // Log accessibility audit in development
-          setTimeout(() => {
-            const audit = accessibilityManager.auditPage();
-            console.group('♿ Accessibility Audit');
-            console.log('Score:', audit.score);
-            if (audit.issues.length > 0) {
-              console.log('Issues:', audit.issues);
-            }
-            if (audit.recommendations.length > 0) {
-              console.log('Recommendations:', audit.recommendations);
-            }
-            console.groupEnd();
-          }, 2000);
-        }
-      } catch (error) {
-        console.error('Failed to initialize optimizations:', error);
-      }
-    };
-
-    initializeOptimizations();
-    
-    // Cleanup function
-    return () => {
-      resourceOptimizer.destroy();
-      accessibilityManager.destroy();
-    };
-  }, [devicePerformance]);
+    // Simplified initialization for debugging
+    console.log('App initialized successfully');
+  }, []);
 
   return (
     <ErrorBoundary
@@ -136,7 +82,7 @@ const App = () => {
                   reducedMotion="user"
                   transition={{
                     type: "tween",
-                    duration: devicePerformance.isMobile ? 0.25 : 0.3,
+                    duration: 0.3,
                     ease: [0.25, 0.46, 0.45, 0.94]
                   }}
                 >

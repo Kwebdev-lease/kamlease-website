@@ -276,19 +276,34 @@ export class AppointmentBookingService {
         ? `Nouvelle demande de rendez-vous - ${formData.prenom} ${formData.nom}`
         : `Nouveau message depuis le site - ${formData.prenom} ${formData.nom}`;
 
-      // Skip Microsoft Graph for now due to CORS issues
-      // Use fallback method (console logging) until backend is implemented
-      console.log('=== EMAIL FALLBACK ===');
-      console.log('TO: contact@kamlease.com');
-      console.log('SUBJECT:', subject);
-      console.log('CONTENT:');
-      console.log(emailContent);
-      console.log('=== END EMAIL FALLBACK ===');
+      // Use Cloudflare Pages Function for email sending
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName: formData.prenom,
+          lastName: formData.nom,
+          company: formData.societe || '',
+          email: formData.email || '',
+          message: formData.message,
+          subject: subject,
+          content: emailContent
+        })
+      });
       
-      // For now, consider this as "success" so the user gets positive feedback
-      console.log('✅ Message reçu et traité (affiché dans la console pour développement)');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       
-      // Return success to provide good UX while we implement proper backend
+      const result = await response.json();
+      
+      if (!result.success) {
+        throw new Error(result.error || 'Email sending failed');
+      }
+      
+      console.log('✅ Email envoyé avec succès via Cloudflare Function');
       return;
     } catch (error) {
       console.error('Unexpected error in email service:', error);

@@ -2,29 +2,51 @@
 export async function onRequestPost(context: any) {
   const { request, env } = context;
   
+  // CORS headers
+  const corsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Content-Type': 'application/json'
+  };
+  
+  // Handle preflight requests
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+  
   try {
     // Récupérer les données du formulaire
     const formData = await request.json();
+    console.log('📧 Tentative d\'envoi d\'email:', formData);
+    
+    // Vérifier les variables d'environnement
+    if (!env.VITE_MICROSOFT_TENANT_ID || !env.VITE_MICROSOFT_CLIENT_ID || !env.VITE_MICROSOFT_CLIENT_SECRET) {
+      throw new Error('Missing Microsoft Graph credentials in environment variables');
+    }
     
     // Obtenir un token Microsoft Graph
-    const tokenResponse = await fetch(`https://login.microsoftonline.com/${env.MICROSOFT_TENANT_ID}/oauth2/v2.0/token`, {
+    const tokenResponse = await fetch(`https://login.microsoftonline.com/${env.VITE_MICROSOFT_TENANT_ID}/oauth2/v2.0/token`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: new URLSearchParams({
-        client_id: env.MICROSOFT_CLIENT_ID,
-        client_secret: env.MICROSOFT_CLIENT_SECRET,
+        client_id: env.VITE_MICROSOFT_CLIENT_ID,
+        client_secret: env.VITE_MICROSOFT_CLIENT_SECRET,
         scope: 'https://graph.microsoft.com/.default',
         grant_type: 'client_credentials'
       })
     });
     
     if (!tokenResponse.ok) {
-      throw new Error('Failed to get access token');
+      const errorText = await tokenResponse.text();
+      console.error('Token request failed:', errorText);
+      throw new Error(`Failed to get access token: ${tokenResponse.status}`);
     }
     
     const tokenData = await tokenResponse.json();
+    console.log('✅ Token Microsoft Graph obtenu');
     
     // Envoyer l'email via Microsoft Graph
     const emailResponse = await fetch('https://graph.microsoft.com/v1.0/users/contact@kamlease.com/sendMail', {
@@ -35,10 +57,10 @@ export async function onRequestPost(context: any) {
       },
       body: JSON.stringify({
         message: {
-          subject: `Nouveau message depuis le site - ${formData.firstName} ${formData.lastName}`,
+          subject: formData.subject || `Nouveau message depuis le site - ${formData.firstName} ${formData.lastName}`,
           body: {
             contentType: 'Text',
-            content: `
+            content: formData.content || `
 NOUVEAU MESSAGE DEPUIS LE SITE WEB
 ==================================
 
@@ -72,21 +94,28 @@ Ne pas répondre directement à cet email.
     });
     
     if (!emailResponse.ok) {
-      throw new Error('Failed to send email');
+      const errorText = await emailResponse.text();
+      console.error('Email sending failed:', errorText);
+      throw new Error(`Failed to send email: ${emailResponse.status}`);
     }
     
-    return new Response(JSON.stringify({ success: true }), {
-      headers: { 'Content-Type': 'application/json' }
+    console.log('✅ Email envoyé avec succès !');
+    
+    return new Response(JSON.stringify({ 
+      success: true,
+      message: 'Email sent successfully'
+    }), {
+      headers: corsHeaders
     });
     
   } catch (error) {
-    console.error('Email sending error:', error);
+    console.error('❌ Erreur lors de l\'envoi d\'email:', error);
     return new Response(JSON.stringify({ 
       success: false, 
-      error: 'Failed to send email' 
+      error: error.message || 'Failed to send email'
     }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' }
+      headers: corsHeaders
     });
   }
 }

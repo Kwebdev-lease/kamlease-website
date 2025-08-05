@@ -276,34 +276,28 @@ export class AppointmentBookingService {
         ? `Nouvelle demande de rendez-vous - ${formData.prenom} ${formData.nom}`
         : `Nouveau message depuis le site - ${formData.prenom} ${formData.nom}`;
 
-      // Use Cloudflare Pages Function for email sending
-      const response = await fetch('/api/send-email', {
+      // Use Formspree for ultra-simple email sending
+      const formspreeResponse = await fetch('https://formspree.io/f/xpzgkqyw', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          firstName: formData.prenom,
-          lastName: formData.nom,
-          company: formData.societe || '',
-          email: formData.email || '',
-          message: formData.message,
-          subject: subject,
-          content: emailContent
+          name: `${formData.prenom} ${formData.nom}`,
+          email: formData.email || 'contact@kamlease.com',
+          company: formData.societe || 'Non spécifiée',
+          message: `${subject}\n\n${emailContent}`,
+          _subject: subject
         })
       });
       
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      if (!formspreeResponse.ok) {
+        const errorText = await formspreeResponse.text();
+        console.error('Formspree error:', errorText);
+        throw new Error(`Formspree error: ${formspreeResponse.status}`);
       }
       
-      const result = await response.json();
-      
-      if (!result.success) {
-        throw new Error(result.error || 'Email sending failed');
-      }
-      
-      console.log('✅ Email envoyé avec succès via Cloudflare Function');
+      console.log('✅ Email envoyé avec succès via Formspree');
       return;
     } catch (error) {
       console.error('Unexpected error in email service:', error);

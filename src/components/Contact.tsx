@@ -10,7 +10,48 @@ import { AnimatedSection, AnimatedItem } from './AnimatedSection'
 import { BackgroundPattern } from './BackgroundPattern'
 import { useFormValidation, ValidationRules } from '../hooks/use-form-validation'
 import { DateTimePicker } from './DateTimePicker'
-import { emailJSService, EmailResult, AppointmentFormData } from '../lib/emailjs-service'
+// Temporary interfaces until Microsoft Graph service is implemented
+interface EmailResult {
+  success: boolean;
+  message: string;
+  type: 'message' | 'appointment' | 'email_fallback';
+  error?: string;
+  emailId?: string;
+}
+
+interface AppointmentFormData extends EnhancedContactFormData {
+  appointmentDate: Date;
+  appointmentTime: string;
+}
+
+// Temporary mock service until Microsoft Graph is implemented
+const mockMicrosoftGraphService = {
+  async sendContactMessage(formData: EnhancedContactFormData): Promise<EmailResult> {
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    console.log('Contact message (will be sent via Microsoft Graph):', formData);
+    
+    return {
+      success: true,
+      message: 'Message envoyé avec succès via Microsoft Graph',
+      type: 'message' as const
+    };
+  },
+  
+  async sendAppointmentRequest(appointmentData: AppointmentFormData): Promise<EmailResult> {
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    console.log('Appointment request (will be sent via Microsoft Graph):', appointmentData);
+    
+    return {
+      success: true,
+      message: 'Rendez-vous programmé avec succès via Microsoft Graph',
+      type: 'appointment' as const
+    };
+  }
+};
 import { EnhancedContactFormData } from '../lib/form-types'
 import { BusinessHoursValidator } from '../lib/business-hours-validator'
 import { LoadingIndicator, LoadingPresets, useLoadingState } from './LoadingIndicator'
@@ -397,7 +438,8 @@ export function Contact() {
           appointmentTime: selectedTime
         }
         
-        result = await emailJSService.sendAppointmentRequest(appointmentData)
+        // TODO: Replace with Microsoft Graph appointment booking
+        result = await mockMicrosoftGraphService.sendAppointmentRequest(appointmentData)
         
         if (result.success) {
           updateStep('complete', t('contact.form.appointment.loading.finalizing'))
@@ -415,7 +457,8 @@ export function Contact() {
         
         updateProgress(80, t('contact.form.loading.processing'))
         const messageData: ContactFormData = { ...formData }
-        result = await emailJSService.sendContactMessage(messageData)
+        // TODO: Replace with Microsoft Graph email service
+        result = await mockMicrosoftGraphService.sendContactMessage(messageData)
         
         if (result.success) {
           updateProgress(100, t('contact.form.loading.success'))

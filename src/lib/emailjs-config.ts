@@ -32,11 +32,11 @@ export function validateEmailJSConfig(config: Partial<EmailJSConfig>): config is
     }
   }
 
-  // Validate format patterns
-  if (config.serviceId && !config.serviceId.startsWith('service_')) {
-    console.error('EmailJS configuration error: serviceId should start with "service_"');
-    return false;
-  }
+  // Validate format patterns - Note: some service IDs don't start with 'service_'
+  // if (config.serviceId && !config.serviceId.startsWith('service_')) {
+  //   console.error('EmailJS configuration error: serviceId should start with "service_"');
+  //   return false;
+  // }
 
   if (config.contactTemplateId && !config.contactTemplateId.startsWith('template_')) {
     console.error('EmailJS configuration error: contactTemplateId should start with "template_"');
@@ -98,7 +98,8 @@ export function getEmailJSConfig(): EmailJSConfig {
 export function sanitizeConfigForLogging(config: EmailJSConfig): Partial<EmailJSConfig> {
   return {
     serviceId: config.serviceId,
-    templateId: config.templateId,
+    contactTemplateId: config.contactTemplateId,
+    autoReplyTemplateId: config.autoReplyTemplateId,
     userId: config.userId ? `${config.userId.substring(0, 4)}***` : undefined
   };
 }

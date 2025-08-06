@@ -84,13 +84,18 @@ export async function onRequest(context) {
     const tokenData = await tokenResponse.json();
     const accessToken = tokenData.access_token;
 
+    // Check if this is an appointment request
+    const isAppointment = formData.appointmentDate && formData.appointmentTime;
+    
     // Préparer le contenu de l'email
     const emailContent = formatEmailContent(formData);
     
     // Préparer le message pour Microsoft Graph
     const message = {
       message: {
-        subject: `Nouveau message de contact - ${formData.prenom} ${formData.nom}`,
+        subject: isAppointment 
+          ? `Demande de rendez-vous - ${formData.prenom} ${formData.nom}`
+          : `Nouveau message de contact - ${formData.prenom} ${formData.nom}`,
         body: {
           contentType: 'HTML',
           content: emailContent
@@ -119,6 +124,18 @@ export async function onRequest(context) {
       const errorText = await emailResponse.text();
       console.error('Microsoft Graph error:', errorText);
       throw new Error('Erreur lors de l\'envoi de l\'email');
+    }
+
+    // If it's an appointment, create calendar event with Teams meeting
+    let calendarEventId = null;
+    if (isAppointment) {
+      try {
+        calendarEventId = await createCalendarEventWithTeams(accessToken, formData, env);
+        console.log('✅ Calendar event created with Teams meeting:', calendarEventId);
+      } catch (calendarError) {
+        console.error('❌ Failed to create calendar event:', calendarError);
+        // Don't fail the whole process if calendar creation fails
+      }
     }
 
     // Envoyer l'email de confirmation à l'utilisateur
@@ -362,4 +379,96 @@ function formatConfirmationEmail(formData) {
   `;
 
   return content;
+}
+/**
+ * 
+Create a calendar event with Teams meeting
+ */
+async function createCalendarEventWithTeams(accessToken, formData, env) {
+  const appointmentDate = new Date(formData.appointmentDate);
+  const [hours, minutes] = formData.appointmentTime.split(':');
+  
+  // Set start time
+  const startTime = new Date(appointmentDate);
+  startTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+  
+  // Set end time (30 minutes later by default)
+  const endTime = new Date(startTime);
+  endTime.setMinutes(endTime.getMinutes() + (parseInt(env.VITE_APPOINTMENT_DURATION) || 30));
+  
+  // Prepare calendar event with Teams meeting
+  const calendarEvent = {
+    subject: `Rendez-vous avec ${formData.prenom} ${formData.nom}`,
+    body: {
+      contentType: 'HTML',
+      content: `
+        <div style="font-family: Arial, sans-serif;">
+          <h3>Rendez-vous avec ${formData.prenom} ${formData.nom}</h3>
+          
+          <h4>Informations du contact :</h4>
+          <ul>
+            <li><strong>Nom :</strong> ${formData.nom}</li>
+            <li><strong>Prénom :</strong> ${formData.prenom}</li>
+            ${formData.societe ? `<li><strong>Société :</strong> ${formData.societe}</li>` : ''}
+            <li><strong>Email :</strong> ${formData.email}</li>
+            <li><strong>Téléphone :</strong> ${formData.telephone}</li>
+          </ul>
+          
+          <h4>Message :</h4>
+          <p>${formData.message}</p>
+          
+          <hr>
+          <p><em>Rendez-vous créé automatiquement depuis le site web Kamlease</em></p>
+        </div>
+      `
+    },
+    start: {
+      dateTime: startTime.toISOString(),
+      timeZone: env.VITE_BUSINESS_TIMEZONE || 'Europe/Paris'
+    },
+    end: {
+      dateTime: endTime.toISOString(),
+      timeZone: env.VITE_BUSINESS_TIMEZONE || 'Europe/Paris'
+    },
+    attendees: [
+      {
+        emailAddress: {
+          address: formData.email,
+          name: `${formData.prenom} ${formData.nom}`
+        },
+        type: 'required'
+      }
+    ],
+    isOnlineMeeting: true,
+    onlineMeetingProvider: 'teamsForBusiness',
+    location: {
+      displayName: 'Réunion Teams',
+      locationType: 'default'
+    },
+    categories: ['Rendez-vous client', 'Kamlease'],
+    importance: 'normal',
+    sensitivity: 'normal',
+    showAs: 'busy'
+  };
+
+  // Create the calendar event
+  const calendarResponse = await fetch(`https://graph.microsoft.com/v1.0/users/${env.VITE_CALENDAR_EMAIL || 'contact@kamlease.com'}/events`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(calendarEvent)
+  });
+
+  if (!calendarResponse.ok) {
+    const errorText = await calendarResponse.text();
+    console.error('Calendar creation failed:', errorText);
+    throw new Error(`Failed to create calendar event: ${calendarResponse.status}`);
+  }
+
+  const createdEvent = await calendarResponse.json();
+  console.log('📅 Calendar event created:', createdEvent.id);
+  
+  return createdEvent.id;
 }

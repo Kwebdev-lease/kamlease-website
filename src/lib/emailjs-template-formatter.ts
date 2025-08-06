@@ -95,19 +95,18 @@ export class EmailJSTemplateFormatter {
    * Formats auto-reply email parameters (envoyé à l'utilisateur)
    */
   formatAutoReply(formData: EnhancedContactFormData): ExtendedEmailTemplateParams {
-    const baseParams = this.createBaseParams(formData);
+    // Utilise le même format que le message de contact mais avec destinataires inversés
+    const contactParams = this.formatContactMessage(formData);
     
-    // Pour l'auto-reply, on inverse les destinataires
+    // Pour l'auto-reply, on inverse les destinataires et change le message
     const autoReplyParams = {
-      ...baseParams,
+      ...contactParams,
       to_email: formData.email, // Envoyer à l'utilisateur
       reply_to: 'contact@kamlease.com', // Répondre à Kamlease
-      from_name: 'Kamlease', // Expéditeur : Kamlease
+      from_name: 'Équipe Kamlease', // Expéditeur : Kamlease
       from_email: 'contact@kamlease.com',
-      contact_info_formatted: this.formatContactInfo(formData),
-      message_formatted: `Bonjour ${formData.prenom},\n\nNous avons bien reçu votre message et vous remercions de votre intérêt pour nos services.\n\nNotre équipe vous répondra dans les plus brefs délais.\n\nCordialement,\nL'équipe Kamlease`,
-      timestamp_iso: new Date().toISOString(),
-      timestamp_readable: this.formatTimestamp(new Date())
+      message: `Bonjour ${formData.prenom},\n\nNous avons bien reçu votre message et vous remercions de votre intérêt pour nos services.\n\nNotre équipe vous répondra dans les plus brefs délais.\n\nCordialement,\nL'équipe Kamlease`,
+      message_formatted: `Bonjour ${formData.prenom},\n\nNous avons bien reçu votre message et vous remercions de votre intérêt pour nos services.\n\nNotre équipe vous répondra dans les plus brefs délais.\n\nCordialement,\nL'équipe Kamlease`
     };
 
     return autoReplyParams;

@@ -73,7 +73,7 @@ export class EmailJSService {
   }
 
   /**
-   * Sends a simple contact message (envoie 2 emails : un à toi et un auto-reply à l'utilisateur)
+   * Sends a simple contact message (temporairement sans auto-reply pour éviter les erreurs)
    */
   async sendContactMessage(formData: EnhancedContactFormData): Promise<EmailResult> {
     try {
@@ -81,26 +81,25 @@ export class EmailJSService {
       const contactParams = emailTemplateFormatter.formatContactMessage(formData);
       const contactResponse = await this.sendEmail(contactParams, 'contact');
       
-      // 2. Envoyer l'auto-réponse à l'utilisateur
-      const autoReplyParams = emailTemplateFormatter.formatAutoReply(formData);
-      const autoReplyResponse = await this.sendEmail(autoReplyParams, 'autoReply');
-      
-      // Vérifier que les deux emails ont été envoyés
+      // Vérifier que l'email principal a été envoyé
       const contactResult = this.validateEmailJSResponse(contactResponse, 'message');
-      const autoReplyResult = this.validateEmailJSResponse(autoReplyResponse, 'message');
       
-      if (contactResult.success && autoReplyResult.success) {
+      if (contactResult.success) {
         return {
           success: true,
-          message: 'Message envoyé avec succès. Vous recevrez une confirmation par email.',
+          message: 'Message envoyé avec succès. Nous vous répondrons dans les plus brefs délais.',
           type: 'message',
-          emailId: `${contactResult.emailId}, ${autoReplyResult.emailId}`
+          emailId: contactResult.emailId
         };
       } else {
-        // Si l'un des deux échoue, on retourne l'erreur
-        const failedResult = !contactResult.success ? contactResult : autoReplyResult;
-        return failedResult;
+        return contactResult;
       }
+      
+      // TODO: Réactiver l'auto-reply une fois le template configuré correctement
+      // 2. Envoyer l'auto-réponse à l'utilisateur
+      // const autoReplyParams = emailTemplateFormatter.formatAutoReply(formData);
+      // const autoReplyResponse = await this.sendEmail(autoReplyParams, 'autoReply');
+      
     } catch (error) {
       console.error('EmailJS contact message error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';

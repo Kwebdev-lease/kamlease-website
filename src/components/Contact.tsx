@@ -15,10 +15,6 @@ import { EmailResult, AppointmentFormData } from '../lib/form-types'
 
 // Initialize Microsoft Graph email service
 const emailService = new EmailService();
-      type: 'appointment' as const
-    };
-  }
-};
 import { EnhancedContactFormData } from '../lib/form-types'
 import { BusinessHoursValidator } from '../lib/business-hours-validator'
 import { LoadingIndicator, LoadingPresets, useLoadingState } from './LoadingIndicator'

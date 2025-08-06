@@ -3,5 +3,10 @@
   "include": [
     "/api/*"
   ],
-  "exclude": []
+  "exclude": [
+    "/assets/*",
+    "/favicon.ico",
+    "/robots.txt",
+    "/sitemap.xml"
+  ]
 }

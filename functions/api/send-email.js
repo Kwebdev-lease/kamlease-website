@@ -3,7 +3,7 @@
  * Cette fonction évite les problèmes CORS en gérant Microsoft Graph côté serveur
  */
 
-export async function onRequestPost(context) {
+export async function onRequest(context) {
   const { request, env } = context;
 
   // Configuration CORS
@@ -16,6 +16,17 @@ export async function onRequestPost(context) {
   // Gérer les requêtes OPTIONS (preflight)
   if (request.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
+  }
+
+  // Only allow POST requests
+  if (request.method !== 'POST') {
+    return new Response(JSON.stringify({
+      success: false,
+      message: 'Method not allowed'
+    }), {
+      status: 405,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
   }
 
   try {

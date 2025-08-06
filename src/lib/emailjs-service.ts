@@ -64,22 +64,43 @@ export class EmailJSService {
     } catch (error) {
       console.warn('EmailJS service initialized with fallback config');
       this.config = {
-        serviceId: 'service_fallback',
-        templateId: 'template_fallback',
+        serviceId: 'website_automail',
+        contactTemplateId: 'template_0r644sd',
+        autoReplyTemplateId: 'template_u2efufb',
         userId: 'lwGUqh3EWS-EkkziA'
       };
     }
   }
 
   /**
-   * Sends a simple contact message
+   * Sends a simple contact message (envoie 2 emails : un à toi et un auto-reply à l'utilisateur)
    */
   async sendContactMessage(formData: EnhancedContactFormData): Promise<EmailResult> {
     try {
-      const templateParams = emailTemplateFormatter.formatContactMessage(formData);
-      const response = await this.sendEmail(templateParams);
+      // 1. Envoyer le message à contact@kamlease.com
+      const contactParams = emailTemplateFormatter.formatContactMessage(formData);
+      const contactResponse = await this.sendEmail(contactParams, 'contact');
       
-      return this.validateEmailJSResponse(response, 'message');
+      // 2. Envoyer l'auto-réponse à l'utilisateur
+      const autoReplyParams = emailTemplateFormatter.formatAutoReply(formData);
+      const autoReplyResponse = await this.sendEmail(autoReplyParams, 'autoReply');
+      
+      // Vérifier que les deux emails ont été envoyés
+      const contactResult = this.validateEmailJSResponse(contactResponse, 'message');
+      const autoReplyResult = this.validateEmailJSResponse(autoReplyResponse, 'message');
+      
+      if (contactResult.success && autoReplyResult.success) {
+        return {
+          success: true,
+          message: 'Message envoyé avec succès. Vous recevrez une confirmation par email.',
+          type: 'message',
+          emailId: `${contactResult.emailId}, ${autoReplyResult.emailId}`
+        };
+      } else {
+        // Si l'un des deux échoue, on retourne l'erreur
+        const failedResult = !contactResult.success ? contactResult : autoReplyResult;
+        return failedResult;
+      }
     } catch (error) {
       console.error('EmailJS contact message error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -116,10 +137,12 @@ export class EmailJSService {
   /**
    * Sends email via EmailJS API
    */
-  private async sendEmail(templateParams: EmailTemplateParams | ExtendedEmailTemplateParams): Promise<EmailJSResponse> {
+  private async sendEmail(templateParams: EmailTemplateParams | ExtendedEmailTemplateParams, type: 'contact' | 'autoReply' = 'contact'): Promise<EmailJSResponse> {
+    const templateId = type === 'contact' ? this.config.contactTemplateId : this.config.autoReplyTemplateId;
+    
     const payload = {
       service_id: this.config.serviceId,
-      template_id: this.config.templateId,
+      template_id: templateId,
       user_id: this.config.userId,
       accessToken: this.config.accessToken,
       template_params: templateParams

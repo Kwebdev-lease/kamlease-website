@@ -5,14 +5,16 @@
 
 export interface EmailJSConfig {
   serviceId: string;
-  templateId: string;
+  contactTemplateId: string; // Template pour recevoir les messages (template_0r644sd)
+  autoReplyTemplateId: string; // Template pour l'auto-réponse (template_u2efufb)
   userId: string;
   accessToken?: string;
 }
 
 export interface EmailJSEnvironment {
   VITE_EMAILJS_SERVICE_ID: string;
-  VITE_EMAILJS_TEMPLATE_ID: string;
+  VITE_EMAILJS_CONTACT_TEMPLATE_ID: string;
+  VITE_EMAILJS_AUTOREPLY_TEMPLATE_ID: string;
   VITE_EMAILJS_USER_ID: string;
   VITE_EMAILJS_ACCESS_TOKEN?: string;
 }
@@ -21,7 +23,7 @@ export interface EmailJSEnvironment {
  * Validates EmailJS configuration
  */
 export function validateEmailJSConfig(config: Partial<EmailJSConfig>): config is EmailJSConfig {
-  const requiredFields: (keyof EmailJSConfig)[] = ['serviceId', 'templateId', 'userId'];
+  const requiredFields: (keyof EmailJSConfig)[] = ['serviceId', 'contactTemplateId', 'autoReplyTemplateId', 'userId'];
   
   for (const field of requiredFields) {
     if (!config[field] || typeof config[field] !== 'string' || config[field]!.trim() === '') {
@@ -36,8 +38,13 @@ export function validateEmailJSConfig(config: Partial<EmailJSConfig>): config is
     return false;
   }
 
-  if (config.templateId && !config.templateId.startsWith('template_')) {
-    console.error('EmailJS configuration error: templateId should start with "template_"');
+  if (config.contactTemplateId && !config.contactTemplateId.startsWith('template_')) {
+    console.error('EmailJS configuration error: contactTemplateId should start with "template_"');
+    return false;
+  }
+
+  if (config.autoReplyTemplateId && !config.autoReplyTemplateId.startsWith('template_')) {
+    console.error('EmailJS configuration error: autoReplyTemplateId should start with "template_"');
     return false;
   }
 
@@ -52,7 +59,8 @@ export function loadEmailJSConfig(): EmailJSConfig {
   
   const config: Partial<EmailJSConfig> = {
     serviceId: env.VITE_EMAILJS_SERVICE_ID,
-    templateId: env.VITE_EMAILJS_TEMPLATE_ID,
+    contactTemplateId: env.VITE_EMAILJS_CONTACT_TEMPLATE_ID,
+    autoReplyTemplateId: env.VITE_EMAILJS_AUTOREPLY_TEMPLATE_ID,
     userId: env.VITE_EMAILJS_USER_ID,
     accessToken: env.VITE_EMAILJS_ACCESS_TOKEN
   };
@@ -74,11 +82,12 @@ export function getEmailJSConfig(): EmailJSConfig {
     // Provide fallback configuration for both development and production
     console.warn('EmailJS configuration not available, using fallback configuration');
     
-    // Use your actual user ID with placeholder service and template
+    // Configuration EmailJS complète
     return {
-      serviceId: 'service_kamlease_temp', // Tu devras remplacer par ton vrai service ID
-      templateId: 'template_contact_temp', // Tu devras remplacer par ton vrai template ID
-      userId: 'lwGUqh3EWS-EkkziA' // Ta vraie clé publique
+      serviceId: 'website_automail', // Ton service ID
+      contactTemplateId: 'template_0r644sd', // Template pour recevoir les messages
+      autoReplyTemplateId: 'template_u2efufb', // Template pour l'auto-réponse
+      userId: 'lwGUqh3EWS-EkkziA' // Ta clé publique
     };
   }
 }

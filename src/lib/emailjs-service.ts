@@ -252,8 +252,38 @@ export class EmailJSService {
   }
 }
 
-// Export singleton instance
-export const emailJSService = new EmailJSService();
+// Export singleton instance with lazy initialization
+let _emailJSServiceInstance: EmailJSService | null = null;
+
+export const emailJSService = {
+  get instance(): EmailJSService {
+    if (!_emailJSServiceInstance) {
+      _emailJSServiceInstance = new EmailJSService();
+    }
+    return _emailJSServiceInstance;
+  },
+  
+  // Proxy methods to the actual service
+  async sendContactMessage(formData: EnhancedContactFormData): Promise<EmailResult> {
+    return this.instance.sendContactMessage(formData);
+  },
+  
+  async sendAppointmentRequest(appointmentData: AppointmentFormData): Promise<EmailResult> {
+    return this.instance.sendAppointmentRequest(appointmentData);
+  },
+  
+  async testConfiguration(): Promise<EmailResult> {
+    return this.instance.testConfiguration();
+  },
+  
+  getFormattedParams(formData: EnhancedContactFormData) {
+    return this.instance.getFormattedParams(formData);
+  },
+  
+  getFormattedAppointmentParams(appointmentData: AppointmentFormData) {
+    return this.instance.getFormattedAppointmentParams(appointmentData);
+  }
+};
 
 // Export factory function for custom configuration
 export function createEmailJSService(config: EmailJSConfig): EmailJSService {

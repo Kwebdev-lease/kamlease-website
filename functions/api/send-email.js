@@ -40,6 +40,8 @@ export async function onRequestPost(context) {
     }
 
     // Log des données reçues pour debug
+    console.log('=== CLOUDFLARE FUNCTION DEBUG ===');
+    console.log('Raw request body:', JSON.stringify(formData, null, 2));
     console.log('Form data received:', {
       prenom: formData.prenom,
       nom: formData.nom,
@@ -48,6 +50,7 @@ export async function onRequestPost(context) {
       telephone: formData.telephone,
       message: formData.message?.substring(0, 50) + '...'
     });
+    console.log('=== END DEBUG ===');
 
     // Obtenir un token d'accès Microsoft Graph
     const tokenResponse = await fetch(`https://login.microsoftonline.com/${env.VITE_MICROSOFT_TENANT_ID}/oauth2/v2.0/token`, {
@@ -182,6 +185,9 @@ function formatEmailContent(formData) {
         </h1>
         <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 16px;">
           Reçu le ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR')}
+        </p>
+        <p style="color: rgba(255,255,255,0.7); margin: 5px 0 0 0; font-size: 12px;">
+          ✅ Nouvelle fonction Cloudflare active
         </p>
       </div>
 

@@ -26,27 +26,60 @@ export class EmailService {
         return this.simulateContactMessage(formData);
       }
 
-      // Send via Cloudflare Function
-      const response = await fetch('/api/send-email', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData)
-      });
+      // Try Cloudflare Function first, fallback to EmailJS if not available
+      try {
+        const response = await fetch('/api/send-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData)
+        });
 
-      const result = await response.json();
+        if (response.ok) {
+          const result = await response.json();
+          if (result.success) {
+            return {
+              success: true,
+              message: result.message,
+              type: 'message',
+              emailId: `email_${Date.now()}`
+            };
+          }
+        }
+        
+        // If Cloudflare function fails, throw to trigger fallback
+        throw new Error('Cloudflare function not available');
+        
+      } catch (cfError) {
+        console.log('Cloudflare function not available, using EmailJS fallback');
+        
+        // Fallback to EmailJS
+        const emailjs = await import('@emailjs/browser');
+        
+        const templateParams = {
+          from_name: `${formData.prenom} ${formData.nom}`,
+          from_email: formData.email,
+          company: formData.societe || '',
+          phone: formData.telephone,
+          message: formData.message,
+          to_email: 'contact@kamlease.com'
+        };
 
-      if (!response.ok || !result.success) {
-        throw new Error(result.message || 'Erreur lors de l\'envoi');
+        await emailjs.send(
+          'service_kamlease',
+          'template_contact', 
+          templateParams,
+          'your_emailjs_user_id'
+        );
+
+        return {
+          success: true,
+          message: 'Message envoyé avec succès (EmailJS)',
+          type: 'message',
+          emailId: `emailjs_${Date.now()}`
+        };
       }
-
-      return {
-        success: true,
-        message: result.message,
-        type: 'message',
-        emailId: `email_${Date.now()}`
-      };
 
     } catch (error) {
       console.error('Error sending contact message:', error);
@@ -70,27 +103,62 @@ export class EmailService {
         return this.simulateAppointmentRequest(appointmentData);
       }
 
-      // Send via Cloudflare Function
-      const response = await fetch('/api/send-email', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(appointmentData)
-      });
+      // Try Cloudflare Function first, fallback to EmailJS if not available
+      try {
+        const response = await fetch('/api/send-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(appointmentData)
+        });
 
-      const result = await response.json();
+        if (response.ok) {
+          const result = await response.json();
+          if (result.success) {
+            return {
+              success: true,
+              message: result.message,
+              type: 'appointment',
+              emailId: `email_${Date.now()}`
+            };
+          }
+        }
+        
+        // If Cloudflare function fails, throw to trigger fallback
+        throw new Error('Cloudflare function not available');
+        
+      } catch (cfError) {
+        console.log('Cloudflare function not available, using EmailJS fallback');
+        
+        // Fallback to EmailJS
+        const emailjs = await import('@emailjs/browser');
+        
+        const appointmentDate = new Date(appointmentData.appointmentDate);
+        
+        const templateParams = {
+          from_name: `${appointmentData.prenom} ${appointmentData.nom}`,
+          from_email: appointmentData.email,
+          company: appointmentData.societe || '',
+          phone: appointmentData.telephone,
+          message: `DEMANDE DE RENDEZ-VOUS\n\nDate: ${appointmentDate.toLocaleDateString('fr-FR')}\nHeure: ${appointmentData.appointmentTime}\n\nMessage:\n${appointmentData.message}`,
+          to_email: 'contact@kamlease.com'
+        };
 
-      if (!response.ok || !result.success) {
-        throw new Error(result.message || 'Erreur lors de l\'envoi');
+        await emailjs.send(
+          'service_kamlease',
+          'template_contact',
+          templateParams,
+          'your_emailjs_user_id'
+        );
+
+        return {
+          success: true,
+          message: 'Demande de rendez-vous envoyée avec succès (EmailJS)',
+          type: 'appointment',
+          emailId: `emailjs_${Date.now()}`
+        };
       }
-
-      return {
-        success: true,
-        message: result.message,
-        type: 'appointment',
-        emailId: `email_${Date.now()}`
-      };
 
     } catch (error) {
       console.error('Error sending appointment request:', error);

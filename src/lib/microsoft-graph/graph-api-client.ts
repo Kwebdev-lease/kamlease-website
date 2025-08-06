@@ -169,7 +169,7 @@ export class GraphApiClient {
    * Send email using Microsoft Graph API
    * Implements requirement 2.6: Email notifications
    */
-  public async sendEmail(emailData: EmailData): Promise<boolean> {
+  public async sendEmail(emailData: EmailData): Promise<{ id: string; success: boolean }> {
     if (!this.isConfigurationAvailable()) {
       throw new GraphApiError(
         'Microsoft Graph configuration not available. Please check your environment variables.',
@@ -191,13 +191,11 @@ export class GraphApiClient {
             contentType: emailData.isHtml ? 'HTML' : 'Text',
             content: emailData.body
           },
-          toRecipients: [
-            {
-              emailAddress: {
-                address: emailData.to
-              }
+          toRecipients: emailData.to.map(email => ({
+            emailAddress: {
+              address: email
             }
-          ]
+          }))
         }
       };
       
@@ -217,7 +215,12 @@ export class GraphApiClient {
       }
 
       this.logResponse('sendEmail', response.status, 0);
-      return true;
+      
+      // Return a result object with an ID
+      return {
+        id: `email_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        success: true
+      };
 
     } catch (error) {
       this.logError('sendEmail', error);

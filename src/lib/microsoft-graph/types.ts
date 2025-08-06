@@ -23,7 +23,7 @@ export interface TokenInfo {
 }
 
 export interface EmailData {
-  to: string;
+  to: string[];
   subject: string;
   body: string;
   isHtml?: boolean;

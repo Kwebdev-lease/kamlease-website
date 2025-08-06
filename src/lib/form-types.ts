@@ -47,6 +47,31 @@ export interface FormValidationContext {
   isRequired: boolean;
 }
 
+// Email service result types
+export interface EmailResult {
+  success: boolean;
+  message: string;
+  type: 'message' | 'appointment' | 'email_fallback';
+  error?: string;
+  emailId?: string;
+}
+
+// Appointment form data extending contact form
+export interface AppointmentFormData extends EnhancedContactFormData {
+  appointmentDate: Date;
+  appointmentTime: string;
+}
+
+// Enhanced contact form data
+export interface EnhancedContactFormData {
+  prenom: string;
+  nom: string;
+  societe?: string;
+  email: string;
+  telephone: string;
+  message: string;
+}
+
 // Validation error messages
 export interface ValidationErrorMessages {
   required: string;

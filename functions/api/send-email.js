@@ -170,7 +170,7 @@ export async function onRequestPost(context) {
  */
 function formatEmailContent(formData) {
   const isAppointment = formData.appointmentDate && formData.appointmentTime;
-  const logoUrl = 'https://kamlease.com/assets/logos/Kamlease%20Logo.png';
+  const logoUrl = 'https://kamlease.com/kamlease-logo.svg';
   
   let content = `
     <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 650px; margin: 0 auto; background-color: #ffffff;">
@@ -271,7 +271,7 @@ function formatEmailContent(formData) {
  */
 function formatConfirmationEmail(formData) {
   const isAppointment = formData.appointmentDate && formData.appointmentTime;
-  const logoUrl = 'https://kamlease.com/assets/logos/Kamlease%20Logo.png';
+  const logoUrl = 'https://kamlease.com/kamlease-logo.svg';
   
   let content = `
     <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 650px; margin: 0 auto; background-color: #ffffff;">

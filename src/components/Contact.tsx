@@ -15,6 +15,14 @@ import { EmailResult, AppointmentFormData } from '../lib/form-types'
 
 // Initialize Microsoft Graph email service
 const emailService = new EmailService();
+
+// Check if we're in localhost development mode
+const isLocalhostDevelopment = () => {
+  return typeof window !== 'undefined' && 
+         (window.location.hostname === 'localhost' || 
+          window.location.hostname === '127.0.0.1' ||
+          window.location.hostname.includes('local'));
+};
 import { EnhancedContactFormData } from '../lib/form-types'
 import { BusinessHoursValidator } from '../lib/business-hours-validator'
 import { LoadingIndicator, LoadingPresets, useLoadingState } from './LoadingIndicator'
@@ -505,6 +513,24 @@ export function Contact() {
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             {t('contact.description')}
           </p>
+          
+          {/* Development Mode Notification */}
+          {isLocalhostDevelopment() && (
+            <div className="mt-6 mx-auto max-w-2xl">
+              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                <div className="flex items-center">
+                  <AlertCircle className="h-5 w-5 text-blue-600 dark:text-blue-400 mr-3 flex-shrink-0" />
+                  <div className="text-sm text-blue-800 dark:text-blue-200">
+                    <p className="font-medium mb-1">Mode développement détecté</p>
+                    <p>
+                      Microsoft Graph ne fonctionne pas depuis localhost. 
+                      Les emails seront simulés et affichés dans la console du navigateur.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </AnimatedSection>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">

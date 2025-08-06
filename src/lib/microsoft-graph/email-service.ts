@@ -17,7 +17,7 @@ export class EmailService {
   }
 
   /**
-   * Send a contact message via Microsoft Graph
+   * Send a contact message via Cloudflare Function (avoids CORS issues)
    */
   async sendContactMessage(formData: EnhancedContactFormData): Promise<EmailResult> {
     try {
@@ -26,33 +26,30 @@ export class EmailService {
         return this.simulateContactMessage(formData);
       }
 
-      // Initialize configuration
-      const config = this.config.initialize();
-      
-      // Prepare email content
-      const emailContent = this.formatContactEmail(formData);
-      
-      // Send email via Microsoft Graph
-      const result = await this.graphClient.sendEmail({
-        to: ['contact@kamlease.com'],
-        subject: `Nouveau message de contact - ${formData.prenom} ${formData.nom}`,
-        body: emailContent,
-        isHtml: true
+      // Send via Cloudflare Function
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
       });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Erreur lors de l\'envoi');
+      }
 
       return {
         success: true,
-        message: 'Message envoyé avec succès',
+        message: result.message,
         type: 'message',
-        emailId: result.id
+        emailId: `email_${Date.now()}`
       };
 
     } catch (error) {
       console.error('Error sending contact message:', error);
-      
-      if (error instanceof GraphApiError && error.code === 'LOCALHOST_NOT_SUPPORTED') {
-        return this.simulateContactMessage(formData);
-      }
 
       return {
         success: false,
@@ -64,7 +61,7 @@ export class EmailService {
   }
 
   /**
-   * Send an appointment request via Microsoft Graph
+   * Send an appointment request via Cloudflare Function (avoids CORS issues)
    */
   async sendAppointmentRequest(appointmentData: AppointmentFormData): Promise<EmailResult> {
     try {
@@ -73,36 +70,30 @@ export class EmailService {
         return this.simulateAppointmentRequest(appointmentData);
       }
 
-      // Initialize configuration
-      const config = this.config.initialize();
-      
-      // Prepare appointment email content
-      const emailContent = this.formatAppointmentEmail(appointmentData);
-      
-      // Send appointment request email
-      const emailResult = await this.graphClient.sendEmail({
-        to: ['contact@kamlease.com'],
-        subject: `Demande de rendez-vous - ${appointmentData.prenom} ${appointmentData.nom}`,
-        body: emailContent,
-        isHtml: true
+      // Send via Cloudflare Function
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(appointmentData)
       });
 
-      // TODO: Create calendar event (future enhancement)
-      // const calendarResult = await this.graphClient.createCalendarEvent({...});
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Erreur lors de l\'envoi');
+      }
 
       return {
         success: true,
-        message: 'Demande de rendez-vous envoyée avec succès',
+        message: result.message,
         type: 'appointment',
-        emailId: emailResult.id
+        emailId: `email_${Date.now()}`
       };
 
     } catch (error) {
       console.error('Error sending appointment request:', error);
-      
-      if (error instanceof GraphApiError && error.code === 'LOCALHOST_NOT_SUPPORTED') {
-        return this.simulateAppointmentRequest(appointmentData);
-      }
 
       return {
         success: false,

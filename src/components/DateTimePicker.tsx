@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { useLanguage } from '@/contexts/LanguageProvider'
 import { BusinessHoursValidator } from '@/lib/business-hours-validator'
 import { useAppointmentValidation, getValidationErrorMessage } from '@/hooks/use-appointment-validation'
+import { useAvailability, isTimeSlotAvailable, getAvailableTimesForDate, hasAvailableSlots } from '@/hooks/use-availability'
 import { cn } from '@/lib/utils'
 
 interface DateTimePickerProps {
@@ -67,6 +68,11 @@ export function DateTimePicker({
     hasErrors,
     hasWarnings
   } = useAppointmentValidation()
+
+  // Use availability checking
+  const startOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
+  const endOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
+  const { availableSlots, loading: availabilityLoading, error: availabilityError } = useAvailability(startOfMonth, endOfMonth);
   // Initialize validator with error handling
   const [validator] = useState(() => {
     try {
@@ -116,7 +122,11 @@ export function DateTimePicker({
   }, [])
 
   // Generate time slots based on business hours configuration
-  const timeSlots = generateTimeSlots(businessHours.startTime, businessHours.endTime)
+  const allTimeSlots = generateTimeSlots(businessHours.startTime, businessHours.endTime)
+  
+  // Filter time slots based on availability for the selected date
+  const availableTimesForDate = selectedDate ? getAvailableTimesForDate(availableSlots, selectedDate) : []
+  const timeSlots = selectedDate ? availableTimesForDate : allTimeSlots
 
   const handleDateSelect = (date: Date) => {
     onDateChange(date)
@@ -255,13 +265,15 @@ export function DateTimePicker({
               const selectable = isDateSelectable(date)
               const selected = isDateSelected(date)
               const currentMonthDate = isCurrentMonth(date)
+              const hasSlots = hasAvailableSlots(availableSlots, date)
+              const isFullyBooked = selectable && currentMonthDate && !hasSlots
               
               return (
                 <motion.button
                   key={index}
                   type="button"
-                  onClick={() => selectable && handleDateSelect(date)}
-                  disabled={!selectable}
+                  onClick={() => selectable && !isFullyBooked && handleDateSelect(date)}
+                  disabled={!selectable || isFullyBooked}
                   whileHover={selectable ? { scale: 1.05 } : {}}
                   whileTap={selectable ? { scale: 0.95 } : {}}
                   className={cn(
@@ -283,6 +295,10 @@ export function DateTimePicker({
                       // Disabled dates
                       'text-gray-300 dark:text-gray-700 cursor-not-allowed': 
                         !selectable,
+                      
+                      // Fully booked dates
+                      'bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 cursor-not-allowed': 
+                        isFullyBooked,
                       
                       // Hover effect for selectable dates
                       'hover:shadow-md': 
@@ -359,8 +375,30 @@ export function DateTimePicker({
                   </h3>
                 </div>
                 
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                  {timeSlots.map(time => {
+                {availabilityLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-orange-500"></div>
+                    <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
+                      Vérification des créneaux disponibles...
+                    </span>
+                  </div>
+                ) : availabilityError ? (
+                  <div className="flex items-center justify-center py-8 text-red-600 dark:text-red-400">
+                    <AlertCircle className="h-5 w-5 mr-2" />
+                    <span className="text-sm">
+                      Erreur lors du chargement des créneaux
+                    </span>
+                  </div>
+                ) : timeSlots.length === 0 ? (
+                  <div className="flex items-center justify-center py-8 text-gray-600 dark:text-gray-400">
+                    <Info className="h-5 w-5 mr-2" />
+                    <span className="text-sm">
+                      Aucun créneau disponible pour cette date
+                    </span>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                    {timeSlots.map(time => {
                     // Validate each time slot in real-time
                     const isTimeValid = validator.isValidBusinessTime(time)
                     const isSlotAvailable = selectedDate ? 
@@ -407,7 +445,8 @@ export function DateTimePicker({
                       </motion.button>
                     )
                   })}
-                </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </motion.div>

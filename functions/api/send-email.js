@@ -24,14 +24,30 @@ export async function onRequestPost(context) {
     
     // Valider les données requises
     if (!formData.prenom || !formData.nom || !formData.email || !formData.message) {
+      console.error('Missing form data:', formData);
       return new Response(JSON.stringify({
         success: false,
-        message: 'Données manquantes'
+        message: 'Données manquantes: ' + JSON.stringify({
+          prenom: !!formData.prenom,
+          nom: !!formData.nom,
+          email: !!formData.email,
+          message: !!formData.message
+        })
       }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
+
+    // Log des données reçues pour debug
+    console.log('Form data received:', {
+      prenom: formData.prenom,
+      nom: formData.nom,
+      societe: formData.societe,
+      email: formData.email,
+      telephone: formData.telephone,
+      message: formData.message?.substring(0, 50) + '...'
+    });
 
     // Obtenir un token d'accès Microsoft Graph
     const tokenResponse = await fetch(`https://login.microsoftonline.com/${env.VITE_MICROSOFT_TENANT_ID}/oauth2/v2.0/token`, {
@@ -75,7 +91,7 @@ export async function onRequestPost(context) {
       }
     };
 
-    // Envoyer l'email via Microsoft Graph
+    // Envoyer l'email de notification (à Kamlease)
     const emailResponse = await fetch(`https://graph.microsoft.com/v1.0/users/${env.VITE_CALENDAR_EMAIL || 'contact@kamlease.com'}/sendMail`, {
       method: 'POST',
       headers: {
@@ -89,6 +105,40 @@ export async function onRequestPost(context) {
       const errorText = await emailResponse.text();
       console.error('Microsoft Graph error:', errorText);
       throw new Error('Erreur lors de l\'envoi de l\'email');
+    }
+
+    // Envoyer l'email de confirmation à l'utilisateur
+    const confirmationMessage = {
+      message: {
+        subject: `Confirmation de réception - ${formData.appointmentDate ? 'Demande de rendez-vous' : 'Message de contact'}`,
+        body: {
+          contentType: 'HTML',
+          content: formatConfirmationEmail(formData)
+        },
+        toRecipients: [
+          {
+            emailAddress: {
+              address: formData.email,
+              name: `${formData.prenom} ${formData.nom}`
+            }
+          }
+        ]
+      }
+    };
+
+    // Envoyer l'email de confirmation
+    const confirmationResponse = await fetch(`https://graph.microsoft.com/v1.0/users/${env.VITE_CALENDAR_EMAIL || 'contact@kamlease.com'}/sendMail`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(confirmationMessage)
+    });
+
+    // Log si l'email de confirmation échoue, mais ne pas faire échouer la requête principale
+    if (!confirmationResponse.ok) {
+      console.error('Failed to send confirmation email:', await confirmationResponse.text());
     }
 
     // Succès
@@ -116,47 +166,180 @@ export async function onRequestPost(context) {
 }
 
 /**
- * Formate le contenu de l'email en HTML
+ * Formate le contenu de l'email de notification (pour Kamlease)
  */
 function formatEmailContent(formData) {
   const isAppointment = formData.appointmentDate && formData.appointmentTime;
+  const logoUrl = 'https://kamlease.com/assets/logos/Kamlease%20Logo.png';
   
   let content = `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <h2 style="color: ${isAppointment ? '#dc2626' : '#2563eb'};">
-        ${isAppointment ? 'Demande de rendez-vous' : 'Nouveau message de contact'}
-      </h2>
+    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 650px; margin: 0 auto; background-color: #ffffff;">
+      <!-- Header avec logo -->
+      <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 12px 12px 0 0;">
+        <img src="${logoUrl}" alt="Kamlease" style="max-height: 60px; margin-bottom: 15px;" />
+        <h1 style="color: white; margin: 0; font-size: 28px; font-weight: 300;">
+          ${isAppointment ? '📅 Nouvelle demande de rendez-vous' : '✉️ Nouveau message de contact'}
+        </h1>
+        <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 16px;">
+          Reçu le ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR')}
+        </p>
+      </div>
+
+      <!-- Contenu principal -->
+      <div style="padding: 30px; background-color: #ffffff;">
   `;
 
   if (isAppointment) {
     const appointmentDate = new Date(formData.appointmentDate);
     content += `
-      <div style="background-color: #fef2f2; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #dc2626;">
-        <h3 style="margin-top: 0; color: #991b1b;">Détails du rendez-vous demandé</h3>
-        <p><strong>Date :</strong> ${appointmentDate.toLocaleDateString('fr-FR')}</p>
-        <p><strong>Heure :</strong> ${formData.appointmentTime}</p>
-      </div>
+        <!-- Détails du rendez-vous -->
+        <div style="background: linear-gradient(135deg, #ff6b6b, #ee5a24); padding: 25px; border-radius: 12px; margin-bottom: 25px; color: white;">
+          <h2 style="margin: 0 0 15px 0; font-size: 22px; display: flex; align-items: center;">
+            <span style="margin-right: 10px;">🗓️</span> Rendez-vous demandé
+          </h2>
+          <div style="display: flex; gap: 30px; flex-wrap: wrap;">
+            <div>
+              <strong>📅 Date :</strong> ${appointmentDate.toLocaleDateString('fr-FR', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+              })}
+            </div>
+            <div>
+              <strong>🕐 Heure :</strong> ${formData.appointmentTime}
+            </div>
+          </div>
+        </div>
     `;
   }
 
   content += `
-      <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
-        <h3 style="margin-top: 0; color: #1e40af;">Informations du contact</h3>
-        <p><strong>Nom :</strong> ${formData.nom}</p>
-        <p><strong>Prénom :</strong> ${formData.prenom}</p>
-        ${formData.societe ? `<p><strong>Société :</strong> ${formData.societe}</p>` : ''}
-        <p><strong>Email :</strong> <a href="mailto:${formData.email}">${formData.email}</a></p>
-        <p><strong>Téléphone :</strong> <a href="tel:${formData.telephone}">${formData.telephone}</a></p>
+        <!-- Informations du contact -->
+        <div style="background-color: #f8fafc; padding: 25px; border-radius: 12px; margin-bottom: 25px; border-left: 5px solid #3b82f6;">
+          <h2 style="margin: 0 0 20px 0; color: #1e40af; font-size: 20px; display: flex; align-items: center;">
+            <span style="margin-right: 10px;">👤</span> Informations du contact
+          </h2>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+            <div><strong>👤 Prénom :</strong> ${formData.prenom || 'Non renseigné'}</div>
+            <div><strong>👤 Nom :</strong> ${formData.nom || 'Non renseigné'}</div>
+            ${formData.societe ? `<div><strong>🏢 Société :</strong> ${formData.societe}</div>` : ''}
+            <div><strong>📧 Email :</strong> <a href="mailto:${formData.email}" style="color: #3b82f6; text-decoration: none;">${formData.email}</a></div>
+            <div><strong>📞 Téléphone :</strong> <a href="tel:${formData.telephone}" style="color: #3b82f6; text-decoration: none;">${formData.telephone || 'Non renseigné'}</a></div>
+          </div>
+        </div>
+        
+        <!-- Message -->
+        <div style="background-color: #f0f9ff; padding: 25px; border-radius: 12px; margin-bottom: 25px; border-left: 5px solid #06b6d4;">
+          <h2 style="margin: 0 0 15px 0; color: #0891b2; font-size: 20px; display: flex; align-items: center;">
+            <span style="margin-right: 10px;">💬</span> Message
+          </h2>
+          <div style="background-color: white; padding: 20px; border-radius: 8px; border: 1px solid #e0f2fe;">
+            <p style="margin: 0; line-height: 1.6; white-space: pre-wrap; color: #374151;">${formData.message}</p>
+          </div>
+        </div>
+
+        <!-- Actions rapides -->
+        <div style="background: linear-gradient(135deg, #10b981, #059669); padding: 20px; border-radius: 12px; text-align: center;">
+          <h3 style="color: white; margin: 0 0 15px 0;">Actions rapides</h3>
+          <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+            <a href="mailto:${formData.email}" style="background-color: rgba(255,255,255,0.2); color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: 500;">
+              📧 Répondre par email
+            </a>
+            <a href="tel:${formData.telephone}" style="background-color: rgba(255,255,255,0.2); color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: 500;">
+              📞 Appeler
+            </a>
+          </div>
+        </div>
       </div>
       
-      <div style="background-color: #f0f9ff; padding: 20px; border-radius: 8px; margin: 20px 0;">
-        <h3 style="margin-top: 0; color: #1e40af;">Message</h3>
-        <p style="white-space: pre-wrap;">${formData.message}</p>
+      <!-- Footer -->
+      <div style="background-color: #f9fafb; padding: 20px; text-align: center; border-radius: 0 0 12px 12px; border-top: 1px solid #e5e7eb;">
+        <p style="margin: 0; font-size: 14px; color: #6b7280;">
+          📧 Email automatique généré par le site web <strong>Kamlease</strong><br>
+          🌐 <a href="https://kamlease.com" style="color: #3b82f6; text-decoration: none;">kamlease.com</a>
+        </p>
+      </div>
+    </div>
+  `;
+
+  return content;
+}
+
+/**
+ * Formate l'email de confirmation pour l'utilisateur
+ */
+function formatConfirmationEmail(formData) {
+  const isAppointment = formData.appointmentDate && formData.appointmentTime;
+  const logoUrl = 'https://kamlease.com/assets/logos/Kamlease%20Logo.png';
+  
+  let content = `
+    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 650px; margin: 0 auto; background-color: #ffffff;">
+      <!-- Header avec logo -->
+      <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 12px 12px 0 0;">
+        <img src="${logoUrl}" alt="Kamlease" style="max-height: 60px; margin-bottom: 15px;" />
+        <h1 style="color: white; margin: 0; font-size: 28px; font-weight: 300;">
+          ✅ Message bien reçu !
+        </h1>
+        <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 16px;">
+          Merci ${formData.prenom} pour votre ${isAppointment ? 'demande de rendez-vous' : 'message'}
+        </p>
+      </div>
+
+      <!-- Contenu principal -->
+      <div style="padding: 30px; background-color: #ffffff;">
+        <div style="background: linear-gradient(135deg, #10b981, #059669); padding: 25px; border-radius: 12px; margin-bottom: 25px; color: white; text-align: center;">
+          <h2 style="margin: 0 0 15px 0; font-size: 24px;">
+            🎉 Nous avons bien reçu votre ${isAppointment ? 'demande de rendez-vous' : 'message'} !
+          </h2>
+          <p style="margin: 0; font-size: 16px; opacity: 0.9;">
+            Notre équipe vous répondra dans les plus brefs délais.
+          </p>
+        </div>
+
+        ${isAppointment ? `
+        <div style="background-color: #fef3c7; padding: 20px; border-radius: 12px; margin-bottom: 25px; border-left: 5px solid #f59e0b;">
+          <h3 style="margin: 0 0 15px 0; color: #92400e; display: flex; align-items: center;">
+            <span style="margin-right: 10px;">📅</span> Votre demande de rendez-vous
+          </h3>
+          <p style="margin: 0; color: #92400e;">
+            <strong>Date souhaitée :</strong> ${new Date(formData.appointmentDate).toLocaleDateString('fr-FR', { 
+              weekday: 'long', 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            })}<br>
+            <strong>Heure souhaitée :</strong> ${formData.appointmentTime}
+          </p>
+        </div>
+        ` : ''}
+
+        <div style="background-color: #f0f9ff; padding: 25px; border-radius: 12px; margin-bottom: 25px;">
+          <h3 style="margin: 0 0 15px 0; color: #1e40af;">📞 Nos coordonnées</h3>
+          <div style="color: #374151; line-height: 1.8;">
+            <p style="margin: 5px 0;"><strong>📧 Email :</strong> <a href="mailto:contact@kamlease.com" style="color: #3b82f6;">contact@kamlease.com</a></p>
+            <p style="margin: 5px 0;"><strong>🌐 Site web :</strong> <a href="https://kamlease.com" style="color: #3b82f6;">kamlease.com</a></p>
+            <p style="margin: 5px 0;"><strong>🕐 Horaires :</strong> Lundi au Vendredi, 14h00 - 16h30</p>
+          </div>
+        </div>
+
+        <div style="background-color: #f9fafb; padding: 20px; border-radius: 12px; text-align: center;">
+          <p style="margin: 0 0 15px 0; color: #374151; font-size: 16px;">
+            💡 <strong>Besoin d'aide ?</strong>
+          </p>
+          <p style="margin: 0; color: #6b7280; font-size: 14px;">
+            N'hésitez pas à nous contacter si vous avez des questions supplémentaires.
+          </p>
+        </div>
       </div>
       
-      <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b;">
-        <p>Ce message a été envoyé depuis le site web Kamlease via Microsoft Graph.</p>
-        <p>Date : ${new Date().toLocaleString('fr-FR')}</p>
+      <!-- Footer -->
+      <div style="background-color: #f9fafb; padding: 20px; text-align: center; border-radius: 0 0 12px 12px; border-top: 1px solid #e5e7eb;">
+        <p style="margin: 0; font-size: 14px; color: #6b7280;">
+          Merci de votre confiance ! 🙏<br>
+          <strong>L'équipe Kamlease</strong><br>
+          <a href="https://kamlease.com" style="color: #3b82f6; text-decoration: none;">kamlease.com</a>
+        </p>
       </div>
     </div>
   `;

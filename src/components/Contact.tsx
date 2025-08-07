@@ -31,6 +31,7 @@ import { cn } from '../lib/utils'
 import { SecurityMiddleware } from '../lib/security/security-middleware'
 import { InputSanitizer } from '../lib/security/input-sanitizer'
 import { CSRFProtection } from '../lib/security/csrf-protection'
+import { Captcha, useCaptcha } from './Captcha'
 
 type SubmissionType = 'message' | 'appointment'
 type ContactFormData = EnhancedContactFormData
@@ -53,6 +54,12 @@ export function Contact() {
   const [appointmentError, setAppointmentError] = useState<string | null>(null)
   const [appointmentValidationErrors, setAppointmentValidationErrors] = useState<string[]>([])
   const [isAppointmentValid, setIsAppointmentValid] = useState(false)
+  
+  // CAPTCHA configuration and state
+  const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY || '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' // Test key
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
+  const [captchaError, setCaptchaError] = useState<string | null>(null)
+  const [isCaptchaVerified, setIsCaptchaVerified] = useState(false)
   
   // Security services - initialized safely
   const [securityMiddleware] = useState(() => {
@@ -201,6 +208,55 @@ export function Contact() {
     }
   }
 
+  // CAPTCHA handlers
+  const handleCaptchaVerify = (token: string) => {
+    setCaptchaToken(token)
+    setIsCaptchaVerified(true)
+    setCaptchaError(null)
+    console.log('✅ CAPTCHA verified with token:', token.substring(0, 20) + '...')
+  }
+
+  const handleCaptchaError = (error: string) => {
+    setCaptchaError(error)
+    setIsCaptchaVerified(false)
+    setCaptchaToken(null)
+    console.error('❌ CAPTCHA error:', error)
+  }
+
+  const handleCaptchaExpired = () => {
+    setIsCaptchaVerified(false)
+    setCaptchaToken(null)
+    setCaptchaError('CAPTCHA expiré, veuillez recharger la page')
+  }
+
+  // Verify CAPTCHA token with server
+  const verifyCaptchaWithServer = async (token: string, action: string): Promise<boolean> => {
+    try {
+      const response = await fetch('/api/verify-captcha', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token, action })
+      })
+
+      const result = await response.json()
+      
+      if (result.success) {
+        console.log('✅ Server CAPTCHA verification successful:', result)
+        return true
+      } else {
+        console.error('❌ Server CAPTCHA verification failed:', result)
+        setCaptchaError(result.message || 'Vérification CAPTCHA échouée')
+        return false
+      }
+    } catch (error) {
+      console.error('❌ CAPTCHA server verification error:', error)
+      setCaptchaError('Erreur de vérification CAPTCHA')
+      return false
+    }
+  }
+
   const handleInputBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     validateField(name, value)
@@ -318,15 +374,18 @@ export function Contact() {
     const hasNoErrors = Object.keys(errors).length === 0
     const basicFormValid = hasRequiredFields && hasNoErrors
     
+    // CAPTCHA validation
+    const isCaptchaValid = isCaptchaVerified && captchaToken !== null
+    
     // Appointment validation
     if (submissionType === 'appointment') {
       const hasDateAndTime = selectedDate !== null && selectedTime !== null
       const hasNoAppointmentErrors = appointmentValidationErrors.length === 0
-      return basicFormValid && hasDateAndTime && hasNoAppointmentErrors && isAppointmentValid
+      return basicFormValid && hasDateAndTime && hasNoAppointmentErrors && isAppointmentValid && isCaptchaValid
     }
     
-    return basicFormValid
-  }, [formData, submissionType, selectedDate, selectedTime, appointmentValidationErrors, isAppointmentValid, errors])
+    return basicFormValid && isCaptchaValid
+  }, [formData, submissionType, selectedDate, selectedTime, appointmentValidationErrors, isAppointmentValid, errors, isCaptchaVerified, captchaToken])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -340,6 +399,19 @@ export function Contact() {
     if (!appointmentValidation.isValid) {
       setAppointmentError(appointmentValidation.error)
       return
+    }
+
+    // CAPTCHA verification
+    if (!captchaToken || !isCaptchaVerified) {
+      setCaptchaError('Veuillez compléter la vérification anti-spam')
+      return
+    }
+
+    // Verify CAPTCHA with server
+    const action = submissionType === 'appointment' ? 'appointment' : 'contact'
+    const isCaptchaValid = await verifyCaptchaWithServer(captchaToken, action)
+    if (!isCaptchaValid) {
+      return // Error already set in verifyCaptchaWithServer
     }
 
     // Security validation (if available)
@@ -973,6 +1045,38 @@ export function Contact() {
                     </motion.div>
                   )}
                 </AnimatePresence>
+
+                {/* CAPTCHA Verification */}
+                <AnimatedItem delay={0.6}>
+                  <div className="pt-4">
+                    <Captcha
+                      siteKey={RECAPTCHA_SITE_KEY}
+                      onVerify={handleCaptchaVerify}
+                      onError={handleCaptchaError}
+                      onExpired={handleCaptchaExpired}
+                      action={submissionType === 'appointment' ? 'appointment' : 'contact'}
+                      disabled={isLoading}
+                      className="mb-4"
+                    />
+                    
+                    {/* CAPTCHA Error Display */}
+                    <AnimatePresence>
+                      {captchaError && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          className="mt-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-center space-x-2"
+                        >
+                          <AlertCircle className="h-4 w-4 text-red-600 dark:text-red-400 flex-shrink-0" />
+                          <p className="text-red-700 dark:text-red-300 text-sm">
+                            {captchaError}
+                          </p>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </AnimatedItem>
                 
                 <AnimatedItem delay={0.65}>
                   <div className="pt-4">

@@ -50,6 +50,46 @@ export async function onRequest(context) {
       });
     }
 
+    // Vérifier le token CAPTCHA
+    if (!formData.captchaToken) {
+      console.error('Missing CAPTCHA token');
+      return new Response(JSON.stringify({
+        success: false,
+        message: 'Token CAPTCHA manquant'
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+
+    // Importer la fonction de vérification CAPTCHA
+    const { verifyCaptchaToken } = await import('./verify-captcha.js');
+    
+    // Vérifier le CAPTCHA
+    const captchaResult = await verifyCaptchaToken(
+      formData.captchaToken,
+      env.RECAPTCHA_SECRET_KEY,
+      formData.appointmentDate ? 'appointment' : 'contact',
+      0.5 // Score minimum
+    );
+
+    if (!captchaResult.success) {
+      console.error('CAPTCHA verification failed:', captchaResult);
+      return new Response(JSON.stringify({
+        success: false,
+        message: 'Vérification CAPTCHA échouée',
+        details: captchaResult.errorCodes
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+
+    console.log('✅ CAPTCHA verification successful:', { 
+      score: captchaResult.score, 
+      action: captchaResult.action 
+    });
+
     // Log des données reçues pour debug
     console.log('=== CLOUDFLARE FUNCTION DEBUG ===');
     console.log('Raw request body:', JSON.stringify(formData, null, 2));

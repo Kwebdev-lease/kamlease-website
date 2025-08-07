@@ -121,11 +121,13 @@ export function SuccessFeedback({
             </div>
           </div>
           <div className="flex items-start text-green-700 dark:text-green-300">
-            <MapPin className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" />
+            <div className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0 text-blue-500">
+              🎥
+            </div>
             <div>
-              <div className="font-medium">Kamlease - Bureau principal</div>
+              <div className="font-medium">Réunion Microsoft Teams</div>
               <div className="text-green-600 dark:text-green-400 text-xs mt-1">
-                123 Rue de l'Innovation, 75001 Paris
+                Le lien de connexion vous sera envoyé par email
               </div>
             </div>
           </div>
@@ -199,7 +201,7 @@ export function SuccessFeedback({
           icon: <Mail className="w-4 h-4 text-blue-500" />
         },
         {
-          text: 'L\'événement a été ajouté à votre calendrier Outlook',
+          text: 'L\'événement Teams a été ajouté à votre calendrier',
           icon: <Calendar className="w-4 h-4 text-green-500" />
         },
         {
@@ -222,7 +224,7 @@ export function SuccessFeedback({
           icon: <Clock className="w-4 h-4 text-orange-500" />
         },
         {
-          text: 'Nous confirmerons le créneau et ajouterons l\'événement',
+          text: 'Nous confirmerons le créneau et créerons la réunion Teams',
           icon: <Calendar className="w-4 h-4 text-green-500" />
         },
         {

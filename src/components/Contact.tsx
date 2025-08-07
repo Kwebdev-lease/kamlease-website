@@ -548,28 +548,7 @@ export function Contact() {
                   )}
                 </AnimatePresence>
 
-                {/* Success Feedback */}
-                <AnimatePresence>
-                  {successFeedback.isVisible && successFeedback.contactDetails && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      className="mb-6"
-                    >
-                      <SuccessFeedback
-                        isVisible={successFeedback.isVisible}
-                        type={successFeedback.type}
-                        message={successFeedback.message}
-                        contactDetails={successFeedback.contactDetails}
-                        appointmentDetails={successFeedback.appointmentDetails}
-                        onClose={() => setSuccessFeedback(prev => ({ ...prev, isVisible: false }))}
-                        autoClose={true}
-                        autoCloseDelay={successFeedback.type === 'appointment' ? 12000 : 8000}
-                      />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+
 
                 {/* Development Notice */}
                 {(import.meta.env.DEV || window.location.hostname === 'localhost') && (
@@ -1048,6 +1027,29 @@ export function Contact() {
                     </EnhancedButton>
                   </div>
                 </AnimatedItem>
+
+                {/* Success Feedback - Moved after submit button */}
+                <AnimatePresence>
+                  {successFeedback.isVisible && successFeedback.contactDetails && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      className="mt-6"
+                    >
+                      <SuccessFeedback
+                        isVisible={successFeedback.isVisible}
+                        type={successFeedback.type}
+                        message={successFeedback.message}
+                        contactDetails={successFeedback.contactDetails}
+                        appointmentDetails={successFeedback.appointmentDetails}
+                        onClose={() => setSuccessFeedback(prev => ({ ...prev, isVisible: false }))}
+                        autoClose={true}
+                        autoCloseDelay={successFeedback.type === 'appointment' ? 12000 : 8000}
+                      />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </form>
             </CardContent>
           </Card>

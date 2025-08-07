@@ -332,19 +332,31 @@ function formatConfirmationEmail(formData) {
         </div>
 
         ${isAppointment ? `
-        <div style="background-color: #fef3c7; padding: 20px; border-radius: 12px; margin-bottom: 25px; border-left: 5px solid #f59e0b;">
-          <h3 style="margin: 0 0 15px 0; color: #92400e; display: flex; align-items: center;">
-            <span style="margin-right: 10px;">📅</span> Votre demande de rendez-vous
+        <div style="background: linear-gradient(135deg, #0078d4, #106ebe); padding: 25px; border-radius: 12px; margin-bottom: 25px; color: white;">
+          <h3 style="margin: 0 0 15px 0; display: flex; align-items: center;">
+            <span style="margin-right: 10px;">🎥</span> Votre rendez-vous Teams
           </h3>
-          <p style="margin: 0; color: #92400e;">
-            <strong>Date souhaitée :</strong> ${new Date(formData.appointmentDate).toLocaleDateString('fr-FR', { 
-              weekday: 'long', 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
-            })}<br>
-            <strong>Heure souhaitée :</strong> ${formData.appointmentTime}
-          </p>
+          <div style="background-color: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+            <p style="margin: 0 0 10px 0;">
+              <strong>📅 Date :</strong> ${new Date(formData.appointmentDate).toLocaleDateString('fr-FR', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+              })}
+            </p>
+            <p style="margin: 0;">
+              <strong>🕐 Heure :</strong> ${formData.appointmentTime} (heure française)
+            </p>
+          </div>
+          <div style="background-color: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;">
+            <p style="margin: 0 0 10px 0; font-size: 14px;">
+              <strong>💻 Format :</strong> Réunion Microsoft Teams en ligne
+            </p>
+            <p style="margin: 0; font-size: 14px; opacity: 0.9;">
+              Le lien de connexion Teams vous sera envoyé par email une fois le rendez-vous confirmé.
+            </p>
+          </div>
         </div>
         ` : ''}
 

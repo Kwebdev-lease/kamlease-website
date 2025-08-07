@@ -115,8 +115,8 @@ export function validatePhone(phone: string, language: 'fr' | 'en' = 'fr'): Phon
   return {
     isValid: false,
     error: language === 'fr'
-      ? 'Format de téléphone invalide (ex: +33 1 23 45 67 89 ou 01 23 45 67 89)'
-      : 'Invalid phone format (ex: +33 1 23 45 67 89 or 01 23 45 67 89)'
+      ? 'Format de téléphone invalide (ex: +33 6 73 71 05 86 ou 06 73 71 05 86)'
+      : 'Invalid phone format (ex: +33 6 73 71 05 86 or 06 73 71 05 86)'
   };
 }
 
@@ -192,7 +192,7 @@ export function getValidationErrorMessage(
     fr: {
       required: 'Ce champ est requis',
       emailInvalid: 'Format d\'email invalide',
-      phoneInvalid: 'Format de téléphone invalide (ex: +33 1 23 45 67 89)',
+      phoneInvalid: 'Format de téléphone invalide (ex: +33 6 73 71 05 86)',
       minLength: `Minimum ${params?.minLength || 2} caractères requis`,
       maxLength: `Maximum ${params?.maxLength || 100} caractères autorisés`,
       patternMismatch: 'Format invalide'
@@ -200,7 +200,7 @@ export function getValidationErrorMessage(
     en: {
       required: 'This field is required',
       emailInvalid: 'Invalid email format',
-      phoneInvalid: 'Invalid phone format (ex: +33 1 23 45 67 89)',
+      phoneInvalid: 'Invalid phone format (ex: +33 6 73 71 05 86)',
       minLength: `Minimum ${params?.minLength || 2} characters required`,
       maxLength: `Maximum ${params?.maxLength || 100} characters allowed`,
       patternMismatch: 'Invalid format'

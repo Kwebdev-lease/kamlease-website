@@ -30,7 +30,7 @@ export default function Index() {
               url: seoConfig.site.url,
               logo: seoConfig.site.url + seoConfig.site.logo,
               contactPoint: {
-                telephone: '+33-1-XX-XX-XX-XX',
+                telephone: '+33-6-73-71-05-86',
                 contactType: 'customer service',
                 availableLanguage: ['French', 'English']
               },
@@ -46,11 +46,11 @@ export default function Index() {
               name: seoConfig.site.name,
               description: seoConfig.site.description[language],
               url: seoConfig.site.url,
-              telephone: '+33-1-XX-XX-XX-XX',
+              telephone: '+33-6-73-71-05-86',
               address: {
-                streetAddress: 'Adresse à définir',
-                addressLocality: 'Ville',
-                postalCode: '00000',
+                streetAddress: '109 Rue Maréchal Joffre',
+                addressLocality: 'La Ferté-Saint-Aubin',
+                postalCode: '45240',
                 addressCountry: 'FR'
               },
               openingHours: ['Mo-Fr 09:00-18:00'],

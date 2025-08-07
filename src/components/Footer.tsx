@@ -88,10 +88,10 @@ export function Footer() {
             <h3 className="text-lg font-semibold mb-4">{t('footer.contact')}</h3>
             <ul className="space-y-2 text-gray-400">
               <li>contact@kamlease.com</li>
-              <li>+33 1 23 45 67 89</li>
+              <li>+33 6 73 71 05 86</li>
               <li>
-                123 Rue de l'Innovation<br />
-                75001 Paris, France
+                109 Rue Maréchal Joffre<br />
+                45240 La Ferté-Saint-Aubin, France
               </li>
             </ul>
           </div>

@@ -35,8 +35,8 @@ export function LegalNotice() {
             </p>
             <ul className="text-gray-700 dark:text-gray-300 space-y-2">
               <li><strong>{t('legal.notice.company')}:</strong> Kamlease</li>
-              <li><strong>{t('legal.notice.address')}:</strong> 123 Rue de l'Innovation, 75001 Paris, France</li>
-              <li><strong>{t('legal.notice.phone')}:</strong> +33 1 23 45 67 89</li>
+              <li><strong>{t('legal.notice.address')}:</strong> 109 Rue Maréchal Joffre, 45240 La Ferté-Saint-Aubin, France</li>
+              <li><strong>{t('legal.notice.phone')}:</strong> +33 6 73 71 05 86</li>
               <li><strong>{t('legal.notice.email')}:</strong> contact@kamlease.com</li>
             </ul>
           </section>

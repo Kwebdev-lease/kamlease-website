@@ -209,7 +209,7 @@ export function SuccessFeedback({
           icon: <Clock className="w-4 h-4 text-orange-500" />
         },
         {
-          text: 'Pour modifier ou annuler: +33 1 23 45 67 89',
+          text: 'Pour modifier ou annuler: +33 6 73 71 05 86',
           icon: <CheckCircle className="w-4 h-4 text-gray-500" />
         }
       )
@@ -228,7 +228,7 @@ export function SuccessFeedback({
           icon: <Calendar className="w-4 h-4 text-green-500" />
         },
         {
-          text: 'Contact direct: +33 1 23 45 67 89',
+          text: 'Contact direct: +33 6 73 71 05 86',
           icon: <CheckCircle className="w-4 h-4 text-gray-500" />
         }
       )

@@ -140,7 +140,7 @@ export const translations = {
         address: 'Adresse',
         placeholder: 'Décrivez votre projet, vos besoins et vos objectifs...',
         emailPlaceholder: 'votre.email@exemple.com',
-        telephonePlaceholder: '+33 1 23 45 67 89',
+        telephonePlaceholder: '6 73 71 05 86',
         required: '*',
         successMessage: 'Votre message a été envoyé ! Nous vous recontacterons bientôt.',
         appointmentMessage: 'Fonctionnalité de rendez-vous à intégrer avec votre système de calendrier',
@@ -148,7 +148,7 @@ export const translations = {
           emailRequired: 'L\'adresse email est obligatoire',
           emailInvalid: 'Format d\'email invalide',
           telephoneRequired: 'Le numéro de téléphone est obligatoire',
-          telephoneInvalid: 'Format de téléphone invalide (ex: +33 1 23 45 67 89)'
+          telephoneInvalid: 'Format de téléphone invalide (ex: +33 6 73 71 05 86)'
         },
         errors: {
           sendFailed: 'Erreur lors de l\'envoi de l\'email',
@@ -477,7 +477,7 @@ export const translations = {
         address: 'Address',
         placeholder: 'Describe your project, your needs and your objectives...',
         emailPlaceholder: 'your.email@example.com',
-        telephonePlaceholder: '+33 1 23 45 67 89',
+        telephonePlaceholder: '6 73 71 05 86',
         required: '*',
         successMessage: 'Your message has been sent! We will contact you soon.',
         appointmentMessage: 'Appointment feature to be integrated with your calendar system',
@@ -485,7 +485,7 @@ export const translations = {
           emailRequired: 'Email address is required',
           emailInvalid: 'Invalid email format',
           telephoneRequired: 'Phone number is required',
-          telephoneInvalid: 'Invalid phone format (ex: +33 1 23 45 67 89)'
+          telephoneInvalid: 'Invalid phone format (ex: +33 6 73 71 05 86)'
         },
         errors: {
           sendFailed: 'Failed to send email',

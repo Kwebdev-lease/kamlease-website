@@ -421,9 +421,6 @@ export function Contact() {
     // Security validation (if available)
     if (securityMiddleware) {
       try {
-        const endpoint = submissionType === 'appointment' ? 'form-submission-appointment' : 'form-submission-message'
-        const formDataWithCsrf = { ...formData, csrf_token: csrfToken }
-        
         // Temporarily disable CSRF validation to fix form submission
         console.log('Security validation temporarily disabled for form submission');
         
@@ -431,11 +428,6 @@ export function Contact() {
         if (!formData.prenom || !formData.nom || !formData.email || !formData.message) {
           setSubmitError('Veuillez remplir tous les champs obligatoires.');
           return;
-        }
-
-        // Show security warnings if any
-        if (securityValidation.warnings && securityValidation.warnings.length > 0) {
-          setSecurityWarnings(prev => [...prev, ...securityValidation.warnings])
         }
       } catch (error) {
         console.warn('Security validation failed:', error)
@@ -468,7 +460,8 @@ export function Contact() {
         const appointmentData: AppointmentFormData = {
           ...formData,
           appointmentDate: selectedDate,
-          appointmentTime: selectedTime
+          appointmentTime: selectedTime,
+          captchaToken: captchaToken
         }
         
         // Send appointment request via Microsoft Graph
@@ -489,7 +482,10 @@ export function Contact() {
         await new Promise(resolve => setTimeout(resolve, 200))
         
         updateProgress(80, t('contact.form.loading.processing'))
-        const messageData: ContactFormData = { ...formData }
+        const messageData: ContactFormData = { 
+          ...formData,
+          captchaToken: captchaToken
+        }
         // Send contact message via Microsoft Graph
         result = await emailService.sendContactMessage(messageData)
         

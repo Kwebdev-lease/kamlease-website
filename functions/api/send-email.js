@@ -242,29 +242,49 @@ export async function onRequest(context) {
 
 /**
  * Formate le contenu de l'email de notification (pour Kamlease)
+ * Compatible avec les modes sombre et clair des clients email
  */
 function formatEmailContent(formData) {
   const isAppointment = formData.appointmentDate && formData.appointmentTime;
   const logoUrl = 'https://kamlease.com/kamlease-logo.svg';
   
   let content = `
-    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 650px; margin: 0 auto; background-color: #ffffff;">
+    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 650px; margin: 0 auto; background-color: #ffffff; color: #000000;">
+      <style>
+        /* Dark mode compatibility */
+        @media (prefers-color-scheme: dark) {
+          .email-container { background-color: #1a1a1a !important; color: #ffffff !important; }
+          .content-section { background-color: #2d2d2d !important; color: #ffffff !important; }
+          .info-box { background-color: #3a3a3a !important; color: #ffffff !important; border-color: #555555 !important; }
+          .message-box { background-color: #2a2a2a !important; color: #ffffff !important; border-color: #444444 !important; }
+          .footer-section { background-color: #1f1f1f !important; color: #cccccc !important; border-color: #444444 !important; }
+        }
+        
+        /* Force colors for email clients that don't support CSS properly */
+        [data-ogsc] .email-container { background-color: #ffffff !important; color: #000000 !important; }
+        [data-ogsc] .content-section { background-color: #ffffff !important; color: #000000 !important; }
+        
+        /* Outlook dark mode support */
+        [data-ogsb] .email-container { background-color: #ffffff !important; color: #000000 !important; }
+        [data-ogsb] .content-section { background-color: #ffffff !important; color: #000000 !important; }
+      </style>
+      
       <!-- Header avec logo -->
       <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 12px 12px 0 0;">
         <img src="${logoUrl}" alt="Kamlease" style="max-height: 60px; margin-bottom: 15px;" />
-        <h1 style="color: white; margin: 0; font-size: 28px; font-weight: 300;">
+        <h1 style="color: #ffffff !important; margin: 0; font-size: 28px; font-weight: 300;">
           ${isAppointment ? '📅 Nouvelle demande de rendez-vous' : '✉️ Nouveau message de contact'}
         </h1>
-        <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 16px;">
+        <p style="color: rgba(255,255,255,0.9) !important; margin: 10px 0 0 0; font-size: 16px;">
           Reçu le ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR')}
         </p>
-        <p style="color: rgba(255,255,255,0.7); margin: 5px 0 0 0; font-size: 12px;">
-          ✅ Nouvelle fonction Cloudflare active
+        <p style="color: rgba(255,255,255,0.7) !important; margin: 5px 0 0 0; font-size: 12px;">
+          ✅ Protection CAPTCHA active
         </p>
       </div>
 
       <!-- Contenu principal -->
-      <div style="padding: 30px; background-color: #ffffff;">
+      <div class="email-container content-section" style="padding: 30px; background-color: #ffffff; color: #000000;">
   `;
 
   if (isAppointment) {
@@ -294,26 +314,26 @@ function formatEmailContent(formData) {
 
   content += `
         <!-- Informations du contact -->
-        <div style="background-color: #f8fafc; padding: 25px; border-radius: 12px; margin-bottom: 25px; border-left: 5px solid #3b82f6;">
-          <h2 style="margin: 0 0 20px 0; color: #1e40af; font-size: 20px; display: flex; align-items: center;">
+        <div class="info-box" style="background-color: #f8fafc; padding: 25px; border-radius: 12px; margin-bottom: 25px; border-left: 5px solid #3b82f6; color: #000000;">
+          <h2 style="margin: 0 0 20px 0; color: #1e40af !important; font-size: 20px; display: flex; align-items: center;">
             <span style="margin-right: 10px;">👤</span> Informations du contact
           </h2>
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
-            <div><strong>👤 Prénom :</strong> ${formData.prenom || 'Non renseigné'}</div>
-            <div><strong>👤 Nom :</strong> ${formData.nom || 'Non renseigné'}</div>
-            ${formData.societe ? `<div><strong>🏢 Société :</strong> ${formData.societe}</div>` : ''}
-            <div><strong>📧 Email :</strong> <a href="mailto:${formData.email}" style="color: #3b82f6; text-decoration: none;">${formData.email}</a></div>
-            <div><strong>📞 Téléphone :</strong> <a href="tel:${formData.telephone}" style="color: #3b82f6; text-decoration: none;">${formData.telephone || 'Non renseigné'}</a></div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; color: #000000;">
+            <div style="color: inherit;"><strong>👤 Prénom :</strong> ${formData.prenom || 'Non renseigné'}</div>
+            <div style="color: inherit;"><strong>👤 Nom :</strong> ${formData.nom || 'Non renseigné'}</div>
+            ${formData.societe ? `<div style="color: inherit;"><strong>🏢 Société :</strong> ${formData.societe}</div>` : ''}
+            <div style="color: inherit;"><strong>📧 Email :</strong> <a href="mailto:${formData.email}" style="color: #3b82f6 !important; text-decoration: none;">${formData.email}</a></div>
+            <div style="color: inherit;"><strong>📞 Téléphone :</strong> <a href="tel:${formData.telephone}" style="color: #3b82f6 !important; text-decoration: none;">${formData.telephone || 'Non renseigné'}</a></div>
           </div>
         </div>
         
         <!-- Message -->
-        <div style="background-color: #f0f9ff; padding: 25px; border-radius: 12px; margin-bottom: 25px; border-left: 5px solid #06b6d4;">
-          <h2 style="margin: 0 0 15px 0; color: #0891b2; font-size: 20px; display: flex; align-items: center;">
+        <div class="info-box" style="background-color: #f0f9ff; padding: 25px; border-radius: 12px; margin-bottom: 25px; border-left: 5px solid #06b6d4; color: #000000;">
+          <h2 style="margin: 0 0 15px 0; color: #0891b2 !important; font-size: 20px; display: flex; align-items: center;">
             <span style="margin-right: 10px;">💬</span> Message
           </h2>
-          <div style="background-color: white; padding: 20px; border-radius: 8px; border: 1px solid #e0f2fe;">
-            <p style="margin: 0; line-height: 1.6; white-space: pre-wrap; color: #374151;">${formData.message}</p>
+          <div class="message-box" style="background-color: #ffffff; padding: 20px; border-radius: 8px; border: 1px solid #e0f2fe; color: #000000;">
+            <p style="margin: 0; line-height: 1.6; white-space: pre-wrap; color: #374151 !important;">${formData.message}</p>
           </div>
         </div>
 
@@ -332,10 +352,10 @@ function formatEmailContent(formData) {
       </div>
       
       <!-- Footer -->
-      <div style="background-color: #f9fafb; padding: 20px; text-align: center; border-radius: 0 0 12px 12px; border-top: 1px solid #e5e7eb;">
-        <p style="margin: 0; font-size: 14px; color: #6b7280;">
+      <div class="footer-section" style="background-color: #f9fafb; padding: 20px; text-align: center; border-radius: 0 0 12px 12px; border-top: 1px solid #e5e7eb; color: #6b7280;">
+        <p style="margin: 0; font-size: 14px; color: #6b7280 !important;">
           📧 Email automatique généré par le site web <strong>Kamlease</strong><br>
-          🌐 <a href="https://kamlease.com" style="color: #3b82f6; text-decoration: none;">kamlease.com</a>
+          🌐 <a href="https://kamlease.com" style="color: #3b82f6 !important; text-decoration: none;">kamlease.com</a>
         </p>
       </div>
     </div>
@@ -352,20 +372,35 @@ function formatConfirmationEmail(formData) {
   const logoUrl = 'https://kamlease.com/kamlease-logo.svg';
   
   let content = `
-    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 650px; margin: 0 auto; background-color: #ffffff;">
+    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 650px; margin: 0 auto; background-color: #ffffff; color: #000000;">
+      <style>
+        /* Dark mode compatibility */
+        @media (prefers-color-scheme: dark) {
+          .email-container { background-color: #1a1a1a !important; color: #ffffff !important; }
+          .content-section { background-color: #2d2d2d !important; color: #ffffff !important; }
+          .info-box { background-color: #3a3a3a !important; color: #ffffff !important; border-color: #555555 !important; }
+          .teams-box { background-color: #1e3a8a !important; color: #ffffff !important; }
+          .footer-section { background-color: #1f1f1f !important; color: #cccccc !important; border-color: #444444 !important; }
+        }
+        
+        /* Force colors for email clients */
+        [data-ogsc] .email-container { background-color: #ffffff !important; color: #000000 !important; }
+        [data-ogsb] .email-container { background-color: #ffffff !important; color: #000000 !important; }
+      </style>
+      
       <!-- Header avec logo -->
       <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 12px 12px 0 0;">
         <img src="${logoUrl}" alt="Kamlease" style="max-height: 60px; margin-bottom: 15px;" />
-        <h1 style="color: white; margin: 0; font-size: 28px; font-weight: 300;">
+        <h1 style="color: #ffffff !important; margin: 0; font-size: 28px; font-weight: 300;">
           ✅ Message bien reçu !
         </h1>
-        <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 16px;">
+        <p style="color: rgba(255,255,255,0.9) !important; margin: 10px 0 0 0; font-size: 16px;">
           Merci ${formData.prenom} pour votre ${isAppointment ? 'demande de rendez-vous' : 'message'}
         </p>
       </div>
 
       <!-- Contenu principal -->
-      <div style="padding: 30px; background-color: #ffffff;">
+      <div class="email-container content-section" style="padding: 30px; background-color: #ffffff; color: #000000;">
         <div style="background: linear-gradient(135deg, #10b981, #059669); padding: 25px; border-radius: 12px; margin-bottom: 25px; color: white; text-align: center;">
           <h2 style="margin: 0 0 15px 0; font-size: 24px;">
             🎉 Nous avons bien reçu votre ${isAppointment ? 'demande de rendez-vous' : 'message'} !
@@ -404,31 +439,31 @@ function formatConfirmationEmail(formData) {
         </div>
         ` : ''}
 
-        <div style="background-color: #f0f9ff; padding: 25px; border-radius: 12px; margin-bottom: 25px;">
-          <h3 style="margin: 0 0 15px 0; color: #1e40af;">📞 Nos coordonnées</h3>
-          <div style="color: #374151; line-height: 1.8;">
-            <p style="margin: 5px 0;"><strong>📧 Email :</strong> <a href="mailto:contact@kamlease.com" style="color: #3b82f6;">contact@kamlease.com</a></p>
-            <p style="margin: 5px 0;"><strong>🌐 Site web :</strong> <a href="https://kamlease.com" style="color: #3b82f6;">kamlease.com</a></p>
-            <p style="margin: 5px 0;"><strong>🕐 Horaires :</strong> Lundi au Vendredi, 14h00 - 16h30</p>
+        <div class="info-box" style="background-color: #f0f9ff; padding: 25px; border-radius: 12px; margin-bottom: 25px; color: #000000;">
+          <h3 style="margin: 0 0 15px 0; color: #1e40af !important;">📞 Nos coordonnées</h3>
+          <div style="color: #374151 !important; line-height: 1.8;">
+            <p style="margin: 5px 0; color: inherit;"><strong>📧 Email :</strong> <a href="mailto:contact@kamlease.com" style="color: #3b82f6 !important;">contact@kamlease.com</a></p>
+            <p style="margin: 5px 0; color: inherit;"><strong>🌐 Site web :</strong> <a href="https://kamlease.com" style="color: #3b82f6 !important;">kamlease.com</a></p>
+            <p style="margin: 5px 0; color: inherit;"><strong>🕐 Horaires :</strong> Lundi au Vendredi, 14h00 - 16h30</p>
           </div>
         </div>
 
-        <div style="background-color: #f9fafb; padding: 20px; border-radius: 12px; text-align: center;">
-          <p style="margin: 0 0 15px 0; color: #374151; font-size: 16px;">
+        <div class="info-box" style="background-color: #f9fafb; padding: 20px; border-radius: 12px; text-align: center; color: #000000;">
+          <p style="margin: 0 0 15px 0; color: #374151 !important; font-size: 16px;">
             💡 <strong>Besoin d'aide ?</strong>
           </p>
-          <p style="margin: 0; color: #6b7280; font-size: 14px;">
+          <p style="margin: 0; color: #6b7280 !important; font-size: 14px;">
             N'hésitez pas à nous contacter si vous avez des questions supplémentaires.
           </p>
         </div>
       </div>
       
       <!-- Footer -->
-      <div style="background-color: #f9fafb; padding: 20px; text-align: center; border-radius: 0 0 12px 12px; border-top: 1px solid #e5e7eb;">
-        <p style="margin: 0; font-size: 14px; color: #6b7280;">
+      <div class="footer-section" style="background-color: #f9fafb; padding: 20px; text-align: center; border-radius: 0 0 12px 12px; border-top: 1px solid #e5e7eb; color: #6b7280;">
+        <p style="margin: 0; font-size: 14px; color: #6b7280 !important;">
           Merci de votre confiance ! 🙏<br>
           <strong>L'équipe Kamlease</strong><br>
-          <a href="https://kamlease.com" style="color: #3b82f6; text-decoration: none;">kamlease.com</a>
+          <a href="https://kamlease.com" style="color: #3b82f6 !important; text-decoration: none;">kamlease.com</a>
         </p>
       </div>
     </div>

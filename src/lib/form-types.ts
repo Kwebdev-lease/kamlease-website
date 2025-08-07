@@ -70,6 +70,7 @@ export interface EnhancedContactFormData {
   email: string;
   telephone: string;
   message: string;
+  captchaToken?: string;
 }
 
 // Validation error messages

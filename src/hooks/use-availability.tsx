@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 interface TimeSlot {
   start: string;
@@ -21,25 +21,56 @@ interface UseAvailabilityResult {
   refetch: () => void;
 }
 
+// Cache for storing availability data
+const availabilityCache = new Map<string, { data: TimeSlot[]; timestamp: number }>();
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache
+
 /**
- * Hook to fetch available time slots from the server
+ * Hook to fetch available time slots from the server with caching and debouncing
  */
 export function useAvailability(startDate?: Date, endDate?: Date): UseAvailabilityResult {
   const [availableSlots, setAvailableSlots] = useState<TimeSlot[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const debounceTimeoutRef = useRef<NodeJS.Timeout>();
+  const lastFetchRef = useRef<string>('');
 
-  const fetchAvailability = async () => {
+  const getCacheKey = useCallback((start: Date, end: Date) => {
+    return `${start.toISOString().split('T')[0]}_${end.toISOString().split('T')[0]}`;
+  }, []);
+
+  const fetchAvailability = useCallback(async (forceRefresh = false) => {
     if (!startDate || !endDate) {
       return;
     }
 
+    const cacheKey = getCacheKey(startDate, endDate);
+    
+    // Avoid duplicate requests
+    if (lastFetchRef.current === cacheKey && !forceRefresh) {
+      return;
+    }
+
+    // Check cache first
+    if (!forceRefresh) {
+      const cached = availabilityCache.get(cacheKey);
+      if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+        console.log(`📋 Using cached availability data for ${cacheKey}`);
+        setAvailableSlots(cached.data);
+        setError(null);
+        return;
+      }
+    }
+
     setLoading(true);
     setError(null);
+    lastFetchRef.current = cacheKey;
 
     try {
       const startDateStr = startDate.toISOString();
       const endDateStr = endDate.toISOString();
+      
+      console.log(`🔍 Fetching availability for ${cacheKey}...`);
       
       const response = await fetch(`/api/check-availability?startDate=${encodeURIComponent(startDateStr)}&endDate=${encodeURIComponent(endDateStr)}`);
       
@@ -53,8 +84,16 @@ export function useAvailability(startDate?: Date, endDate?: Date): UseAvailabili
         throw new Error(data.error || data.message || 'Failed to fetch availability');
       }
 
-      setAvailableSlots(data.availableSlots || []);
-      console.log(`✅ Loaded ${data.availableSlots?.length || 0} available slots`);
+      const slots = data.availableSlots || [];
+      
+      // Cache the result
+      availabilityCache.set(cacheKey, {
+        data: slots,
+        timestamp: Date.now()
+      });
+
+      setAvailableSlots(slots);
+      console.log(`✅ Loaded ${slots.length} available slots for ${cacheKey}`);
       
     } catch (err) {
       console.error('Error fetching availability:', err);
@@ -63,17 +102,41 @@ export function useAvailability(startDate?: Date, endDate?: Date): UseAvailabili
     } finally {
       setLoading(false);
     }
-  };
+  }, [startDate, endDate, getCacheKey]);
 
+  // Debounced effect to avoid rapid API calls
   useEffect(() => {
-    fetchAvailability();
-  }, [startDate, endDate]);
+    if (!startDate || !endDate) {
+      return;
+    }
+
+    // Clear existing timeout
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+
+    // Set new timeout for debounced fetch
+    debounceTimeoutRef.current = setTimeout(() => {
+      fetchAvailability();
+    }, 300); // 300ms debounce
+
+    // Cleanup timeout on unmount or dependency change
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
+  }, [fetchAvailability]);
+
+  const refetch = useCallback(() => {
+    fetchAvailability(true);
+  }, [fetchAvailability]);
 
   return {
     availableSlots,
     loading,
     error,
-    refetch: fetchAvailability
+    refetch
   };
 }
 

@@ -69,10 +69,25 @@ export function DateTimePicker({
     hasWarnings
   } = useAppointmentValidation()
 
-  // Use availability checking
+  // Use availability checking - only load when needed
+  const [shouldLoadAvailability, setShouldLoadAvailability] = useState(false);
   const startOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
   const endOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
-  const { availableSlots, loading: availabilityLoading, error: availabilityError } = useAvailability(startOfMonth, endOfMonth);
+  const { availableSlots, loading: availabilityLoading, error: availabilityError } = useAvailability(
+    shouldLoadAvailability ? startOfMonth : undefined, 
+    shouldLoadAvailability ? endOfMonth : undefined
+  );
+
+  // Load availability only when user interacts with the calendar
+  useEffect(() => {
+    if (!shouldLoadAvailability) {
+      // Delay initial load to avoid immediate API call
+      const timer = setTimeout(() => {
+        setShouldLoadAvailability(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [shouldLoadAvailability]);
   // Initialize validator with error handling
   const [validator] = useState(() => {
     try {
@@ -130,6 +145,10 @@ export function DateTimePicker({
 
   const handleDateSelect = (date: Date) => {
     onDateChange(date)
+    // Ensure availability is loaded when user selects a date
+    if (!shouldLoadAvailability) {
+      setShouldLoadAvailability(true);
+    }
     // Validation will be triggered by useEffect
   }
 

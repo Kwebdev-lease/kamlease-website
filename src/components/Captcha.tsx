@@ -131,11 +131,16 @@ export function Captcha({
     setIsVerifying(false)
   }
 
-  // Auto-execute on load if enabled
+  // Auto-execute on load if enabled, and re-execute when action changes
   useEffect(() => {
     if (isLoaded && !disabled && siteKey) {
+      // Reset state when action changes
+      setIsVerified(false)
+      setError(null)
+      
       // Small delay to ensure everything is ready
       const timer = setTimeout(() => {
+        console.log('🔄 Generating new CAPTCHA token for action:', action)
         executeRecaptcha()
       }, 1000) // Increased delay for better reliability
       return () => clearTimeout(timer)
@@ -146,7 +151,7 @@ export function Captcha({
       setIsVerified(true)
       onVerify('dev-mode-token-' + Date.now())
     }
-  }, [isLoaded, disabled, siteKey])
+  }, [isLoaded, disabled, siteKey, action]) // Added action as dependency
 
   const getStatusIcon = () => {
     if (isVerifying) {

@@ -229,6 +229,16 @@ export function Contact() {
     setCaptchaError('CAPTCHA expiré, veuillez recharger la page')
   }
 
+  // Reset CAPTCHA when submission type changes
+  useEffect(() => {
+    if (RECAPTCHA_SITE_KEY && isCaptchaVerified) {
+      console.log('🔄 Submission type changed, CAPTCHA will regenerate with new action:', submissionType)
+      // The CAPTCHA component will automatically regenerate with the new action
+      setIsCaptchaVerified(false)
+      setCaptchaToken(null)
+    }
+  }, [submissionType, RECAPTCHA_SITE_KEY])
+
 
 
   const handleInputBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {

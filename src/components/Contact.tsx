@@ -56,10 +56,10 @@ export function Contact() {
   const [isAppointmentValid, setIsAppointmentValid] = useState(false)
   
   // CAPTCHA configuration and state
-  const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY || '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' // Test key
+  const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY || ''
   const [captchaToken, setCaptchaToken] = useState<string | null>(null)
   const [captchaError, setCaptchaError] = useState<string | null>(null)
-  const [isCaptchaVerified, setIsCaptchaVerified] = useState(false)
+  const [isCaptchaVerified, setIsCaptchaVerified] = useState(!RECAPTCHA_SITE_KEY) // Auto-verified if no CAPTCHA configured
   
   // Security services - initialized safely
   const [securityMiddleware] = useState(() => {
@@ -374,8 +374,8 @@ export function Contact() {
     const hasNoErrors = Object.keys(errors).length === 0
     const basicFormValid = hasRequiredFields && hasNoErrors
     
-    // CAPTCHA validation
-    const isCaptchaValid = isCaptchaVerified && captchaToken !== null
+    // CAPTCHA validation (skip if not configured)
+    const isCaptchaValid = !RECAPTCHA_SITE_KEY || (isCaptchaVerified && captchaToken !== null)
     
     // Appointment validation
     if (submissionType === 'appointment') {
@@ -401,17 +401,21 @@ export function Contact() {
       return
     }
 
-    // CAPTCHA verification
-    if (!captchaToken || !isCaptchaVerified) {
-      setCaptchaError('Veuillez compléter la vérification anti-spam')
-      return
-    }
+    // CAPTCHA verification (skip if not configured)
+    if (RECAPTCHA_SITE_KEY) {
+      if (!captchaToken || !isCaptchaVerified) {
+        setCaptchaError('Veuillez compléter la vérification anti-spam')
+        return
+      }
 
-    // Verify CAPTCHA with server
-    const action = submissionType === 'appointment' ? 'appointment' : 'contact'
-    const isCaptchaValid = await verifyCaptchaWithServer(captchaToken, action)
-    if (!isCaptchaValid) {
-      return // Error already set in verifyCaptchaWithServer
+      // Verify CAPTCHA with server
+      const action = submissionType === 'appointment' ? 'appointment' : 'contact'
+      const isCaptchaValid = await verifyCaptchaWithServer(captchaToken, action)
+      if (!isCaptchaValid) {
+        return // Error already set in verifyCaptchaWithServer
+      }
+    } else {
+      console.log('🔄 CAPTCHA not configured, skipping verification')
     }
 
     // Security validation (if available)
@@ -1046,37 +1050,55 @@ export function Contact() {
                   )}
                 </AnimatePresence>
 
-                {/* CAPTCHA Verification */}
-                <AnimatedItem delay={0.6}>
-                  <div className="pt-4">
-                    <Captcha
-                      siteKey={RECAPTCHA_SITE_KEY}
-                      onVerify={handleCaptchaVerify}
-                      onError={handleCaptchaError}
-                      onExpired={handleCaptchaExpired}
-                      action={submissionType === 'appointment' ? 'appointment' : 'contact'}
-                      disabled={isLoading}
-                      className="mb-4"
-                    />
-                    
-                    {/* CAPTCHA Error Display */}
-                    <AnimatePresence>
-                      {captchaError && (
-                        <motion.div
-                          initial={{ opacity: 0, y: -10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -10 }}
-                          className="mt-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-center space-x-2"
-                        >
-                          <AlertCircle className="h-4 w-4 text-red-600 dark:text-red-400 flex-shrink-0" />
-                          <p className="text-red-700 dark:text-red-300 text-sm">
-                            {captchaError}
+                {/* CAPTCHA Verification - Only show if configured */}
+                {RECAPTCHA_SITE_KEY && (
+                  <AnimatedItem delay={0.6}>
+                    <div className="pt-4">
+                      <Captcha
+                        siteKey={RECAPTCHA_SITE_KEY}
+                        onVerify={handleCaptchaVerify}
+                        onError={handleCaptchaError}
+                        onExpired={handleCaptchaExpired}
+                        action={submissionType === 'appointment' ? 'appointment' : 'contact'}
+                        disabled={isLoading}
+                        className="mb-4"
+                      />
+                      
+                      {/* CAPTCHA Error Display */}
+                      <AnimatePresence>
+                        {captchaError && (
+                          <motion.div
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            className="mt-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-center space-x-2"
+                          >
+                            <AlertCircle className="h-4 w-4 text-red-600 dark:text-red-400 flex-shrink-0" />
+                            <p className="text-red-700 dark:text-red-300 text-sm">
+                              {captchaError}
+                            </p>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  </AnimatedItem>
+                )}
+
+                {/* Development Notice for CAPTCHA */}
+                {!RECAPTCHA_SITE_KEY && (import.meta.env.DEV || window.location.hostname === 'localhost') && (
+                  <AnimatedItem delay={0.6}>
+                    <div className="pt-4">
+                      <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                        <div className="flex items-center space-x-2">
+                          <AlertCircle className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
+                          <p className="text-yellow-800 dark:text-yellow-200 text-sm">
+                            <strong>Mode développement :</strong> Protection CAPTCHA désactivée
                           </p>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                </AnimatedItem>
+                        </div>
+                      </div>
+                    </div>
+                  </AnimatedItem>
+                )}
                 
                 <AnimatedItem delay={0.65}>
                   <div className="pt-4">

@@ -48,39 +48,41 @@ export function Captcha({
 
   // Load reCAPTCHA script
   useEffect(() => {
-    if (window.grecaptcha) {
-      setIsLoaded(true)
+    // Skip if no site key or already loaded
+    if (!siteKey || window.grecaptcha) {
+      if (window.grecaptcha) {
+        window.grecaptcha.ready(() => {
+          setIsLoaded(true)
+        })
+      }
       return
     }
 
-    // Create script element
+    // Create script element for reCAPTCHA v3
     const script = document.createElement('script')
     script.src = `https://www.google.com/recaptcha/api.js?render=${siteKey}`
     script.async = true
     script.defer = true
 
-    // Set up callback for when script loads
-    window.onRecaptchaLoad = () => {
-      setIsLoaded(true)
-    }
-
     script.onload = () => {
       if (window.grecaptcha) {
         window.grecaptcha.ready(() => {
+          console.log('✅ reCAPTCHA v3 loaded successfully')
           setIsLoaded(true)
         })
       }
     }
 
     script.onerror = () => {
-      setError('Failed to load reCAPTCHA')
+      console.error('❌ Failed to load reCAPTCHA script')
+      setError('Impossible de charger la protection anti-spam')
       onError?.('Failed to load reCAPTCHA')
     }
 
     document.head.appendChild(script)
 
     return () => {
-      // Cleanup
+      // Cleanup on unmount
       if (script.parentNode) {
         script.parentNode.removeChild(script)
       }
@@ -89,7 +91,8 @@ export function Captcha({
 
   // Execute reCAPTCHA verification
   const executeRecaptcha = async (): Promise<string | null> => {
-    if (!isLoaded || !window.grecaptcha || disabled) {
+    if (!isLoaded || !window.grecaptcha || disabled || !siteKey) {
+      console.warn('⚠️ reCAPTCHA not ready:', { isLoaded, hasGrecaptcha: !!window.grecaptcha, disabled, siteKey: !!siteKey })
       return null
     }
 
@@ -97,17 +100,22 @@ export function Captcha({
     setError(null)
 
     try {
+      console.log('🔍 Executing reCAPTCHA with action:', action)
+      
+      // Execute reCAPTCHA v3
       const token = await window.grecaptcha.execute(siteKey, { action })
       
-      if (token) {
+      if (token && token.length > 0) {
+        console.log('✅ reCAPTCHA token received:', token.substring(0, 20) + '...')
         setIsVerified(true)
         onVerify(token)
         return token
       } else {
-        throw new Error('No token received')
+        throw new Error('Token vide reçu de reCAPTCHA')
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'reCAPTCHA verification failed'
+      console.error('❌ reCAPTCHA execution failed:', err)
+      const errorMessage = err instanceof Error ? err.message : 'Échec de la vérification anti-spam'
       setError(errorMessage)
       onError?.(errorMessage)
       return null
@@ -125,14 +133,20 @@ export function Captcha({
 
   // Auto-execute on load if enabled
   useEffect(() => {
-    if (isLoaded && !disabled) {
+    if (isLoaded && !disabled && siteKey) {
       // Small delay to ensure everything is ready
       const timer = setTimeout(() => {
         executeRecaptcha()
-      }, 500)
+      }, 1000) // Increased delay for better reliability
       return () => clearTimeout(timer)
+    } else if (!siteKey) {
+      // Fallback mode - simulate verification for development
+      console.warn('⚠️ No reCAPTCHA site key provided, using fallback mode')
+      setError('Mode développement - CAPTCHA simulé')
+      setIsVerified(true)
+      onVerify('dev-mode-token-' + Date.now())
     }
-  }, [isLoaded, disabled])
+  }, [isLoaded, disabled, siteKey])
 
   const getStatusIcon = () => {
     if (isVerifying) {

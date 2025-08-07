@@ -229,33 +229,7 @@ export function Contact() {
     setCaptchaError('CAPTCHA expiré, veuillez recharger la page')
   }
 
-  // Verify CAPTCHA token with server
-  const verifyCaptchaWithServer = async (token: string, action: string): Promise<boolean> => {
-    try {
-      const response = await fetch('/api/verify-captcha', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ token, action })
-      })
 
-      const result = await response.json()
-      
-      if (result.success) {
-        console.log('✅ Server CAPTCHA verification successful:', result)
-        return true
-      } else {
-        console.error('❌ Server CAPTCHA verification failed:', result)
-        setCaptchaError(result.message || 'Vérification CAPTCHA échouée')
-        return false
-      }
-    } catch (error) {
-      console.error('❌ CAPTCHA server verification error:', error)
-      setCaptchaError('Erreur de vérification CAPTCHA')
-      return false
-    }
-  }
 
   const handleInputBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -407,13 +381,7 @@ export function Contact() {
         setCaptchaError('Veuillez compléter la vérification anti-spam')
         return
       }
-
-      // Verify CAPTCHA with server
-      const action = submissionType === 'appointment' ? 'appointment' : 'contact'
-      const isCaptchaValid = await verifyCaptchaWithServer(captchaToken, action)
-      if (!isCaptchaValid) {
-        return // Error already set in verifyCaptchaWithServer
-      }
+      console.log('✅ CAPTCHA token ready for server verification')
     } else {
       console.log('🔄 CAPTCHA not configured, skipping verification')
     }

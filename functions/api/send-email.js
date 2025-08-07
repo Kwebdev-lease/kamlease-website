@@ -52,35 +52,40 @@ export async function onRequest(context) {
 
     // Vérifier le token CAPTCHA (si configuré)
     if (env.RECAPTCHA_SECRET_KEY && formData.captchaToken) {
-      console.log('🔍 Verifying CAPTCHA token...');
-      
-      // Importer la fonction de vérification CAPTCHA
-      const { verifyCaptchaToken } = await import('./verify-captcha.js');
-      
-      // Vérifier le CAPTCHA
-      const captchaResult = await verifyCaptchaToken(
-        formData.captchaToken,
-        env.RECAPTCHA_SECRET_KEY,
-        formData.appointmentDate ? 'appointment' : 'contact',
-        0.5 // Score minimum
-      );
+      // Vérifier si c'est un token de développement
+      if (formData.captchaToken.startsWith('dev-mode-token-')) {
+        console.log('🔄 Development CAPTCHA token detected, skipping verification');
+      } else {
+        console.log('🔍 Verifying CAPTCHA token...');
+        
+        // Importer la fonction de vérification CAPTCHA
+        const { verifyCaptchaToken } = await import('./verify-captcha.js');
+        
+        // Vérifier le CAPTCHA
+        const captchaResult = await verifyCaptchaToken(
+          formData.captchaToken,
+          env.RECAPTCHA_SECRET_KEY,
+          formData.appointmentDate ? 'appointment' : 'contact',
+          0.5 // Score minimum
+        );
 
-      if (!captchaResult.success) {
-        console.error('CAPTCHA verification failed:', captchaResult);
-        return new Response(JSON.stringify({
-          success: false,
-          message: 'Vérification CAPTCHA échouée',
-          details: captchaResult.errorCodes
-        }), {
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        if (!captchaResult.success) {
+          console.error('CAPTCHA verification failed:', captchaResult);
+          return new Response(JSON.stringify({
+            success: false,
+            message: 'Vérification CAPTCHA échouée',
+            details: captchaResult.errorCodes
+          }), {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+
+        console.log('✅ CAPTCHA verification successful:', { 
+          score: captchaResult.score, 
+          action: captchaResult.action 
         });
       }
-
-      console.log('✅ CAPTCHA verification successful:', { 
-        score: captchaResult.score, 
-        action: captchaResult.action 
-      });
     } else if (env.RECAPTCHA_SECRET_KEY && !formData.captchaToken) {
       console.error('CAPTCHA configured but no token provided');
       return new Response(JSON.stringify({

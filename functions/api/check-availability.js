@@ -77,7 +77,7 @@ export async function onRequest(context) {
 
   } catch (error) {
     console.error('❌ Error checking availability:', error);
-    
+
     // Fallback to simplified mode on error
     console.log('🔄 Falling back to simplified availability checking');
     return getSimplifiedAvailability(startDate, endDate, env, corsHeaders);
@@ -99,7 +99,7 @@ async function getMicrosoftGraphToken(env) {
 
   try {
     const tokenUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`;
-    
+
     const response = await fetch(tokenUrl, {
       method: 'POST',
       headers: {
@@ -135,17 +135,17 @@ async function getMicrosoftGraphToken(env) {
  */
 async function getBusySlots(accessToken, startDate, endDate, env) {
   const calendarEmail = env.VITE_CALENDAR_EMAIL || 'contact@kamlease.com';
-  
+
   try {
     // Method 1: Use getSchedule API to get busy times
     const busySlots = await getBusySlotsFromSchedule(accessToken, calendarEmail, startDate, endDate, env);
-    
+
     // Method 2: Alternative - use findMeetingTimes API (as per Microsoft documentation)
     if (busySlots.length === 0) {
       console.log('🔄 Trying alternative findMeetingTimes API...');
       return await getBusySlotsFromFindMeetingTimes(accessToken, calendarEmail, startDate, endDate, env);
     }
-    
+
     return busySlots;
 
   } catch (error) {
@@ -160,7 +160,7 @@ async function getBusySlots(accessToken, startDate, endDate, env) {
 async function getBusySlotsFromSchedule(accessToken, calendarEmail, startDate, endDate, env) {
   try {
     const graphUrl = `https://graph.microsoft.com/v1.0/users/${calendarEmail}/calendar/getSchedule`;
-    
+
     const requestBody = {
       schedules: [calendarEmail],
       startTime: {
@@ -223,9 +223,7 @@ async function getBusySlotsFromSchedule(accessToken, calendarEmail, startDate, e
  */
 async function getBusySlotsFromFindMeetingTimes(accessToken, calendarEmail, startDate, endDate, env) {
   try {
-    const graphUrl = 'https://graph.microsoft.com/v1.0/me/calendar/getSchedule';
-    
-    // Alternative: Use events API to get calendar events directly
+    // Use events API to get calendar events directly
     const eventsUrl = `https://graph.microsoft.com/v1.0/users/${calendarEmail}/events`;
     const params = new URLSearchParams({
       '$filter': `start/dateTime ge '${startDate}' and end/dateTime le '${endDate}'`,
@@ -281,7 +279,7 @@ async function getBusySlotsFromFindMeetingTimes(accessToken, calendarEmail, star
  */
 function getSimplifiedAvailability(startDate, endDate, env, corsHeaders) {
   console.log('🔄 Using simplified availability checking (no calendar integration)');
-  
+
   const busySlots = [];
   const availableSlots = generateAvailableSlots(startDate, endDate, busySlots, env);
 
@@ -310,10 +308,10 @@ function generateAvailableSlots(startDate, endDate, busySlots, env) {
 
   const start = new Date(startDate);
   const end = new Date(endDate);
-  
+
   console.log('🕐 Business hours:', { businessStartTime, businessEndTime, appointmentDuration });
   console.log('🚫 Busy slots to exclude:', busySlots.length);
-  
+
   // Iterate through each day
   for (let date = new Date(start); date <= end; date.setDate(date.getDate() + 1)) {
     // Skip weekends (Saturday = 6, Sunday = 0)
@@ -328,7 +326,7 @@ function generateAvailableSlots(startDate, endDate, busySlots, env) {
     // Create time slots for this day
     const dayStart = new Date(date);
     dayStart.setHours(startHour, startMinute, 0, 0);
-    
+
     const dayEnd = new Date(date);
     dayEnd.setHours(endHour, endMinute, 0, 0);
 
@@ -341,7 +339,7 @@ function generateAvailableSlots(startDate, endDate, busySlots, env) {
       if (slotEnd <= dayEnd) {
         // Check if this slot conflicts with any busy time
         const isAvailable = !isSlotBusy(slotStart, slotEnd, busySlots);
-        
+
         if (isAvailable) {
           slots.push({
             start: slotStart.toISOString(),
@@ -368,7 +366,7 @@ function isSlotBusy(slotStart, slotEnd, busySlots) {
   for (const busySlot of busySlots) {
     const busyStart = new Date(busySlot.start);
     const busyEnd = new Date(busySlot.end);
-    
+
     // Check for overlap: slot starts before busy ends AND slot ends after busy starts
     if (slotStart < busyEnd && slotEnd > busyStart) {
       return true;

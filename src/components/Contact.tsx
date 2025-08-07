@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { EnhancedButton } from '@/components/ui/enhanced-button'
 import { EnhancedInput, EnhancedIconContainer, EnhancedListItem } from './HoverEffects'

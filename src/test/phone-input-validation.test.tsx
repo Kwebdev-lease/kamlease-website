@@ -117,9 +117,9 @@ describe('PhoneInput - Format strict avec dropdown', () => {
       />
     )
 
-    // Vérifier que le drapeau français et le format sont affichés
+    // Vérifier que le drapeau français et l'indicatif sont affichés
     expect(screen.getByText('🇫🇷')).toBeInTheDocument()
-    expect(screen.getByText('France +33')).toBeInTheDocument()
+    expect(screen.getByText('+33')).toBeInTheDocument()
   })
 
   it('should open country dropdown when clicked', async () => {
@@ -166,7 +166,7 @@ describe('PhoneInput - Format strict avec dropdown', () => {
     })
     
     // Vérifier que l'indicatif a changé
-    expect(screen.getByText('Allemagne +49')).toBeInTheDocument()
+    expect(screen.getByText('+49')).toBeInTheDocument()
     expect(screen.getByText('🇩🇪')).toBeInTheDocument()
   })
 
@@ -182,7 +182,7 @@ describe('PhoneInput - Format strict avec dropdown', () => {
     )
 
     // Vérifier que l'Allemagne est sélectionnée
-    expect(screen.getByText('Allemagne +49')).toBeInTheDocument()
+    expect(screen.getByText('+49')).toBeInTheDocument()
     expect(screen.getByText('🇩🇪')).toBeInTheDocument()
     
     // Vérifier que les 9 chiffres sont affichés (sans le 0 initial)

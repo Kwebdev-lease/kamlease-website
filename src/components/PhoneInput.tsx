@@ -152,7 +152,7 @@ export function PhoneInput({
   }
 
   return (
-    <div className={`relative ${className}`}>
+    <div className={`relative ${className}`} style={{ zIndex: 'auto' }}>
       <div className={`flex border rounded-lg overflow-hidden transition-colors ${
         error 
           ? 'border-red-300 dark:border-red-600' 
@@ -163,13 +163,13 @@ export function PhoneInput({
           <button
             type="button"
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center px-3 py-2 bg-gray-50 dark:bg-gray-700 border-r border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors min-w-[140px]"
+            className="flex items-center px-3 py-2 bg-gray-50 dark:bg-gray-700 border-r border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors min-w-[80px]"
           >
-            <span className="mr-2">{selectedCountry.flag}</span>
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
-              {selectedCountry.country} {selectedCountry.code}
+            <span className="mr-1">{selectedCountry.flag}</span>
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              {selectedCountry.code}
             </span>
-            <ChevronDown className={`ml-2 h-4 w-4 text-gray-500 transition-transform flex-shrink-0 ${
+            <ChevronDown className={`ml-1 h-4 w-4 text-gray-500 transition-transform flex-shrink-0 ${
               isDropdownOpen ? 'rotate-180' : ''
             }`} />
           </button>
@@ -181,7 +181,8 @@ export function PhoneInput({
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="absolute top-full left-0 right-0 z-50 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto min-w-[200px]"
+                className="absolute top-full left-0 z-[9999] bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-xl max-h-60 overflow-y-auto min-w-[250px]"
+                style={{ zIndex: 9999 }}
               >
                 {COUNTRY_CODES.map((country, index) => (
                   <button
@@ -245,7 +246,7 @@ export function PhoneInput({
       {/* Fermer la dropdown en cliquant à l'extérieur */}
       {isDropdownOpen && (
         <div
-          className="fixed inset-0 z-40"
+          className="fixed inset-0 z-[9998]"
           onClick={() => setIsDropdownOpen(false)}
         />
       )}

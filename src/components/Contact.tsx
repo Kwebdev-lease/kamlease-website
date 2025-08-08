@@ -32,7 +32,6 @@ import { SecurityMiddleware } from '../lib/security/security-middleware'
 import { InputSanitizer } from '../lib/security/input-sanitizer'
 import { CSRFProtection } from '../lib/security/csrf-protection'
 import { Captcha, useCaptcha } from './Captcha'
-import { PhoneInput } from './PhoneInput'
 
 type SubmissionType = 'message' | 'appointment'
 type ContactFormData = EnhancedContactFormData
@@ -908,15 +907,18 @@ export function Contact() {
                       <label htmlFor="telephone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         {t('contact.form.telephone')} {t('contact.form.required')}
                       </label>
-                      <div className="relative" style={{ zIndex: 1 }}>
-                        <PhoneInput
+                      <div className="relative">
+                        <EnhancedInput
+                          id="telephone"
                           name="telephone"
+                          type="tel"
                           required
                           value={formData.telephone}
-                          onChange={(value) => setFormData(prev => ({ ...prev, telephone: value }))}
+                          onChange={handleInputChange}
                           onBlur={handleInputBlur}
                           onFocus={handleInputFocus}
                           error={!!errors.telephone}
+                          className="border-gray-300 dark:border-gray-600"
                           placeholder={t('contact.form.telephonePlaceholder')}
                         />
                         <AnimatePresence>

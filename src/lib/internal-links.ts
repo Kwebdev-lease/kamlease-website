@@ -9,14 +9,6 @@ export interface InternalLink {
   priority: number // 1-10, higher is more important
 }
 
-export interface SectionAnchor {
-  id: string
-  title: string
-  url: string
-  keywords: string[]
-  description?: string
-}
-
 /**
  * Service for managing internal links and navigation anchors
  * Optimizes internal linking for SEO and user experience
@@ -24,7 +16,6 @@ export interface SectionAnchor {
 export class InternalLinksService {
   private static instance: InternalLinksService
   private links: Map<string, InternalLink[]> = new Map()
-  private anchors: Map<string, SectionAnchor[]> = new Map()
 
   private constructor() {
     this.initializeLinks()
@@ -262,12 +253,7 @@ export class InternalLinksService {
       .slice(0, maxLinks)
   }
 
-  /**
-   * Get section anchors for navigation
-   */
-  getSectionAnchors(page: string): SectionAnchor[] {
-    return this.anchors.get(page) || []
-  }
+
 
   /**
    * Generate SEO-friendly URL slug
@@ -326,15 +312,6 @@ export class InternalLinksService {
   }
 
   /**
-   * Add section anchor
-   */
-  addSectionAnchor(page: string, anchor: SectionAnchor): void {
-    const existingAnchors = this.anchors.get(page) || []
-    existingAnchors.push(anchor)
-    this.anchors.set(page, existingAnchors)
-  }
-
-  /**
    * Get all internal links for sitemap generation
    */
   getAllInternalUrls(): string[] {
@@ -371,8 +348,6 @@ export const useInternalLinks = () => {
   return {
     getContextualLinks: (context: string, maxLinks?: number) => 
       service.getContextualLinks(context, maxLinks),
-    getSectionAnchors: (page: string) => 
-      service.getSectionAnchors(page),
     getRelatedLinks: (keywords: string[], currentUrl: string, maxLinks?: number) => 
       service.getRelatedLinks(keywords, currentUrl, maxLinks),
     generateUrlSlug: (text: string) => 

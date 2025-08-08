@@ -9,7 +9,7 @@ import { Footer } from '@/components/Footer'
 import { SEOHead } from '@/components/SEOHead'
 import { StructuredData } from '@/components/StructuredData'
 import { pagesSEOData, seoConfig } from '@/lib/seo-config'
-import { SectionAnchors } from '@/components/SectionAnchors'
+
 import { useLanguage } from '@/contexts/LanguageProvider'
 
 export default function Index() {
@@ -75,9 +75,7 @@ export default function Index() {
         language={language}
       />
       
-      {/* Section Navigation */}
-      <SectionAnchors page="home" />
-      
+
       <Header />
       <main id="main-content" tabIndex={-1}>
         <Hero />

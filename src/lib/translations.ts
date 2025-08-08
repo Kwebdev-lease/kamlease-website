@@ -14,9 +14,7 @@ export const translations = {
       breadcrumbs: 'Fil d\'Ariane',
       relatedLinks: 'Liens connexes',
       relatedContent: 'Contenu connexe',
-      sectionNavigation: 'Navigation des sections',
-      backToTop: 'Haut de page',
-      tableOfContents: 'Table des matières'
+      backToTop: 'Haut de page'
     },
     // Hero
     hero: {
@@ -351,9 +349,7 @@ export const translations = {
       breadcrumbs: 'Breadcrumbs',
       relatedLinks: 'Related Links',
       relatedContent: 'Related Content',
-      sectionNavigation: 'Section Navigation',
-      backToTop: 'Back to Top',
-      tableOfContents: 'Table of Contents'
+      backToTop: 'Back to Top'
     },
     // Hero
     hero: {

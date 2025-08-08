@@ -1209,8 +1209,8 @@ export function Contact() {
                         <div>
                           <p className="font-medium text-gray-900 dark:text-white">{t('contact.form.address')}</p>
                           <p className="text-gray-600 dark:text-gray-300">
-                            123 Rue de l'Innovation<br />
-                            75001 Paris, France
+                            109 Rue Maréchal Joffre<br />
+                            45240 La Ferté-Saint-Aubin, France
                           </p>
                         </div>
                       </div>

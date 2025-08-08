@@ -178,9 +178,9 @@ describe('StructuredData Component', () => {
 
     it('should include address when provided', () => {
       const address = {
-        streetAddress: '123 Rue de la Tech',
-        addressLocality: 'Paris',
-        postalCode: '75001',
+        streetAddress: '109 Rue Maréchal Joffre',
+        addressLocality: 'La Ferté-Saint-Aubin',
+        postalCode: '45240',
         addressCountry: 'FR'
       }
 
@@ -390,9 +390,9 @@ describe('StructuredData Component', () => {
       }
       
       const address = {
-        streetAddress: '123 Rue de la Tech',
-        addressLocality: 'Paris',
-        postalCode: '75001',
+        streetAddress: '109 Rue Maréchal Joffre',
+        addressLocality: 'La Ferté-Saint-Aubin',
+        postalCode: '45240',
         addressCountry: 'FR'
       }
 

@@ -60,9 +60,9 @@ describe('StructuredDataService', () => {
           availableLanguage: ['French', 'English']
         },
         address: {
-          streetAddress: '123 Rue de la Tech',
-          addressLocality: 'Paris',
-          postalCode: '75001',
+          streetAddress: '109 Rue Maréchal Joffre',
+          addressLocality: 'La Ferté-Saint-Aubin',
+          postalCode: '45240',
           addressCountry: 'FR'
         }
       }
@@ -73,7 +73,7 @@ describe('StructuredDataService', () => {
       expect(parsed.contactPoint.telephone).toBe('+33123456789')
       expect(parsed.contactPoint.email).toBe('contact@kamlease.com')
       expect(parsed.address).toBeDefined()
-      expect(parsed.address.streetAddress).toBe('123 Rue de la Tech')
+      expect(parsed.address.streetAddress).toBe('109 Rue Maréchal Joffre')
     })
   })
 

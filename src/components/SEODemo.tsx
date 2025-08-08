@@ -192,9 +192,9 @@ function HomePage() {
           email: 'contact@kamlease.com'
         }}
         address={{
-          streetAddress: '123 Rue de la Tech',
-          addressLocality: 'Paris',
-          postalCode: '75001',
+          streetAddress: '109 Rue Maréchal Joffre',
+          addressLocality: 'La Ferté-Saint-Aubin',
+          postalCode: '45240',
           addressCountry: 'FR'
         }}
       />

@@ -1,6 +1,6 @@
 /**
- * Composant de saisie de téléphone international
- * Avec sélecteur de pays et validation numérique
+ * Composant de saisie de téléphone avec dropdown pays et validation stricte
+ * Format: Dropdown pays + 0 fixe grisé + 9 chiffres maximum
  */
 
 import { useState, useEffect } from 'react'
@@ -10,7 +10,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 // Liste des pays avec indicatifs téléphoniques
 const COUNTRY_CODES = [
   { code: '+33', country: 'France', flag: '🇫🇷' },
-  { code: '+1', country: 'États-Unis / Canada', flag: '🇺🇸' },
+  { code: '+1', country: 'États-Unis', flag: '🇺🇸' },
+  { code: '+1', country: 'Canada', flag: '🇨🇦' },
   { code: '+44', country: 'Royaume-Uni', flag: '🇬🇧' },
   { code: '+49', country: 'Allemagne', flag: '🇩🇪' },
   { code: '+39', country: 'Italie', flag: '🇮🇹' },
@@ -65,16 +66,16 @@ export function PhoneInput({
   onBlur,
   onFocus,
   error = false,
-  placeholder = "6 73 71 05 86",
+  placeholder = "73 71 05 86",
   className = "",
   name = "telephone",
   required = false
 }: PhoneInputProps) {
   const [selectedCountry, setSelectedCountry] = useState(COUNTRY_CODES[0]) // France par défaut
-  const [phoneNumber, setPhoneNumber] = useState('')
+  const [phoneDigits, setPhoneDigits] = useState('')
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
-  // Séparer l'indicatif du numéro au chargement
+  // Parser le numéro existant au chargement
   useEffect(() => {
     if (value) {
       // Trouver l'indicatif correspondant
@@ -84,36 +85,57 @@ export function PhoneInput({
       
       if (matchingCountry) {
         setSelectedCountry(matchingCountry)
-        setPhoneNumber(value.substring(matchingCountry.code.length).trim())
+        // Extraire les chiffres après l'indicatif et le 0
+        const remainingNumber = value.substring(matchingCountry.code.length).trim()
+        const digitsOnly = remainingNumber.replace(/[^\d]/g, '')
+        // Enlever le 0 initial s'il existe et garder max 9 chiffres
+        const withoutLeadingZero = digitsOnly.startsWith('0') ? digitsOnly.substring(1) : digitsOnly
+        setPhoneDigits(withoutLeadingZero.substring(0, 9))
       } else {
-        setPhoneNumber(value)
+        // Si pas d'indicatif, traiter comme numéro français
+        const digitsOnly = value.replace(/[^\d]/g, '')
+        const withoutLeadingZero = digitsOnly.startsWith('0') ? digitsOnly.substring(1) : digitsOnly
+        setPhoneDigits(withoutLeadingZero.substring(0, 9))
       }
     }
   }, [value])
 
-  // Mettre à jour la valeur complète quand l'indicatif ou le numéro change
+  // Mettre à jour la valeur complète quand l'indicatif ou les chiffres changent
   useEffect(() => {
-    const fullNumber = phoneNumber ? `${selectedCountry.code} ${phoneNumber}` : ''
-    if (fullNumber !== value) {
-      onChange(fullNumber)
+    if (phoneDigits) {
+      const fullNumber = `${selectedCountry.code} 0${phoneDigits}`
+      if (fullNumber !== value) {
+        onChange(fullNumber)
+      }
+    } else {
+      if (value !== '') {
+        onChange('')
+      }
     }
-  }, [selectedCountry, phoneNumber, onChange])
+  }, [selectedCountry, phoneDigits, onChange, value])
 
-  // Gérer la saisie du numéro (chiffres uniquement)
-  const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Gérer la saisie des chiffres (9 chiffres maximum, chiffres uniquement)
+  const handlePhoneDigitsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value
-    // Permettre seulement les chiffres et les espaces, supprimer tout autre caractère
-    const numbersOnly = input.replace(/[^\d\s]/g, '')
-    setPhoneNumber(numbersOnly)
+    // Permettre seulement les chiffres, supprimer tout autre caractère
+    const numbersOnly = input.replace(/[^\d]/g, '')
+    // Limiter à 9 chiffres maximum
+    const limitedDigits = numbersOnly.substring(0, 9)
+    setPhoneDigits(limitedDigits)
   }
 
   // Gérer les touches pressées pour bloquer les caractères non numériques
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    // Permettre les touches de contrôle (backspace, delete, tab, escape, enter, etc.)
+    // Permettre les touches de contrôle
     if (e.key === 'Backspace' || e.key === 'Delete' || e.key === 'Tab' || 
         e.key === 'Escape' || e.key === 'Enter' || e.key === 'ArrowLeft' || 
-        e.key === 'ArrowRight' || e.key === 'ArrowUp' || e.key === 'ArrowDown' ||
-        e.key === ' ') {
+        e.key === 'ArrowRight' || e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+      return
+    }
+    
+    // Bloquer si on a déjà 9 chiffres
+    if (phoneDigits.length >= 9 && /[0-9]/.test(e.key)) {
+      e.preventDefault()
       return
     }
     
@@ -141,13 +163,13 @@ export function PhoneInput({
           <button
             type="button"
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center px-3 py-2 bg-gray-50 dark:bg-gray-700 border-r border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors min-w-[120px]"
+            className="flex items-center px-3 py-2 bg-gray-50 dark:bg-gray-700 border-r border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors min-w-[140px]"
           >
             <span className="mr-2">{selectedCountry.flag}</span>
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              {selectedCountry.code}
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
+              {selectedCountry.country} {selectedCountry.code}
             </span>
-            <ChevronDown className={`ml-2 h-4 w-4 text-gray-500 transition-transform ${
+            <ChevronDown className={`ml-2 h-4 w-4 text-gray-500 transition-transform flex-shrink-0 ${
               isDropdownOpen ? 'rotate-180' : ''
             }`} />
           </button>
@@ -159,11 +181,11 @@ export function PhoneInput({
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="absolute top-full left-0 right-0 z-50 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto"
+                className="absolute top-full left-0 right-0 z-50 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto min-w-[200px]"
               >
-                {COUNTRY_CODES.map((country) => (
+                {COUNTRY_CODES.map((country, index) => (
                   <button
-                    key={country.code}
+                    key={`${country.code}-${index}`}
                     type="button"
                     onClick={() => handleCountrySelect(country)}
                     className="w-full flex items-center px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
@@ -171,11 +193,11 @@ export function PhoneInput({
                     <span className="mr-3">{country.flag}</span>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-gray-900 dark:text-white">
-                          {country.code}
-                        </span>
-                        <span className="text-xs text-gray-500 dark:text-gray-400 truncate ml-2">
+                        <span className="text-sm text-gray-900 dark:text-white truncate">
                           {country.country}
+                        </span>
+                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400 ml-2 flex-shrink-0">
+                          {country.code}
                         </span>
                       </div>
                     </div>
@@ -186,24 +208,37 @@ export function PhoneInput({
           </AnimatePresence>
         </div>
 
-        {/* Champ de saisie du numéro */}
-        <div className="flex-1 relative">
+        {/* Champ de saisie du numéro avec 0 fixe */}
+        <div className="flex-1 relative flex items-center">
           <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          
+          {/* 0 fixe grisé */}
+          <span className="absolute left-10 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 font-mono">
+            0
+          </span>
+          
+          {/* Champ pour les 9 chiffres */}
           <input
             type="tel"
             name={name}
-            value={phoneNumber}
-            onChange={handlePhoneNumberChange}
+            value={phoneDigits}
+            onChange={handlePhoneDigitsChange}
             onKeyDown={handleKeyPress}
             onBlur={onBlur}
             onFocus={onFocus}
             placeholder={placeholder}
             required={required}
-            className="w-full pl-10 pr-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none"
+            className="w-full pl-14 pr-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none font-mono"
             inputMode="numeric"
-            pattern="[0-9\s]*"
+            pattern="[0-9]*"
             autoComplete="tel"
+            maxLength={9}
           />
+          
+          {/* Indicateur de longueur */}
+          <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-gray-400">
+            {phoneDigits.length}/9
+          </span>
         </div>
       </div>
 

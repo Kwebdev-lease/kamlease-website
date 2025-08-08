@@ -3,7 +3,8 @@
  * Format: Dropdown pays + 0 fixe grisé + 9 chiffres maximum
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { ChevronDown, Phone } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -74,6 +75,8 @@ export function PhoneInput({
   const [selectedCountry, setSelectedCountry] = useState(COUNTRY_CODES[0]) // France par défaut
   const [phoneDigits, setPhoneDigits] = useState('')
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 })
+  const buttonRef = useRef<HTMLButtonElement>(null)
 
   // Parser le numéro existant au chargement
   useEffect(() => {
@@ -151,6 +154,26 @@ export function PhoneInput({
     setIsDropdownOpen(false)
   }
 
+  // Calculer la position du dropdown
+  const updateDropdownPosition = () => {
+    if (buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect()
+      setDropdownPosition({
+        top: rect.bottom + window.scrollY,
+        left: rect.left + window.scrollX,
+        width: rect.width
+      })
+    }
+  }
+
+  // Ouvrir/fermer le dropdown
+  const toggleDropdown = () => {
+    if (!isDropdownOpen) {
+      updateDropdownPosition()
+    }
+    setIsDropdownOpen(!isDropdownOpen)
+  }
+
   return (
     <div className={`relative ${className}`}>
       <div className={`flex border rounded-lg overflow-hidden transition-colors ${
@@ -161,8 +184,9 @@ export function PhoneInput({
         {/* Sélecteur de pays */}
         <div className="relative">
           <button
+            ref={buttonRef}
             type="button"
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            onClick={toggleDropdown}
             className="flex items-center px-3 py-2 bg-gray-50 dark:bg-gray-700 border-r border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors min-w-[80px]"
           >
             <span className="mr-1">{selectedCountry.flag}</span>
@@ -173,45 +197,6 @@ export function PhoneInput({
               isDropdownOpen ? 'rotate-180' : ''
             }`} />
           </button>
-
-          {/* Liste déroulante des pays */}
-          <AnimatePresence>
-            {isDropdownOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="absolute top-full left-0 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-xl max-h-60 overflow-y-auto min-w-[250px]"
-                style={{ 
-                  zIndex: 99999,
-                  position: 'absolute',
-                  top: '100%',
-                  left: 0
-                }}
-              >
-                {COUNTRY_CODES.map((country, index) => (
-                  <button
-                    key={`${country.code}-${index}`}
-                    type="button"
-                    onClick={() => handleCountrySelect(country)}
-                    className="w-full flex items-center px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                  >
-                    <span className="mr-3">{country.flag}</span>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-900 dark:text-white truncate">
-                          {country.country}
-                        </span>
-                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400 ml-2 flex-shrink-0">
-                          {country.code}
-                        </span>
-                      </div>
-                    </div>
-                  </button>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>
 
         {/* Champ de saisie du numéro avec 0 fixe */}
@@ -243,13 +228,54 @@ export function PhoneInput({
         </div>
       </div>
 
-      {/* Fermer la dropdown en cliquant à l'extérieur */}
-      {isDropdownOpen && (
-        <div
-          className="fixed inset-0"
-          style={{ zIndex: 99998 }}
-          onClick={() => setIsDropdownOpen(false)}
-        />
+      {/* Dropdown en portail pour s'afficher au-dessus de tout */}
+      {isDropdownOpen && typeof window !== 'undefined' && createPortal(
+        <>
+          {/* Overlay pour fermer en cliquant à l'extérieur */}
+          <div
+            className="fixed inset-0"
+            style={{ zIndex: 99998 }}
+            onClick={() => setIsDropdownOpen(false)}
+          />
+          
+          {/* Liste déroulante des pays */}
+          <AnimatePresence>
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="fixed bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-xl max-h-60 overflow-y-auto min-w-[250px]"
+              style={{ 
+                zIndex: 99999,
+                top: dropdownPosition.top,
+                left: dropdownPosition.left,
+                minWidth: Math.max(dropdownPosition.width, 250)
+              }}
+            >
+              {COUNTRY_CODES.map((country, index) => (
+                <button
+                  key={`${country.code}-${index}`}
+                  type="button"
+                  onClick={() => handleCountrySelect(country)}
+                  className="w-full flex items-center px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                >
+                  <span className="mr-3">{country.flag}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-900 dark:text-white truncate">
+                        {country.country}
+                      </span>
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400 ml-2 flex-shrink-0">
+                        {country.code}
+                      </span>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </motion.div>
+          </AnimatePresence>
+        </>,
+        document.body
       )}
     </div>
   )

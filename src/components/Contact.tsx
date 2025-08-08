@@ -908,7 +908,7 @@ export function Contact() {
                       <label htmlFor="telephone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         {t('contact.form.telephone')} {t('contact.form.required')}
                       </label>
-                      <div className="relative">
+                      <div className="relative" style={{ zIndex: 1 }}>
                         <PhoneInput
                           name="telephone"
                           required

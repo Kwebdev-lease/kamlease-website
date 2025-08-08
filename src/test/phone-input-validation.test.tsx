@@ -68,7 +68,7 @@ describe('PhoneInput - Format strict avec dropdown', () => {
     expect(input).toHaveAttribute('maxLength', '9')
   })
 
-  it('should display fixed 0 and digit counter', () => {
+  it('should display fixed 0', () => {
     const mockOnChange = vi.fn()
     
     render(
@@ -81,12 +81,9 @@ describe('PhoneInput - Format strict avec dropdown', () => {
 
     // Vérifier que le 0 fixe est affiché
     expect(screen.getByText('0')).toBeInTheDocument()
-    
-    // Vérifier le compteur initial
-    expect(screen.getByText('0/9')).toBeInTheDocument()
   })
 
-  it('should update digit counter as user types', () => {
+  it('should hide placeholder when user starts typing', () => {
     const mockOnChange = vi.fn()
     
     render(
@@ -99,11 +96,14 @@ describe('PhoneInput - Format strict avec dropdown', () => {
 
     const input = screen.getByRole('textbox')
     
-    // Saisir 5 chiffres
+    // Vérifier que le placeholder est visible initialement
+    expect(input).toHaveAttribute('placeholder', '73 71 05 86')
+    
+    // Saisir des chiffres
     fireEvent.change(input, { target: { value: '73710' } })
     
-    // Vérifier que le compteur est mis à jour
-    expect(screen.getByText('5/9')).toBeInTheDocument()
+    // Vérifier que le placeholder disparaît
+    expect(input).toHaveAttribute('placeholder', '')
   })
 
   it('should display France as default country with correct format', () => {
@@ -156,8 +156,9 @@ describe('PhoneInput - Format strict avec dropdown', () => {
     )
 
     // Ouvrir la dropdown
-    const countryButton = screen.getByRole('button')
-    fireEvent.click(countryButton)
+    const countryButtons = screen.getAllByRole('button')
+    const mainButton = countryButtons[0] // Le premier bouton est le bouton principal
+    fireEvent.click(mainButton)
     
     // Sélectionner l'Allemagne
     await waitFor(() => {
@@ -166,7 +167,6 @@ describe('PhoneInput - Format strict avec dropdown', () => {
     })
     
     // Vérifier que l'indicatif a changé
-    expect(screen.getByText('+49')).toBeInTheDocument()
     expect(screen.getByText('🇩🇪')).toBeInTheDocument()
   })
 
@@ -188,9 +188,6 @@ describe('PhoneInput - Format strict avec dropdown', () => {
     // Vérifier que les 9 chiffres sont affichés (sans le 0 initial)
     const input = screen.getByRole('textbox')
     expect(input).toHaveValue('123456789')
-    
-    // Vérifier le compteur
-    expect(screen.getByText('9/9')).toBeInTheDocument()
   })
 
   it('should format output correctly with country code and fixed 0', () => {

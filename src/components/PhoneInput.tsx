@@ -152,7 +152,7 @@ export function PhoneInput({
   }
 
   return (
-    <div className={`relative ${className}`} style={{ zIndex: 'auto' }}>
+    <div className={`relative ${className}`}>
       <div className={`flex border rounded-lg overflow-hidden transition-colors ${
         error 
           ? 'border-red-300 dark:border-red-600' 
@@ -181,8 +181,13 @@ export function PhoneInput({
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="absolute top-full left-0 z-[9999] bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-xl max-h-60 overflow-y-auto min-w-[250px]"
-                style={{ zIndex: 9999 }}
+                className="absolute top-full left-0 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-xl max-h-60 overflow-y-auto min-w-[250px]"
+                style={{ 
+                  zIndex: 99999,
+                  position: 'absolute',
+                  top: '100%',
+                  left: 0
+                }}
               >
                 {COUNTRY_CODES.map((country, index) => (
                   <button
@@ -214,7 +219,7 @@ export function PhoneInput({
           <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           
           {/* 0 fixe grisé */}
-          <span className="absolute left-10 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 font-mono">
+          <span className="absolute left-10 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 font-mono text-base">
             0
           </span>
           
@@ -227,26 +232,22 @@ export function PhoneInput({
             onKeyDown={handleKeyPress}
             onBlur={onBlur}
             onFocus={onFocus}
-            placeholder={placeholder}
+            placeholder={phoneDigits.length === 0 ? placeholder : ''}
             required={required}
-            className="w-full pl-14 pr-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none font-mono"
+            className="w-full pl-14 pr-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none font-mono text-base"
             inputMode="numeric"
             pattern="[0-9]*"
             autoComplete="tel"
             maxLength={9}
           />
-          
-          {/* Indicateur de longueur */}
-          <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-gray-400">
-            {phoneDigits.length}/9
-          </span>
         </div>
       </div>
 
       {/* Fermer la dropdown en cliquant à l'extérieur */}
       {isDropdownOpen && (
         <div
-          className="fixed inset-0 z-[9998]"
+          className="fixed inset-0"
+          style={{ zIndex: 99998 }}
           onClick={() => setIsDropdownOpen(false)}
         />
       )}

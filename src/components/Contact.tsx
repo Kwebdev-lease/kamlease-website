@@ -544,8 +544,11 @@ export function Contact() {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <AnimatedSection animation="fadeInUp" className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-            {t.language === 'fr' ? 'Nous contacter' : 'Contact us'}
+            {t('contact.title')}
           </h2>
+          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            {t('contact.description')}
+          </p>
           
           {/* Development Mode Notification */}
           {isLocalhostDevelopment() && (
@@ -566,10 +569,15 @@ export function Contact() {
           )}
         </AnimatedSection>
         
-        <div className="max-w-2xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Contact Form */}
-          <AnimatedSection animation="fadeInUp" delay={0.2}>
+          <AnimatedSection animation="slideInLeft" delay={0.2}>
             <Card className="border-gray-200 dark:border-gray-800 backdrop-blur-sm bg-white/80 dark:bg-gray-900/80">
+              <CardHeader>
+                <CardTitle className="text-2xl text-gray-900 dark:text-white">
+                  {t('contact.form.title')}
+                </CardTitle>
+              </CardHeader>
               <CardContent>
                 {/* Loading Indicator */}
                 <AnimatePresence>
@@ -1145,6 +1153,102 @@ export function Contact() {
               </form>
             </CardContent>
           </Card>
+          </AnimatedSection>
+          
+          {/* Contact Info */}
+          <AnimatedSection animation="slideInRight" delay={0.4}>
+            <div className="space-y-8">
+              <Card className="border-gray-200 dark:border-gray-800 backdrop-blur-sm bg-white/80 dark:bg-gray-900/80">
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                    {t('contact.info.title')}
+                  </h3>
+                  <div className="space-y-4">
+                    <AnimatedItem delay={0.1}>
+                      <div className="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer group">
+                        <EnhancedIconContainer
+                          size="sm"
+                          variant="default"
+                          glowColor="orange"
+                          className="mt-1"
+                        >
+                          <Mail className="h-4 w-4 text-orange-500" />
+                        </EnhancedIconContainer>
+                        <div>
+                          <p className="font-medium text-gray-900 dark:text-white">{t('contact.form.email')}</p>
+                          <p className="text-gray-600 dark:text-gray-300">contact@kamlease.com</p>
+                        </div>
+                      </div>
+                    </AnimatedItem>
+                    <AnimatedItem delay={0.2}>
+                      <div className="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer group">
+                        <EnhancedIconContainer
+                          size="sm"
+                          variant="default"
+                          glowColor="orange"
+                          className="mt-1"
+                        >
+                          <Phone className="h-4 w-4 text-orange-500" />
+                        </EnhancedIconContainer>
+                        <div>
+                          <p className="font-medium text-gray-900 dark:text-white">{t('contact.form.phone')}</p>
+                          <p className="text-gray-600 dark:text-gray-300">+33 6 73 71 05 86</p>
+                        </div>
+                      </div>
+                    </AnimatedItem>
+                    <AnimatedItem delay={0.3}>
+                      <div className="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer group">
+                        <EnhancedIconContainer
+                          size="sm"
+                          variant="default"
+                          glowColor="orange"
+                          className="mt-1"
+                        >
+                          <MapPin className="h-4 w-4 text-orange-500" />
+                        </EnhancedIconContainer>
+                        <div>
+                          <p className="font-medium text-gray-900 dark:text-white">{t('contact.form.address')}</p>
+                          <p className="text-gray-600 dark:text-gray-300">
+                            109 Rue Maréchal Joffre<br />
+                            45240 La Ferté-Saint-Aubin, France
+                          </p>
+                        </div>
+                      </div>
+                    </AnimatedItem>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="border-gray-200 dark:border-gray-800 backdrop-blur-sm bg-white/80 dark:bg-gray-900/80">
+              <CardContent className="p-6">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                  {t('contact.info.whyChoose')}
+                </h3>
+                <ul className="space-y-3 text-gray-600 dark:text-gray-300">
+                  <AnimatedItem delay={0.1}>
+                    <EnhancedListItem interactive={true} accent={true}>
+                      <span>{t('contact.features.experience')}</span>
+                    </EnhancedListItem>
+                  </AnimatedItem>
+                  <AnimatedItem delay={0.2}>
+                    <EnhancedListItem interactive={true} accent={true}>
+                      <span>{t('contact.features.expertise')}</span>
+                    </EnhancedListItem>
+                  </AnimatedItem>
+                  <AnimatedItem delay={0.3}>
+                    <EnhancedListItem interactive={true} accent={true}>
+                      <span>{t('contact.features.solutions')}</span>
+                    </EnhancedListItem>
+                  </AnimatedItem>
+                  <AnimatedItem delay={0.4}>
+                    <EnhancedListItem interactive={true} accent={true}>
+                      <span>{t('contact.features.support')}</span>
+                    </EnhancedListItem>
+                  </AnimatedItem>
+                </ul>
+              </CardContent>
+            </Card>
+            </div>
           </AnimatedSection>
         </div>
       </div>

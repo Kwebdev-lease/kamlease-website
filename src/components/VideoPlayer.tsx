@@ -67,7 +67,7 @@ export function VideoPlayer({ src, title, className = '' }: VideoPlayerProps) {
           {title}
         </h3>
       )}
-      
+
       <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-black">
         <video
           ref={videoRef}
@@ -79,14 +79,14 @@ export function VideoPlayer({ src, title, className = '' }: VideoPlayerProps) {
           muted
           playsInline
         />
-        
+
         {/* Overlay avec bouton play/pause */}
         <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <button
             onClick={togglePlay}
             className="bg-white/90 hover:bg-white text-gray-900 rounded-full p-4 transition-all duration-300 hover:scale-110 shadow-lg"
-            aria-label={isPlaying ? 
-              (language === 'fr' ? 'Mettre en pause' : 'Pause') : 
+            aria-label={isPlaying ?
+              (language === 'fr' ? 'Mettre en pause' : 'Pause') :
               (language === 'fr' ? 'Lire la vidéo' : 'Play video')
             }
           >
@@ -97,12 +97,11 @@ export function VideoPlayer({ src, title, className = '' }: VideoPlayerProps) {
             )}
           </button>
         </div>
-        
+
         {/* Indicateur de lecture en bas à droite */}
         <div className="absolute bottom-4 right-4">
-          <div className={`w-3 h-3 rounded-full transition-colors duration-300 ${
-            isPlaying ? 'bg-red-500' : 'bg-gray-400'
-          }`}></div>
+          <div className={`w-3 h-3 rounded-full transition-colors duration-300 ${isPlaying ? 'bg-red-500' : 'bg-gray-400'
+            }`}></div>
         </div>
       </div>
     </div>

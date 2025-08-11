@@ -20,8 +20,15 @@ const LOGO_CONFIG = {
 }
 
 function LogoComponent({ className = 'h-12 w-auto', alt = 'Kamlease' }: LogoProps) {
-  // Utiliser directement le logo couleur SVG
-  const logoSrc = '/assets/logos/Logo couleur.svg'
+  const [hasError, setHasError] = useState(false)
+  const [logoSrc, setLogoSrc] = useState('/assets/logos/Logo couleur.svg')
+
+  const handleError = () => {
+    if (!hasError) {
+      setHasError(true)
+      setLogoSrc('/assets/logos/Logo couleur.png')
+    }
+  }
 
   return (
     <img 
@@ -29,10 +36,7 @@ function LogoComponent({ className = 'h-12 w-auto', alt = 'Kamlease' }: LogoProp
       alt={alt}
       className={`${className} object-contain`}
       style={{ maxHeight: '100%', width: 'auto' }}
-      onError={(e) => {
-        // Fallback vers PNG si SVG échoue
-        e.currentTarget.src = '/assets/logos/Logo couleur.png'
-      }}
+      onError={handleError}
     />
   )
 }

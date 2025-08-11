@@ -20,23 +20,13 @@ const LOGO_CONFIG = {
 }
 
 function LogoComponent({ className = 'h-12 w-auto', alt = 'Kamlease' }: LogoProps) {
-  const [hasError, setHasError] = useState(false)
-  const [logoSrc, setLogoSrc] = useState('/assets/logos/Logo couleur.svg')
-
-  const handleError = () => {
-    if (!hasError) {
-      setHasError(true)
-      setLogoSrc('/assets/logos/Logo couleur.png')
-    }
-  }
-
+  // Utiliser directement le SVG sans fallback pour éviter le spam
   return (
     <img 
-      src={logoSrc}
+      src="/assets/logos/Logo couleur.svg"
       alt={alt}
       className={`${className} object-contain`}
       style={{ maxHeight: '100%', width: 'auto' }}
-      onError={handleError}
     />
   )
 }

@@ -21,7 +21,17 @@ export function Hero() {
   const internalLinks = contentOptimizer.generateInternalLinks('hero', language)
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-black to-gray-900">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Image de fond avec taille contrôlée */}
+      <div className="absolute inset-0 z-0 flex items-center justify-center bg-black">
+        <img 
+          src="/images/gallery/Fondhero.png" 
+          alt="Background" 
+          className="w-auto h-full max-w-none object-contain opacity-60"
+        />
+        <div className="absolute inset-0 bg-black/30"></div>
+      </div>
+      
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
         {/* Contenu à gauche */}
         <div className="text-center lg:text-left">
@@ -71,14 +81,8 @@ export function Hero() {
         </AnimatedSection>
         </div>
         
-        {/* Image décorative à droite */}
-        <div className="hidden lg:flex justify-center items-center">
-          <img 
-            src="/images/gallery/Fondhero.png" 
-            alt="Engrenages mécaniques" 
-            className="w-3/4 h-auto object-contain opacity-80"
-          />
-        </div>
+        {/* Espace pour l'objet de l'image à droite */}
+        <div className="hidden lg:block"></div>
       </div>
     </section>
   )

@@ -18,26 +18,26 @@ export function Expertise() {
   const expertiseAreas = [
     {
       icon: Users,
-      title: language === 'fr' ? 'Collaboration Sur Mesure' : 'Tailor-made Collaboration',
+      title: language === 'fr' ? 'Collaboration sur mesure' : 'Tailor-made Collaboration',
       description: language === 'fr'
-        ? 'Nous croyons en une collaboration étroite avec nos clients pour concevoir des solutions mécatroniques techniques adaptées à leurs besoins spécifiques, de l\'idée initiale jusqu\'à l\'industrialisation.'
-        : 'We believe in close collaboration with our clients to design technical mechatronic solutions adapted to their specific needs, from initial idea to industrialization.',
+        ? 'Nous croyons en une collaboration étroite avec nos clients pour concevoir des solutions techniques adaptées à leurs besoins spécifiques, de l\'idée initiale jusqu\'à l\'industrialisation.'
+        : 'We believe in close collaboration with our clients to design technical solutions adapted to their specific needs, from initial idea to industrialization.',
       subtitle: language === 'fr' ? 'Développement Électronique Industriel' : 'Industrial Electronic Development'
     },
     {
       icon: Lightbulb,
-      title: language === 'fr' ? 'Innovation et Qualité' : 'Innovation and Quality',
+      title: language === 'fr' ? 'Innovation et qualité' : 'Innovation and Quality',
       description: language === 'fr'
-        ? 'L\'innovation en ingénierie mécatronique est au cœur de notre démarche. Nous explorons constamment de nouvelles technologies pour vous offrir des produits plus performants et durables.'
-        : 'Innovation in mechatronic engineering is at the heart of our approach. We constantly explore new technologies to offer you more efficient and durable products.',
+        ? 'L\'innovation est au cœur de notre démarche. Nous explorons constamment de nouvelles technologies pour vous offrir des produits plus performants et durables, tout en garantissant une qualité irréprochable.'
+        : 'Innovation is at the heart of our approach. We constantly explore new technologies to offer you more efficient and durable products, while guaranteeing impeccable quality.',
       subtitle: language === 'fr' ? 'Solutions Auto-staging' : 'Auto-staging Solutions'
     },
     {
       icon: DollarSign,
-      title: language === 'fr' ? 'Optimisation des Coûts' : 'Cost Optimization',
+      title: language === 'fr' ? 'Optimisation des coûts' : 'Cost Optimization',
       description: language === 'fr'
-        ? 'Nous nous engageons à offrir des solutions mécatroniques de haute technicité à des coûts maîtrisés, répondant à vos contraintes budgétaires sans compromis sur la qualité.'
-        : 'We are committed to offering high-tech mechatronic solutions at controlled costs, meeting your budget constraints without compromising on quality.',
+        ? 'Nous nous engageons à offrir des solutions de haute technicité à des coûts maîtrisés, répondant à vos contraintes budgétaires sans compromis sur la qualité.'
+        : 'We are committed to offering high-tech solutions at controlled costs, meeting your budget constraints without compromising on quality.',
       subtitle: language === 'fr' ? 'Optimisation Processus Industriels' : 'Industrial Process Optimization'
     }
   ]
@@ -63,12 +63,12 @@ export function Expertise() {
           threshold={0.2}
         >
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-            {language === 'fr' ? 'Ingénierie Mécatronique Avancée' : 'Advanced Mechatronic Engineering'}
+            {language === 'fr' ? 'Notre expertise' : 'Our expertise'}
           </h2>
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-4xl mx-auto mb-6">
             {language === 'fr'
-              ? 'Nous allions collaboration sur mesure, excellence technologique et optimisation des coûts pour concevoir des solutions mécatroniques adaptées à vos enjeux industriels. Grâce à notre approche multidisciplinaire en électronique industrielle, nous vous accompagnons de l\'idée à l\'industrialisation.'
-              : 'We combine tailor-made collaboration, technological excellence and cost optimization to design mechatronic solutions adapted to your industrial challenges. Thanks to our multidisciplinary approach in industrial electronics, we support you from idea to industrialization.'
+              ? 'Nous allions collaboration sur mesure, excellence technologique et optimisation des coûts pour concevoir des solutions adaptées à vos enjeux. Grâce à notre approche multidisciplinaire, nous vous accompagnons de l\'idée à l\'industrialisation, avec un engagement constant pour la qualité et la performance.'
+              : 'We combine tailor-made collaboration, technological excellence and cost optimization to design solutions adapted to your challenges. Thanks to our multidisciplinary approach, we support you from idea to industrialization, with a constant commitment to quality and performance.'
             }
           </p>
           

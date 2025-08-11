@@ -51,8 +51,8 @@ export function About() {
             <h2 className="text-3xl md:text-4xl font-heading font-bold mb-6 group">
               <span className="bg-gradient-to-r from-brand-neutral-800 via-brand-orange-600 to-brand-neutral-700 dark:from-brand-neutral-100 dark:via-brand-orange-400 dark:to-brand-neutral-50 bg-clip-text text-transparent relative">
                 {language === 'fr' 
-                  ? 'Expertise Mécatronique et Auto-staging - 30 ans d\'expérience'
-                  : 'Mechatronic and Auto-staging Expertise - 30 years experience'
+                  ? 'Qui sommes nous ?'
+                  : 'Who are we?'
                 }
                 <div className="absolute -bottom-2 left-0 w-0 h-1 bg-gradient-to-r from-brand-orange-500 to-brand-orange-600 group-hover:w-full transition-all duration-700 rounded-full shadow-lg shadow-brand-orange-500/50"></div>
               </span>
@@ -62,8 +62,8 @@ export function About() {
               <p className="text-brand-neutral-600 dark:text-brand-neutral-300 relative group hover:text-brand-neutral-700 dark:hover:text-brand-neutral-200 transition-all duration-300 leading-relaxed">
                 <span className="relative z-10">
                   {language === 'fr'
-                    ? 'Kamlease intervient dans les secteurs automobile et industriel, en se concentrant sur les solutions mécatroniques, l\'électronique industrielle et la mécanique. Notre expertise unique en auto-staging nous permet d\'adapter les produits automobiles aux besoins variés d\'autres industries.'
-                    : 'Kamlease operates in the automotive and industrial sectors, focusing on mechatronic solutions, industrial electronics and mechanics. Our unique auto-staging expertise allows us to adapt automotive products to the varied needs of other industries.'
+                    ? 'Kamlease intervient dans les secteurs automobile et non-automobile, en se concentrant sur la mécatronique, l\'électronique et la mécanique. Grâce à notre expertise en auto-staging, nous adaptons les produits automobiles aux besoins variés d\'autres industries.'
+                    : 'Kamlease operates in automotive and non-automotive sectors, focusing on mechatronics, electronics and mechanics. Thanks to our auto-staging expertise, we adapt automotive products to the varied needs of other industries.'
                   }
                 </span>
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-brand-orange-500/8 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg -mx-2 -my-1"></div>
@@ -72,8 +72,8 @@ export function About() {
               <p className="text-brand-neutral-600 dark:text-brand-neutral-300 relative group hover:text-brand-neutral-700 dark:hover:text-brand-neutral-200 transition-all duration-300 leading-relaxed">
                 <span className="relative z-10">
                   {language === 'fr'
-                    ? 'Grâce à notre approche d\'ingénierie mécatronique avancée et à notre expertise en développement de produits industriels, nous offrons des solutions personnalisées qui répondent parfaitement aux exigences spécifiques de chaque client.'
-                    : 'Thanks to our advanced mechatronic engineering approach and our expertise in industrial product development, we offer personalized solutions that perfectly meet the specific requirements of each client.'
+                    ? 'Grâce à notre expertise en "auto-staging", nous adaptons des produits issus du secteur automobile pour répondre aux besoins variés de diverses industries. Cette polyvalence nous permet d\'offrir des solutions parfaitement adaptées à vos exigences.'
+                    : 'Thanks to our "auto-staging" expertise, we adapt products from the automotive sector to meet the varied needs of various industries. This versatility allows us to offer solutions perfectly adapted to your requirements.'
                   }
                 </span>
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-brand-orange-500/8 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg -mx-2 -my-1"></div>

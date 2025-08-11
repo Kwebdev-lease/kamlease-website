@@ -21,17 +21,17 @@ export function Header() {
   ]
 
   const handleNavClick = (elementId: string) => {
-    scrollToElement(elementId, 100) // 100px offset for the header
+    scrollToElement(elementId, 120) // 120px offset for the taller header
   }
 
 
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-black/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
-      <nav id="main-navigation" className="mx-auto flex max-w-7xl items-center justify-between py-3 px-4 lg:px-8" aria-label="Global" tabIndex={-1}>
+      <nav id="main-navigation" className="mx-auto flex max-w-7xl items-center justify-between py-4 px-4 lg:px-8" aria-label="Global" tabIndex={-1}>
         <div className="flex lg:flex-1">
-          <a href="#" className="-m-1.5 p-1.5">
-            <Logo className="h-12 w-auto" />
+          <a href="https://kamlease.com" className="-m-1.5 p-1.5">
+            <Logo className="h-8 w-auto" />
           </a>
         </div>
         <div className="flex lg:hidden gap-2">

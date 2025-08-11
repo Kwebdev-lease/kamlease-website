@@ -3,7 +3,7 @@ interface LogoProps {
   alt?: string
 }
 
-export function Logo({ className = 'h-12 w-auto', alt = 'Kamlease' }: LogoProps) {
+export function Logo({ className = 'h-8 w-auto', alt = 'Kamlease' }: LogoProps) {
   return (
     <img 
       src="/assets/logos/logo-color.svg"

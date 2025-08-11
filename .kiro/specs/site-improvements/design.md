@@ -62,7 +62,7 @@ interface LogoConfig {
 }
 
 const LOGO_CONFIG: LogoConfig = {
-  light: '/assets/logos/Logo couleur.svg',
+  light: '/assets/logos/logo-color.svg',
   dark: '/assets/logos/Logo White for black background.svg',
   format: 'svg'
 }

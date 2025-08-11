@@ -17,7 +17,7 @@ export function Footer() {
               <img 
                 src="/assets/logos/Logo White for black background.svg"
                 alt="Kamlease"
-                className="h-16 w-auto object-contain"
+                className="h-10 w-auto object-contain"
               />
             </div>
             <p className="text-gray-400 mb-6 max-w-md">

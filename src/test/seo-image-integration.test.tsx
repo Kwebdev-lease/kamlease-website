@@ -14,7 +14,7 @@ describe('SEO Image Integration', () => {
     render(
       <TestWrapper>
         <SEOImage 
-          src="/assets/logos/Logo couleur.svg" 
+          src="/assets/logos/logo-color.svg" 
           context="logo"
           keywords={['Kamlease', 'mécatronique']}
           priority={true}

@@ -215,7 +215,7 @@ export function SEOLogo({
   const { language } = useLanguage()
   
   // Use the existing logo paths from the Logo component
-  const logoSrc = props.src || '/assets/logos/Logo couleur.svg'
+  const logoSrc = props.src || '/assets/logos/logo-color.svg'
   
   return (
     <SEOImage

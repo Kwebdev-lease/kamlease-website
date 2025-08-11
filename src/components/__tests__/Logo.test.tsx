@@ -8,14 +8,14 @@ describe('Logo Component', () => {
     
     const logo = screen.getByAltText('Kamlease')
     expect(logo).toBeInTheDocument()
-    expect(logo).toHaveAttribute('src', '/assets/logos/Logo couleur.svg')
+    expect(logo).toHaveAttribute('src', '/assets/logos/logo-color.svg')
   })
 
   it('uses color logo', () => {
     render(<Logo />)
     
     const logo = screen.getByAltText('Kamlease')
-    expect(logo).toHaveAttribute('src', '/assets/logos/Logo couleur.svg')
+    expect(logo).toHaveAttribute('src', '/assets/logos/logo-color.svg')
   })
 
   it('accepts custom className', () => {

@@ -25,7 +25,7 @@ export function SEOImageDemo() {
         <h2 className="text-2xl font-semibold">SEO Hero Image</h2>
         <div className="bg-gray-100 p-4 rounded-lg shadow h-64">
           <SEOHeroImage 
-            src="/assets/logos/Logo couleur.svg"
+            src="/assets/logos/logo-color.svg"
             className="w-full h-full object-contain"
           />
         </div>
@@ -43,7 +43,7 @@ export function SEOImageDemo() {
           <div className="bg-white p-4 rounded-lg shadow">
             <h3 className="font-medium mb-2">Services Context</h3>
             <SEOImage
-              src="/assets/logos/Logo couleur.svg"
+              src="/assets/logos/logo-color.svg"
               context="services"
               keywords={['ingénierie', 'mécatronique', 'solutions']}
               className="w-full h-32"
@@ -57,7 +57,7 @@ export function SEOImageDemo() {
           <div className="bg-white p-4 rounded-lg shadow">
             <h3 className="font-medium mb-2">Expertise Context</h3>
             <SEOImage
-              src="/assets/logos/Logo couleur.svg"
+              src="/assets/logos/logo-color.svg"
               context="expertise"
               keywords={['expertise', 'technique', 'innovation']}
               className="w-full h-32"
@@ -71,7 +71,7 @@ export function SEOImageDemo() {
           <div className="bg-white p-4 rounded-lg shadow">
             <h3 className="font-medium mb-2">Contact Context</h3>
             <SEOImage
-              src="/assets/logos/Logo couleur.svg"
+              src="/assets/logos/logo-color.svg"
               context="contact"
               keywords={['contact', 'bureau', 'équipe']}
               className="w-full h-32"

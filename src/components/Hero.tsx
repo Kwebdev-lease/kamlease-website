@@ -21,15 +21,21 @@ export function Hero() {
   const internalLinks = contentOptimizer.generateInternalLinks('hero', language)
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Image de fond avec taille contrôlée */}
-      <div className="absolute inset-0 z-0 flex items-center justify-center bg-black">
-        <img 
-          src="/images/gallery/Fondhero.png" 
-          alt="Background" 
-          className="w-auto h-full max-w-none object-contain opacity-60"
-        />
-        <div className="absolute inset-0 bg-black/30"></div>
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-black">
+      {/* Image de fond avec marges spécifiques */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0" style={{ 
+          top: '10%', 
+          bottom: '10%', 
+          left: '10%', 
+          right: '5%' 
+        }}>
+          <img 
+            src="/images/gallery/Fondhero.png" 
+            alt="Background" 
+            className="w-full h-full object-contain opacity-60"
+          />
+        </div>
       </div>
       
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">

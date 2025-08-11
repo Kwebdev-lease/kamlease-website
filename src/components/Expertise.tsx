@@ -139,24 +139,27 @@ export function Expertise() {
             ]
             return (
               <AnimatedItem key={index}>
-                <div className="relative p-10 bg-gradient-to-bl from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 rounded-3xl shadow-[inset_-2px_2px_rgba(255,255,255,0.3),_-20px_20px_40px_rgba(0,0,0,0.25)] dark:shadow-[inset_-2px_2px_rgba(255,255,255,0.1),_-20px_20px_40px_rgba(0,0,0,0.4)] h-full grid grid-rows-[auto_1fr_auto] gap-6">
-                  {/* Title and Icon */}
-                  <div className="flex justify-between items-end">
-                    <h3 className="text-2xl font-medium text-gray-800 dark:text-gray-200 uppercase tracking-wide break-words">
+                <div className="relative p-10 bg-gradient-to-bl from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-3xl shadow-[inset_-2px_2px_rgba(255,255,255,0.3),_-20px_20px_40px_rgba(0,0,0,0.25)] dark:shadow-[inset_-2px_2px_rgba(255,255,255,0.1),_-20px_20px_40px_rgba(0,0,0,0.4)] h-full">
+                  {/* Layout grid: title icon / content content / bar bar */}
+                  <div className="grid grid-cols-[1fr_auto] grid-rows-[auto_1fr_auto] gap-6 h-full">
+                    {/* Title */}
+                    <h3 className="text-xl font-medium text-gray-800 dark:text-gray-200 uppercase tracking-wide self-end">
                       {area.title}
                     </h3>
-                    <div className="text-5xl">
+                    
+                    {/* Icon */}
+                    <div className="text-5xl self-end">
                       <Icon className={`h-12 w-12 bg-gradient-to-r ${gradients[index]} bg-clip-text text-transparent`} />
                     </div>
+                    
+                    {/* Content spanning both columns */}
+                    <div className="col-span-2 text-gray-700 dark:text-gray-300 leading-relaxed">
+                      <p className="mb-0">{area.description}</p>
+                    </div>
+                    
+                    {/* Gradient bar spanning both columns */}
+                    <div className={`col-span-2 h-0.5 bg-gradient-to-r ${gradients[index]} rounded-full`}></div>
                   </div>
-                  
-                  {/* Content */}
-                  <div className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                    <p className="mb-0">{area.description}</p>
-                  </div>
-                  
-                  {/* Gradient bar */}
-                  <div className={`h-0.5 bg-gradient-to-r ${gradients[index]} rounded-full`}></div>
                 </div>
               </AnimatedItem>
             )
@@ -174,28 +177,39 @@ export function Expertise() {
             const Icon = area.icon
             return (
               <AnimatedItem key={index}>
-                <div className="relative p-8 bg-white/10 dark:bg-black/10 backdrop-blur-xl border border-white/20 dark:border-gray-800/30 rounded-2xl shadow-2xl hover:shadow-orange-500/10 hover:border-orange-500/30 transition-all duration-300 h-full group">
-                  {/* Frosted glass overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent dark:from-gray-800/5 rounded-2xl"></div>
+                <div className="relative p-8 bg-white/20 dark:bg-white/5 backdrop-blur-2xl border border-white/30 dark:border-white/10 rounded-2xl shadow-2xl hover:shadow-orange-500/20 hover:border-orange-500/50 hover:bg-white/30 dark:hover:bg-white/10 transition-all duration-300 h-full group">
+                  {/* Enhanced frosted glass overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent dark:from-white/5 dark:via-white/2 dark:to-transparent rounded-2xl"></div>
+                  
+                  {/* Noise texture for glass effect */}
+                  <div className="absolute inset-0 opacity-20 dark:opacity-10 rounded-2xl" style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+                    backgroundSize: '256px 256px'
+                  }}></div>
                   
                   {/* Content */}
                   <div className="relative z-10">
-                    {/* Icon with glow effect */}
-                    <div className="mb-6 inline-flex p-4 bg-orange-500/10 backdrop-blur-sm rounded-2xl border border-orange-500/20 group-hover:bg-orange-500/20 group-hover:border-orange-500/40 transition-all duration-300">
-                      <Icon className="h-8 w-8 text-orange-500 group-hover:text-orange-400 transition-colors duration-300" />
+                    {/* Icon with enhanced glow effect */}
+                    <div className="mb-6 inline-flex p-4 bg-orange-500/20 dark:bg-orange-500/10 backdrop-blur-sm rounded-2xl border border-orange-500/30 dark:border-orange-500/20 group-hover:bg-orange-500/30 dark:group-hover:bg-orange-500/20 group-hover:border-orange-500/50 dark:group-hover:border-orange-500/40 transition-all duration-300 shadow-lg shadow-orange-500/10">
+                      <Icon className="h-8 w-8 text-orange-500 group-hover:text-orange-400 transition-colors duration-300 drop-shadow-lg" />
                     </div>
                     
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 group-hover:text-orange-500 dark:group-hover:text-orange-400 transition-colors duration-300">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 group-hover:text-orange-500 dark:group-hover:text-orange-400 transition-colors duration-300 drop-shadow-sm">
                       {area.title}
                     </h3>
                     
-                    <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                    <p className="text-gray-700 dark:text-gray-200 leading-relaxed drop-shadow-sm">
                       {area.description}
                     </p>
                   </div>
                   
-                  {/* Subtle glow effect on hover */}
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-orange-500/0 via-orange-500/5 to-orange-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  {/* Enhanced glow effect on hover */}
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-orange-500/0 via-orange-500/10 to-orange-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
+                  
+                  {/* Rim light effect */}
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-white/20 dark:via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{
+                    background: 'linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%)'
+                  }}></div>
                 </div>
               </AnimatedItem>
             )

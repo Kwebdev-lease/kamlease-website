@@ -13,7 +13,7 @@ const STATIC_ASSETS = [
   '/index.html',
   '/assets/fonts/inter/Inter-VariableFont_opsz,wght.ttf',
   '/assets/fonts/space-grotesk/SpaceGrotesk-VariableFont_wght.ttf',
-  '/assets/logos/Logo Black for white background.svg',
+  '/assets/logos/Logo couleur.svg',
   '/assets/logos/Logo White for black background.svg',
   '/favicon.svg'
 ]

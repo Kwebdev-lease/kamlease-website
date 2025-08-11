@@ -33,7 +33,7 @@ describe('StructuredDataService', () => {
       expect(parsed.name).toBe('Kamlease')
       expect(parsed.description).toContain('mécatronique')
       expect(parsed.url).toBe('https://kamlease.com')
-      expect(parsed.logo).toContain('Logo Black for white background.svg')
+      expect(parsed.logo).toContain('Logo couleur.svg')
       expect(parsed.contactPoint).toBeDefined()
       expect(parsed.contactPoint.contactType).toBe('customer service')
       expect(parsed.contactPoint.availableLanguage).toContain('French')

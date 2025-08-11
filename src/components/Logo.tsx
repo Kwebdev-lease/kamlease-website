@@ -7,9 +7,9 @@ export function Logo({ className = 'h-12 w-auto', alt = 'Kamlease' }: LogoProps)
   return (
     <div className={`${className} overflow-hidden flex items-center justify-center`}>
       <img 
-        src="/assets/logos/logo-couleur.svg"
+        src="/assets/logos/Logo couleur.svg"
         alt={alt}
-        className="w-full h-full object-cover scale-150"
+        className="w-full h-full object-contain"
         style={{
           objectPosition: 'center',
           transform: 'scale(1.5) translateY(-5%)'

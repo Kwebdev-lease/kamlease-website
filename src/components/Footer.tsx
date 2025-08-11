@@ -16,9 +16,9 @@ export function Footer() {
             <div className="mb-4">
               <div className="h-20 w-auto overflow-hidden flex items-center justify-center">
                 <img 
-                  src="/assets/logos/logo-couleur.svg"
+                  src="/assets/logos/Logo White for black background.svg"
                   alt="Kamlease"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                   style={{
                     objectPosition: 'center',
                     transform: 'scale(1.5) translateY(-5%)'

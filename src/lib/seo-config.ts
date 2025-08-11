@@ -133,7 +133,7 @@ export const seoConfig: SEOConfig = {
       en: 'Innovative solutions in mechatronics, electronics and auto-staging. 30+ years of expertise to transform your ideas into industrial reality.'
     },
     url: 'https://kamlease.com',
-    logo: '/assets/logos/Logo Black for white background.svg',
+    logo: '/assets/logos/Logo couleur.svg',
     defaultLanguage: 'fr',
     supportedLanguages: ['fr', 'en']
   },
@@ -199,7 +199,7 @@ export const seoConfig: SEOConfig = {
   },
   socialMedia: {
     openGraph: {
-      defaultImage: '/assets/logos/Kamlease Logo.png',
+      defaultImage: '/assets/logos/Logo couleur.svg',
       defaultImageAlt: 'Kamlease - Solutions Mécatroniques et Électroniques',
       defaultType: 'business.business',
       imageWidth: 1200,
@@ -249,7 +249,7 @@ export const pagesSEOData: Record<string, PageSEOData> = {
     ],
     canonicalUrl: '/',
     language: 'fr',
-    image: '/assets/logos/Kamlease Logo.png',
+    image: '/assets/logos/Logo couleur.svg',
     imageAlt: 'Logo Kamlease - Solutions Mécatroniques et Électroniques',
     type: 'business.business',
     openGraph: {

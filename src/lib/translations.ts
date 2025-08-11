@@ -67,11 +67,11 @@ export const translations = {
       description: 'Des résultats concrets qui témoignent de notre engagement envers l\'excellence et l\'efficacité.',
       items: {
         timeSaved: {
-          label: 'Temps Économisé',
-          tooltip: 'Temps gagné par les poseurs ou assembleurs grâce à des produits plus simples à monter (chiffres basés sur nos projets depuis 2015).'
+          label: '(En milliers de jours) Temps Économisé',
+          tooltip: 'Temps gagné par les poseurs ou assembleurs grâce à des produits plus simples à monter (chiffres basés sur nos projets depuis 2018).'
         },
         financialGains: {
-          label: 'Gains Financiers',
+          label: '(En millions d\'euros) Gains Financiers',
           tooltip: 'Gains réalisés par les entreprises grâce à notre accompagnement sur la fabrication de leurs produits.'
         },
         projects: {
@@ -79,7 +79,7 @@ export const translations = {
           tooltip: 'Nombre total de projets complétés avec succès.'
         },
         co2Saved: {
-          label: 'CO2 Économisé',
+          label: '(En Ktonnes de CO2) CO2 Économisé',
           tooltip: 'Baisse des émissions grâce à l\'optimisation des solutions proposées, avec une réduction des matières premières utilisées.'
         },
         clients: {
@@ -87,7 +87,7 @@ export const translations = {
           tooltip: 'Nombre de clients avec qui nous avons collaboré.'
         }
       },
-      note: '* Chiffres basés sur nos projets réalisés depuis 2015'
+      note: '* Chiffres basés sur nos projets réalisés depuis 2018'
     },
     // Process
     process: {
@@ -402,11 +402,11 @@ export const translations = {
       description: 'Concrete results that testify to our commitment to excellence and efficiency.',
       items: {
         timeSaved: {
-          label: 'Time Saved',
-          tooltip: 'Time saved by installers or assemblers thanks to products that are easier to mount (figures based on our projects since 2015).'
+          label: '(In thousands of days) Time Saved',
+          tooltip: 'Time saved by installers or assemblers thanks to products that are easier to mount (figures based on our projects since 2018).'
         },
         financialGains: {
-          label: 'Financial Gains',
+          label: '(In millions of euros) Financial Gains',
           tooltip: 'Gains achieved by companies thanks to our support in manufacturing their products.'
         },
         projects: {
@@ -414,7 +414,7 @@ export const translations = {
           tooltip: 'Total number of successfully completed projects.'
         },
         co2Saved: {
-          label: 'CO2 Saved',
+          label: '(In Ktonnes of CO2) CO2 Saved',
           tooltip: 'Reduction in emissions thanks to optimization of proposed solutions, with a reduction in raw materials used.'
         },
         clients: {
@@ -422,7 +422,7 @@ export const translations = {
           tooltip: 'Number of clients we have collaborated with.'
         }
       },
-      note: '* Figures based on our projects completed since 2015'
+      note: '* Figures based on our projects completed since 2018'
     },
     // Process
     process: {

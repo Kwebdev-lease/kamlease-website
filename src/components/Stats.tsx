@@ -7,39 +7,39 @@ import { RollingNumber } from './RollingNumber'
 const getStatsConfig = () => [
   {
     key: 'timeSaved',
-    baseValue: 1300, // 1,3k jours
-    incrementSpeed: 10, // 10 jours par incrémentation
+    baseValue: 1.3, // 1,3 (milliers de jours)
+    incrementSpeed: 0.01, // 0,01 milliers par incrémentation
     incrementInterval: 10000, // toutes les 10 secondes
-    suffix: ' jours',
+    suffix: '',
     shouldIncrement: true
   },
   {
     key: 'financialGains',
-    baseValue: 2500000, // 2,5M€
-    incrementSpeed: 10000, // 0,01M = 10000€ par incrémentation
+    baseValue: 2.5, // 2,5 (millions d'euros)
+    incrementSpeed: 0.01, // 0,01M par incrémentation
     incrementInterval: 3000, // toutes les 3 secondes
     prefix: '',
-    suffix: ' €',
+    suffix: '',
     shouldIncrement: true
   },
   {
     key: 'projects',
-    baseValue: 76, // Inversé : maintenant 76 projets
+    baseValue: 76, // 76 projets
     suffix: '',
     shouldIncrement: false // Nombre fixe de projets
   },
   {
     key: 'co2Saved',
-    baseValue: 1.00,
+    baseValue: 1.00, // 1,00 (Ktonnes de CO2)
     incrementSpeed: 0.01, // 0,01 Ktonnes par incrémentation
     incrementInterval: 2000, // toutes les 2 secondes
     prefix: '',
-    suffix: ' Ktonnes de CO2',
+    suffix: '',
     shouldIncrement: true
   },
   {
     key: 'clients',
-    baseValue: 42, // Inversé : maintenant 42 clients
+    baseValue: 42, // 42 clients
     suffix: '',
     shouldIncrement: false // Nombre fixe de clients
   },
@@ -82,16 +82,7 @@ function PermanentCounter({ stat, isVisible }: { stat: ReturnType<typeof getStat
 
   const formatNumber = (num: number) => {
     if (stat.shouldIncrement) {
-      // Pour les chiffres qui s'incrémentent, afficher 2 décimales pour CO2, 1 pour les autres
-      if (stat.key === 'co2Saved') {
-        return num.toFixed(2).replace('.', ',')
-      }
-      if (num >= 1000000) {
-        return (num / 1000000).toFixed(2).replace('.', ',') + ' M'
-      }
-      if (num >= 1000) {
-        return (num / 1000).toFixed(2).replace('.', ',') + ' k'
-      }
+      // Pour les chiffres qui s'incrémentent, afficher 2 décimales
       return num.toFixed(2).replace('.', ',')
     } else {
       // Pour les chiffres fixes, pas de décimales

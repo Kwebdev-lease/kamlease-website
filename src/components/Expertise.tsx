@@ -84,11 +84,11 @@ export function Expertise() {
           </div>
         </AnimatedSection>
         
-        {/* Staggered expertise cards */}
+        {/* Style 1: Current cards */}
         <AnimatedSection
           animation="staggerChildren"
           staggerDelay={0.15}
-          className="grid grid-cols-1 md:grid-cols-3 gap-8"
+          className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16"
           threshold={0.1}
         >
           {expertiseAreas.map((area, index) => {
@@ -102,7 +102,6 @@ export function Expertise() {
                   focusable={true}
                   className="bg-white/80 dark:bg-black/80 backdrop-blur-sm p-8 border-gray-200/50 dark:border-gray-800/50 h-full"
                 >
-                  {/* Icon with micro-animations */}
                   <EnhancedIconContainer
                     size="xl"
                     variant="default"
@@ -119,6 +118,85 @@ export function Expertise() {
                     {area.description}
                   </p>
                 </EnhancedCard>
+              </AnimatedItem>
+            )
+          })}
+        </AnimatedSection>
+
+        {/* Style 2: Gradient cards with inset shadows */}
+        <AnimatedSection
+          animation="staggerChildren"
+          staggerDelay={0.15}
+          className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16"
+          threshold={0.1}
+        >
+          {expertiseAreas.map((area, index) => {
+            const Icon = area.icon
+            const gradients = [
+              'from-orange-500 to-red-600',
+              'from-blue-500 to-purple-600', 
+              'from-green-500 to-teal-600'
+            ]
+            return (
+              <AnimatedItem key={index}>
+                <div className="relative p-10 bg-gradient-to-bl from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 rounded-3xl shadow-[inset_-2px_2px_rgba(255,255,255,0.3),_-20px_20px_40px_rgba(0,0,0,0.25)] dark:shadow-[inset_-2px_2px_rgba(255,255,255,0.1),_-20px_20px_40px_rgba(0,0,0,0.4)] h-full grid grid-rows-[auto_1fr_auto] gap-6">
+                  {/* Title and Icon */}
+                  <div className="flex justify-between items-end">
+                    <h3 className="text-2xl font-medium text-gray-800 dark:text-gray-200 uppercase tracking-wide break-words">
+                      {area.title}
+                    </h3>
+                    <div className="text-5xl">
+                      <Icon className={`h-12 w-12 bg-gradient-to-r ${gradients[index]} bg-clip-text text-transparent`} />
+                    </div>
+                  </div>
+                  
+                  {/* Content */}
+                  <div className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                    <p className="mb-0">{area.description}</p>
+                  </div>
+                  
+                  {/* Gradient bar */}
+                  <div className={`h-0.5 bg-gradient-to-r ${gradients[index]} rounded-full`}></div>
+                </div>
+              </AnimatedItem>
+            )
+          })}
+        </AnimatedSection>
+
+        {/* Style 3: Frosted glass effect */}
+        <AnimatedSection
+          animation="staggerChildren"
+          staggerDelay={0.15}
+          className="grid grid-cols-1 md:grid-cols-3 gap-8"
+          threshold={0.1}
+        >
+          {expertiseAreas.map((area, index) => {
+            const Icon = area.icon
+            return (
+              <AnimatedItem key={index}>
+                <div className="relative p-8 bg-white/10 dark:bg-black/10 backdrop-blur-xl border border-white/20 dark:border-gray-800/30 rounded-2xl shadow-2xl hover:shadow-orange-500/10 hover:border-orange-500/30 transition-all duration-300 h-full group">
+                  {/* Frosted glass overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent dark:from-gray-800/5 rounded-2xl"></div>
+                  
+                  {/* Content */}
+                  <div className="relative z-10">
+                    {/* Icon with glow effect */}
+                    <div className="mb-6 inline-flex p-4 bg-orange-500/10 backdrop-blur-sm rounded-2xl border border-orange-500/20 group-hover:bg-orange-500/20 group-hover:border-orange-500/40 transition-all duration-300">
+                      <Icon className="h-8 w-8 text-orange-500 group-hover:text-orange-400 transition-colors duration-300" />
+                    </div>
+                    
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 group-hover:text-orange-500 dark:group-hover:text-orange-400 transition-colors duration-300">
+                      {area.title}
+                    </h3>
+                    
+                    <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                      {area.description}
+                    </p>
+                  </div>
+                  
+                  {/* Subtle glow effect on hover */}
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-orange-500/0 via-orange-500/5 to-orange-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                </div>
               </AnimatedItem>
             )
           })}

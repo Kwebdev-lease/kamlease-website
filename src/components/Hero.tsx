@@ -49,8 +49,8 @@ export function Hero() {
         >
           <AnimatedItem delay={0}>
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-heading font-bold mb-12">
-              <span className="block relative group">
-                <span className="bg-gradient-to-r from-brand-neutral-800 via-brand-orange-600 to-brand-neutral-700 dark:from-brand-neutral-100 dark:via-brand-orange-400 dark:to-brand-neutral-50 bg-clip-text text-transparent bg-size-200 bg-pos-0 hover:bg-pos-100 transition-all duration-700 ease-out">
+              <span className="block">
+                <span className="bg-gradient-to-r from-brand-neutral-800 via-brand-orange-600 to-brand-neutral-700 dark:from-brand-neutral-100 dark:via-brand-orange-400 dark:to-brand-neutral-50 bg-clip-text text-transparent">
                   {language === 'fr' ? (
                     <>
                       Innovons Ensemble<br />
@@ -63,7 +63,6 @@ export function Hero() {
                     </>
                   )}
                 </span>
-                <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 w-0 h-1 bg-gradient-to-r from-brand-orange-500 to-brand-orange-600 rounded-full group-hover:w-full transition-all duration-500 ease-out shadow-lg shadow-brand-orange-500/50"></div>
               </span>
             </h1>
           </AnimatedItem>

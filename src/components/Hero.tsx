@@ -28,7 +28,7 @@ export function Hero() {
           top: '10%', 
           bottom: '10%', 
           left: '10%', 
-          right: '5%' 
+          right: '0%' 
         }}>
           <img 
             src="/images/gallery/Fondhero.png" 
@@ -69,7 +69,7 @@ export function Hero() {
           </AnimatedItem>
           
           <AnimatedItem delay={0.2}>
-            <div className="flex flex-col items-center space-y-6 mb-16">
+            <div className="flex flex-col items-center lg:items-start space-y-6 mb-16">
               <EnhancedButton 
                 variant="primary"
                 size="xl" 

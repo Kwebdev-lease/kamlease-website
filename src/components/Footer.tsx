@@ -15,13 +15,9 @@ export function Footer() {
           <div className="md:col-span-2">
             <div className="mb-4">
               <img 
-                src="/assets/logos/Logo couleur.svg"
+                src="/assets/logos/logo-couleur.svg"
                 alt="Kamlease"
                 className="h-20 w-auto object-contain"
-                onError={(e) => {
-                  // Fallback to PNG if SVG fails
-                  e.currentTarget.src = "/assets/logos/Logo couleur.png"
-                }}
               />
             </div>
             <p className="text-gray-400 mb-6 max-w-md">

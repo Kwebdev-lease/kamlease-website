@@ -9,7 +9,11 @@ export function Logo({ className = 'h-12 w-auto', alt = 'Kamlease' }: LogoProps)
       <img 
         src="/assets/logos/logo-couleur.svg"
         alt={alt}
-        className="w-full h-full object-cover scale-110"
+        className="w-full h-full object-cover scale-150"
+        style={{
+          objectPosition: 'center',
+          transform: 'scale(1.5) translateY(-5%)'
+        }}
       />
     </div>
   )

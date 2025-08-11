@@ -14,11 +14,17 @@ export function Footer() {
           {/* Logo and Description */}
           <div className="md:col-span-2">
             <div className="mb-4">
-              <img 
-                src="/assets/logos/logo-couleur.svg"
-                alt="Kamlease"
-                className="h-20 w-auto object-contain"
-              />
+              <div className="h-20 w-auto overflow-hidden flex items-center justify-center">
+                <img 
+                  src="/assets/logos/logo-couleur.svg"
+                  alt="Kamlease"
+                  className="w-full h-full object-cover"
+                  style={{
+                    objectPosition: 'center',
+                    transform: 'scale(1.5) translateY(-5%)'
+                  }}
+                />
+              </div>
             </div>
             <p className="text-gray-400 mb-6 max-w-md">
               {t('footer.description')}

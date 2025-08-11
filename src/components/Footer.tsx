@@ -54,7 +54,7 @@ export function Footer() {
             <ul className="space-y-2">
               <li>
                 <button 
-                  onClick={() => scrollToElement('about', 80)}
+                  onClick={() => scrollToElement('about', 65)}
                   className="text-gray-400 hover:text-orange-500 transition-colors"
                 >
                   {t('nav.about')}
@@ -62,7 +62,7 @@ export function Footer() {
               </li>
               <li>
                 <button 
-                  onClick={() => scrollToElement('expertise', 80)}
+                  onClick={() => scrollToElement('expertise', 65)}
                   className="text-gray-400 hover:text-orange-500 transition-colors"
                 >
                   {t('nav.work')}
@@ -70,7 +70,7 @@ export function Footer() {
               </li>
               <li>
                 <button 
-                  onClick={() => scrollToElement('process', 80)}
+                  onClick={() => scrollToElement('process', 65)}
                   className="text-gray-400 hover:text-orange-500 transition-colors"
                 >
                   {t('nav.process')}
@@ -78,7 +78,7 @@ export function Footer() {
               </li>
               <li>
                 <button 
-                  onClick={() => scrollToElement('contact', 80)}
+                  onClick={() => scrollToElement('contact', 65)}
                   className="text-gray-400 hover:text-orange-500 transition-colors"
                 >
                   {t('nav.contact')}

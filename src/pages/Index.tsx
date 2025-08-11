@@ -1,6 +1,7 @@
 import { Header } from '@/components/Header'
 import { Hero } from '@/components/Hero'
 import { About } from '@/components/About'
+import { Experience } from '@/components/Experience'
 import { Expertise } from '@/components/Expertise'
 import { Process } from '@/components/Process'
 import { Stats } from '@/components/Stats'

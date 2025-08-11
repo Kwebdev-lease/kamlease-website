@@ -4,6 +4,7 @@ import { About } from '@/components/About'
 import { Experience } from '@/components/Experience'
 import { Expertise } from '@/components/Expertise'
 import { Process } from '@/components/Process'
+import { VideoPlayer } from '@/components/VideoPlayer'
 import { Stats } from '@/components/Stats'
 import { Contact } from '@/components/Contact'
 import { Footer } from '@/components/Footer'
@@ -84,6 +85,17 @@ export default function Index() {
         <Experience />
         <Expertise />
         <Process />
+        
+        {/* Section Vidéo Process */}
+        <section className="py-20 bg-gradient-to-br from-brand-neutral-50 to-brand-neutral-100 dark:from-brand-neutral-900 dark:to-brand-neutral-950">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <VideoPlayer 
+              src="/images/gallery/ProcessusVideo.mp4"
+              title={language === 'fr' ? 'Notre processus en vidéo' : 'Our process in video'}
+            />
+          </div>
+        </section>
+        
         <Stats />
         <Contact />
       </main>

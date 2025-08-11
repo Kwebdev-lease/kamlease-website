@@ -21,8 +21,20 @@ export function Hero() {
   const internalLinks = contentOptimizer.generateInternalLinks('hero', language)
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center">
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Image de fond */}
+      <div className="absolute inset-0 z-0">
+        <img 
+          src="/images/gallery/Fondhero.png" 
+          alt="Background" 
+          className="w-full h-full object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-black/40"></div>
+      </div>
+      
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+        {/* Contenu à gauche */}
+        <div className="text-center lg:text-left">
         <AnimatedSection 
           animation="staggerChildren" 
           className="max-w-4xl mx-auto space-y-8"
@@ -67,6 +79,10 @@ export function Hero() {
             </div>
           </AnimatedItem>
         </AnimatedSection>
+        </div>
+        
+        {/* Espace pour l'objet de l'image à droite */}
+        <div className="hidden lg:block"></div>
       </div>
     </section>
   )

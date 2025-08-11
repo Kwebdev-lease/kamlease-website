@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { ThemeToggle } from './ThemeToggle'
+
 import { LanguageToggle } from './LanguageToggle'
 import { useTheme } from './ThemeProvider'
 import { useLanguage } from '@/contexts/LanguageProvider'
@@ -36,7 +36,6 @@ export function Header() {
         </div>
         <div className="flex lg:hidden gap-2">
           <LanguageToggle />
-          <ThemeToggle />
           <button
             type="button"
             className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700 dark:text-gray-300 ml-2"
@@ -59,7 +58,6 @@ export function Header() {
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:items-center lg:gap-4">
           <LanguageToggle />
-          <ThemeToggle />
           <Button 
             className="bg-orange-500 hover:bg-orange-600 text-white"
             onClick={() => handleNavClick('contact')}

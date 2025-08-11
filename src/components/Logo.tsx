@@ -10,12 +10,12 @@ interface LogoProps {
 
 const LOGO_CONFIG = {
   light: {
-    primary: '/assets/logos/Logo Black for white background.svg',
-    fallback: '/assets/logos/Logo Black for white background.png'
+    primary: '/assets/logos/Logo couleur.svg',
+    fallback: '/assets/logos/Logo couleur.png'
   },
   dark: {
-    primary: '/assets/logos/Logo White for black background.svg',
-    fallback: '/assets/logos/Logo White for black background.png'
+    primary: '/assets/logos/Logo couleur.svg',
+    fallback: '/assets/logos/Logo couleur.png'
   }
 }
 

@@ -194,13 +194,7 @@ export function Process() {
                       </p>
                     </motion.div>
 
-                    {/* Hover background effect */}
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-b from-orange-50/50 to-orange-100/30 dark:from-orange-950/30 dark:to-orange-900/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"
-                      initial={{ scale: 0.8 }}
-                      whileHover={prefersReducedMotion ? {} : { scale: 1 }}
-                      transition={{ duration: 0.3 }}
-                    />
+
                   </motion.div>
                 )
               })}
@@ -277,13 +271,7 @@ export function Process() {
                       {t(step.descriptionKey)}
                     </p>
 
-                    {/* Mobile hover background effect */}
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-orange-50/30 to-transparent dark:from-orange-950/20 dark:to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"
-                      initial={{ x: -20 }}
-                      whileHover={prefersReducedMotion ? {} : { x: 0 }}
-                      transition={{ duration: 0.3 }}
-                    />
+
                   </motion.div>
                 </motion.div>
               )

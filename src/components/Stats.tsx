@@ -30,11 +30,11 @@ const getStatsConfig = () => [
   },
   {
     key: 'co2Saved',
-    baseValue: 1000,
-    incrementSpeed: 0.01, // 0,01 tonnes par incrémentation
+    baseValue: 1.00,
+    incrementSpeed: 0.01, // 0,01 Ktonnes par incrémentation
     incrementInterval: 2000, // toutes les 2 secondes
     prefix: '',
-    suffix: ' tonnes',
+    suffix: ' Ktonnes de CO2',
     shouldIncrement: true
   },
   {

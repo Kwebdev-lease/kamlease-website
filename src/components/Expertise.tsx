@@ -112,12 +112,9 @@ export function Expertise() {
                     <Icon className="h-8 w-8 text-orange-500" />
                   </EnhancedIconContainer>
                   
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
                     {area.title}
                   </h3>
-                  <h4 className="text-sm font-semibold text-orange-600 dark:text-orange-400 mb-4">
-                    {area.subtitle}
-                  </h4>
                   <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
                     {area.description}
                   </p>

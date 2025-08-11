@@ -33,66 +33,25 @@ export function ThemeProvider({
   storageKey = 'kamlease-ui-theme',
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const stored = safeStorage.get(storageKey)
-        if (stored && isValidTheme(stored)) {
-          return stored
-        }
-      } catch (error) {
-        console.warn('Failed to load theme from storage, using default', error)
-      }
-    }
-    return defaultTheme
-  })
+  // Force dark theme always
+  const [theme, setTheme] = useState<Theme>('dark')
 
   const [resolvedTheme, setResolvedTheme] = useState<'dark' | 'light'>('dark')
 
   useEffect(() => {
     const root = window.document.documentElement
     root.classList.remove('light', 'dark')
-
-    let effectiveTheme: 'dark' | 'light'
-
-    if (theme === 'system') {
-      try {
-        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
-          .matches
-          ? 'dark'
-          : 'light'
-        effectiveTheme = systemTheme
-      } catch (error) {
-        console.warn('Failed to detect system theme, defaulting to dark', error)
-        effectiveTheme = 'dark'
-      }
-    } else {
-      effectiveTheme = theme
-    }
-
-    root.classList.add(effectiveTheme)
-    setResolvedTheme(effectiveTheme)
-  }, [theme])
+    
+    // Force dark theme always
+    root.classList.add('dark')
+    setResolvedTheme('dark')
+  }, [])
 
   const value = {
-    theme,
-    resolvedTheme,
-    setTheme: (newTheme: Theme) => {
-      if (!isValidTheme(newTheme)) {
-        console.error('Invalid theme value:', newTheme)
-        return
-      }
-      
-      try {
-        const success = safeStorage.set(storageKey, newTheme)
-        if (!success) {
-          console.warn('Failed to persist theme to storage, theme will not persist across sessions')
-        }
-      } catch (error) {
-        console.warn('Error saving theme to storage:', error)
-      }
-      
-      setTheme(newTheme)
+    theme: 'dark' as Theme,
+    resolvedTheme: 'dark' as const,
+    setTheme: () => {
+      // Do nothing - theme is locked to dark
     },
   }
 

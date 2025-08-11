@@ -13,18 +13,12 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Logo and Description */}
           <div className="md:col-span-2">
-            <div className="mb-4">
-              <div className="h-20 w-auto overflow-hidden flex items-center justify-center">
-                <img 
-                  src="/assets/logos/Logo White for black background.svg"
-                  alt="Kamlease"
-                  className="w-full h-full object-contain"
-                  style={{
-                    objectPosition: 'center',
-                    transform: 'scale(1.5) translateY(-5%)'
-                  }}
-                />
-              </div>
+            <div className="mb-4 flex justify-start">
+              <img 
+                src="/assets/logos/Logo White for black background.svg"
+                alt="Kamlease"
+                className="h-16 w-auto object-contain"
+              />
             </div>
             <p className="text-gray-400 mb-6 max-w-md">
               {t('footer.description')}

@@ -31,7 +31,7 @@ export function Header() {
       <nav id="main-navigation" className="mx-auto flex max-w-7xl items-center justify-between py-3 px-4 lg:px-8" aria-label="Global" tabIndex={-1}>
         <div className="flex lg:flex-1">
           <a href="#" className="-m-1.5 p-1.5">
-            <Logo className="h-20 w-auto" />
+            <Logo className="h-12 w-auto" />
           </a>
         </div>
         <div className="flex lg:hidden gap-2">

@@ -5,16 +5,10 @@ interface LogoProps {
 
 export function Logo({ className = 'h-12 w-auto', alt = 'Kamlease' }: LogoProps) {
   return (
-    <div className={`${className} overflow-hidden flex items-center justify-center`}>
-      <img 
-        src="/assets/logos/Logo couleur.svg"
-        alt={alt}
-        className="w-full h-full object-contain"
-        style={{
-          objectPosition: 'center',
-          transform: 'scale(1.5) translateY(-5%)'
-        }}
-      />
-    </div>
+    <img 
+      src="/assets/logos/Logo couleur.svg"
+      alt={alt}
+      className={`${className} object-contain`}
+    />
   )
 }

@@ -50,9 +50,10 @@ export function Header() {
             <button
               key={item.name}
               onClick={() => handleNavClick(item.id)}
-              className="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:text-orange-500 transition-colors"
+              className="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:text-orange-500 transition-all duration-300 hover:scale-110 relative group"
             >
               {item.name}
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full"></span>
             </button>
           ))}
         </div>
@@ -91,7 +92,7 @@ export function Header() {
                   setMobileMenuOpen(false)
                   handleNavClick(item.id)
                 }}
-                className="text-3xl font-bold text-gray-900 dark:text-gray-100 hover:text-orange-500 transition-colors duration-200"
+                className="text-3xl font-bold text-gray-900 dark:text-gray-100 hover:text-orange-500 transition-all duration-300 hover:scale-110 relative group"
               >
                 {item.name}
               </button>

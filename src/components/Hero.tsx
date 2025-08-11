@@ -13,7 +13,7 @@ export function Hero() {
   const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setIsRippling(true)
     setTimeout(() => setIsRippling(false), 600)
-    scrollToElement('contact', 120)
+    scrollToElement('contact', 80)
   }
 
   // Generate SEO-optimized content

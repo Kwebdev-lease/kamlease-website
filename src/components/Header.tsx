@@ -21,7 +21,7 @@ export function Header() {
   ]
 
   const handleNavClick = (elementId: string) => {
-    scrollToElement(elementId, 120) // 120px offset for the taller header
+    scrollToElement(elementId, 80) // 80px offset to position navbar just above sections
   }
 
 

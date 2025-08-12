@@ -20,15 +20,11 @@ export function VideoPlayer({ src, title, className = '' }: VideoPlayerProps) {
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsVisible(true)
-          // Auto-play quand la vidéo devient visible
-          if (videoRef.current) {
-            videoRef.current.play()
-            setIsPlaying(true)
-          }
+          // Auto-play désactivé - l'utilisateur doit cliquer pour lancer
         } else {
           setIsVisible(false)
           // Pause quand la vidéo sort du viewport
-          if (videoRef.current) {
+          if (videoRef.current && isPlaying) {
             videoRef.current.pause()
             setIsPlaying(false)
           }
@@ -42,7 +38,7 @@ export function VideoPlayer({ src, title, className = '' }: VideoPlayerProps) {
     }
 
     return () => observer.disconnect()
-  }, [])
+  }, [isPlaying])
 
   const togglePlay = () => {
     if (videoRef.current) {
@@ -81,7 +77,9 @@ export function VideoPlayer({ src, title, className = '' }: VideoPlayerProps) {
         />
 
         {/* Overlay avec bouton play/pause */}
-        <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <div className={`absolute inset-0 flex items-center justify-center bg-black/20 transition-opacity duration-300 ${
+          !isPlaying ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+        }`}>
           <button
             onClick={togglePlay}
             className="bg-white/90 hover:bg-white text-gray-900 rounded-full p-4 transition-all duration-300 hover:scale-110 shadow-lg"

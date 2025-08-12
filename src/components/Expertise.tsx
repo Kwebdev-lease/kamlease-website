@@ -166,13 +166,12 @@ export function Expertise() {
           })}
         </AnimatedSection>
 
-        {/* Style 3: True Glassmorphism with background lighting */}
+        {/* Style 3: Apple-style Liquid Glass */}
         <div className="relative">
-          {/* Background lighting to enhance glass effect */}
-          <div className="absolute inset-0 -m-8">
-            <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-orange-500/20 rounded-full blur-3xl"></div>
-            <div className="absolute top-3/4 right-1/4 w-40 h-40 bg-blue-500/15 rounded-full blur-3xl"></div>
-            <div className="absolute bottom-1/4 left-1/2 w-36 h-36 bg-purple-500/10 rounded-full blur-3xl"></div>
+          {/* Subtle orange background lighting */}
+          <div className="absolute inset-0 -m-4">
+            <div className="absolute top-1/3 left-1/3 w-48 h-48 bg-orange-500/8 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-1/3 right-1/3 w-56 h-56 bg-orange-400/6 rounded-full blur-3xl"></div>
           </div>
           
           <AnimatedSection
@@ -186,50 +185,39 @@ export function Expertise() {
               return (
                 <AnimatedItem key={index}>
                   <div className="relative p-8 h-full group">
-                    {/* Background glow for each card */}
-                    <div className="absolute -inset-4 bg-gradient-to-br from-orange-500/10 via-transparent to-blue-500/10 rounded-3xl blur-2xl opacity-50"></div>
+                    {/* Subtle card background glow */}
+                    <div className="absolute -inset-2 bg-orange-500/4 rounded-3xl blur-xl"></div>
                     
-                    {/* Main glass container with enhanced effect */}
-                    <div className="absolute inset-0 bg-white/15 dark:bg-white/8 backdrop-blur-2xl rounded-3xl border border-white/30 dark:border-white/20 shadow-[0_8px_32px_0_rgba(31,38,135,0.4),_inset_0_1px_0_0_rgba(255,255,255,0.5)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.6),_inset_0_1px_0_0_rgba(255,255,255,0.1)] group-hover:bg-white/20 dark:group-hover:bg-white/12 group-hover:border-orange-500/40 transition-all duration-500"></div>
+                    {/* Main liquid glass container */}
+                    <div className="absolute inset-0 bg-white/8 dark:bg-white/4 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.1),_inset_0_1px_0_0_rgba(255,255,255,0.2)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.3),_inset_0_1px_0_0_rgba(255,255,255,0.05)] group-hover:bg-white/12 dark:group-hover:bg-white/6 group-hover:border-orange-500/20 transition-all duration-700 ease-out"></div>
                     
-                    {/* Multiple glass layers for realistic depth */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/25 via-white/5 to-transparent dark:from-white/15 dark:via-white/3 dark:to-transparent rounded-3xl"></div>
-                    <div className="absolute inset-0 bg-gradient-to-tl from-white/15 via-transparent to-white/25 dark:from-white/8 dark:to-white/15 rounded-3xl"></div>
+                    {/* Liquid glass gradient overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/12 via-white/3 to-transparent dark:from-white/8 dark:via-white/2 dark:to-transparent rounded-3xl"></div>
                     
-                    {/* Enhanced frosted texture */}
-                    <div className="absolute inset-0 opacity-40 dark:opacity-25 rounded-3xl" style={{
-                      backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.6'/%3E%3C/svg%3E")`,
-                      backgroundSize: '100px 100px',
-                      mixBlendMode: 'overlay'
-                    }}></div>
-                    
-                    {/* Strong inner highlight for glass effect */}
-                    <div className="absolute inset-[1px] bg-gradient-to-br from-white/40 via-transparent to-transparent dark:from-white/25 rounded-3xl"></div>
-                    
-                    {/* Subtle inner shadow */}
-                    <div className="absolute inset-[1px] bg-gradient-to-tl from-black/5 via-transparent to-transparent dark:from-black/10 rounded-3xl"></div>
+                    {/* Subtle inner highlight */}
+                    <div className="absolute inset-[1px] bg-gradient-to-br from-white/20 via-transparent to-transparent dark:from-white/10 rounded-3xl"></div>
                     
                     {/* Content */}
                     <div className="relative z-10 h-full flex flex-col">
-                      {/* Icon with enhanced glass container */}
-                      <div className="mb-6 inline-flex p-4 bg-white/25 dark:bg-white/15 backdrop-blur-xl rounded-2xl border border-white/40 dark:border-white/25 shadow-[0_4px_16px_0_rgba(31,38,135,0.3),_inset_0_1px_0_0_rgba(255,255,255,0.6)] dark:shadow-[0_4px_16px_0_rgba(0,0,0,0.4),_inset_0_1px_0_0_rgba(255,255,255,0.2)] group-hover:bg-orange-500/25 dark:group-hover:bg-orange-500/15 group-hover:border-orange-500/50 group-hover:shadow-orange-500/30 transition-all duration-500 w-fit">
-                        <Icon className="h-8 w-8 text-orange-500 group-hover:text-orange-400 transition-colors duration-300 filter drop-shadow-lg" />
+                      {/* Icon with liquid glass container */}
+                      <div className="mb-6 inline-flex p-4 bg-white/15 dark:bg-white/8 backdrop-blur-xl rounded-2xl border border-white/25 dark:border-white/15 shadow-[0_4px_16px_0_rgba(0,0,0,0.1),_inset_0_1px_0_0_rgba(255,255,255,0.3)] dark:shadow-[0_4px_16px_0_rgba(0,0,0,0.2),_inset_0_1px_0_0_rgba(255,255,255,0.1)] group-hover:bg-orange-500/15 dark:group-hover:bg-orange-500/8 group-hover:border-orange-500/30 transition-all duration-700 w-fit">
+                        <Icon className="h-8 w-8 text-orange-500 group-hover:text-orange-400 transition-colors duration-300" />
                       </div>
                       
-                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 group-hover:text-orange-500 dark:group-hover:text-orange-400 transition-colors duration-300 filter drop-shadow-sm">
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 group-hover:text-orange-500 dark:group-hover:text-orange-400 transition-colors duration-300">
                         {area.title}
                       </h3>
                       
-                      <p className="text-gray-800 dark:text-gray-100 leading-relaxed filter drop-shadow-sm flex-grow">
+                      <p className="text-gray-700 dark:text-gray-300 leading-relaxed flex-grow">
                         {area.description}
                       </p>
                     </div>
                     
-                    {/* Enhanced hover glow */}
-                    <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-orange-500/0 via-orange-500/15 to-orange-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-xl"></div>
+                    {/* Subtle hover glow */}
+                    <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-orange-500/0 via-orange-500/8 to-orange-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-2xl"></div>
                     
-                    {/* Reflection effect - always visible */}
-                    <div className="absolute top-0 left-1/4 right-1/4 h-1/2 bg-gradient-to-b from-white/50 via-white/20 to-transparent dark:from-white/30 dark:via-white/10 rounded-t-3xl opacity-70 group-hover:opacity-90 transition-opacity duration-500"></div>
+                    {/* Liquid reflection effect */}
+                    <div className="absolute top-0 left-1/4 right-1/4 h-1/3 bg-gradient-to-b from-white/25 via-white/8 to-transparent dark:from-white/15 dark:via-white/4 rounded-t-3xl opacity-60"></div>
                   </div>
                 </AnimatedItem>
               )

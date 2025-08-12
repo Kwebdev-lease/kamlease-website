@@ -139,6 +139,11 @@ export function SEOHead({
         ))}
         <link rel="alternate" hreflang="x-default" href={`${baseUrl}${pageData.canonicalUrl}`} />
 
+        {/* Search Console Verification */}
+        {seoConfig.analytics.googleSearchConsoleId && (
+          <meta name="google-site-verification" content={seoConfig.analytics.googleSearchConsoleId} />
+        )}
+
         {/* Additional meta tags for better SEO */}
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="theme-color" content="#000000" />

@@ -220,9 +220,8 @@ export const seoConfig: SEOConfig = {
     }
   },
   analytics: {
-    // These would be configured in production
-    googleAnalyticsId: undefined,
-    googleSearchConsoleId: undefined
+    googleAnalyticsId: 'G-NZDBX4YCJ2',
+    googleSearchConsoleId: '12018095271'
   }
 }
 

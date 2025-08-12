@@ -17,6 +17,7 @@ import { useEffect } from 'react';
 import { MotionConfig } from 'framer-motion';
 import { MultilingualRouter } from './components/MultilingualRouter';
 import { SkipToContent } from './components/SkipToContent';
+import { GoogleAnalytics } from './components/GoogleAnalytics';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -88,6 +89,7 @@ const App = () => {
                 >
                   <TooltipProvider>
                     <SkipToContent />
+                    <GoogleAnalytics />
                     <Toaster />
                     <BrowserRouter>
                       <MultilingualRouter />

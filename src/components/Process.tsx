@@ -74,19 +74,6 @@ export function Process() {
     }
   }
 
-  // Connection line animation variants
-  const lineVariants = {
-    hidden: { scaleX: 0, opacity: 0 },
-    visible: { 
-      scaleX: 1, 
-      opacity: 1,
-      transition: {
-        duration: prefersReducedMotion ? 0.1 : 0.8,
-        ease: "easeInOut",
-        delay: prefersReducedMotion ? 0 : 0.3
-      }
-    }
-  }
   return (
     <section id="process" className="py-20 bg-white dark:bg-black relative overflow-hidden" ref={sectionRef}>
       {/* Background Pattern */}
@@ -154,100 +141,102 @@ export function Process() {
               {processSteps.map((step, index) => {
                 const Icon = step.icon
                 return (
-                  <motion.div 
-                    key={index} 
-                    className="flex flex-col items-center max-w-xs relative z-10 group cursor-pointer"
-                    variants={stepVariants}
-                    whileHover={prefersReducedMotion ? {} : {
-                      y: -8,
-                      transition: { duration: 0.3, ease: "easeOut" }
-                    }}
-                  >
-                    {/* Liquid glass card container */}
-                    <div className="relative p-6 rounded-3xl">
-                      {/* Card background glow */}
-                      <div className="absolute -inset-2 bg-orange-500/6 rounded-3xl blur-xl group-hover:bg-orange-500/10 transition-all duration-700"></div>
-                      
-                      {/* Main liquid glass container */}
-                      <div className="absolute inset-0 bg-white/8 dark:bg-white/4 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.1),_inset_0_1px_0_0_rgba(255,255,255,0.2)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.3),_inset_0_1px_0_0_rgba(255,255,255,0.05)] group-hover:bg-white/12 dark:group-hover:bg-white/6 group-hover:border-orange-500/20 transition-all duration-700 ease-out"></div>
-                      
-                      {/* Liquid glass gradient overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-white/12 via-white/3 to-transparent dark:from-white/8 dark:via-white/2 dark:to-transparent rounded-3xl"></div>
-                      
-                      {/* Content */}
-                      <div className="relative z-10 flex flex-col items-center">
-                        {/* Step circle with liquid glass effect */}
-                        <motion.div 
-                          className="bg-orange-500 w-16 h-16 rounded-full flex items-center justify-center mb-4 relative overflow-hidden shadow-lg group-hover:shadow-xl transition-shadow duration-300"
-                          whileHover={prefersReducedMotion ? {} : {
-                            scale: 1.1,
-                            boxShadow: "0 20px 25px -5px rgba(249, 115, 22, 0.3), 0 10px 10px -5px rgba(249, 115, 22, 0.2)"
-                          }}
-                        >
-                          <motion.div
-                            className="absolute inset-0 bg-gradient-to-r from-orange-400 to-orange-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                            initial={{ scale: 0 }}
-                            whileHover={prefersReducedMotion ? {} : { scale: 1 }}
-                            transition={{ duration: 0.3 }}
-                          />
-                          <motion.div
-                            whileHover={prefersReducedMotion ? {} : { rotate: 360 }}
-                            transition={{ duration: 0.6, ease: "easeInOut" }}
-                          >
-                            <Icon className="h-8 w-8 text-white relative z-10" />
-                          </motion.div>
-                        </motion.div>
-                        
-                        {/* Step number with glow effect */}
-                        <motion.div 
-                          className="text-sm font-bold text-orange-500 mb-2 group-hover:text-orange-400 transition-colors duration-300"
-                          whileHover={prefersReducedMotion ? {} : {
-                            textShadow: "0 0 8px rgba(249, 115, 22, 0.6)"
-                          }}
-                        >
-                          {step.step}
-                        </motion.div>
-                        
-                        {/* Content with hover effects */}
-                        <motion.div className="text-center">
-                          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-orange-500 dark:group-hover:text-orange-400 transition-colors duration-300">
-                            {t(step.titleKey)}
-                          </h3>
-                          <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed group-hover:text-gray-700 dark:group-hover:text-gray-200 transition-colors duration-300">
-                            {t(step.descriptionKey)}
-                          </p>
-                        </motion.div>
-                      </div>
-                      
-                      {/* Hover glow */}
-                      <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-orange-500/0 via-orange-500/8 to-orange-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-2xl"></div>
-                    </div>
-                  </motion.div>
-                  
-                  {/* Arrow between steps */}
-                  {index < processSteps.length - 1 && (
+                  <div key={index} className="flex items-center">
                     <motion.div 
-                      className="flex items-center justify-center mt-20 mx-4"
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
-                      transition={{
-                        duration: prefersReducedMotion ? 0.1 : 0.6,
-                        delay: prefersReducedMotion ? 0 : (index * 0.2 + 0.8),
-                        ease: "easeOut"
+                      className="flex flex-col items-center max-w-xs relative z-10 group cursor-pointer"
+                      variants={stepVariants}
+                      whileHover={prefersReducedMotion ? {} : {
+                        y: -8,
+                        transition: { duration: 0.3, ease: "easeOut" }
                       }}
                     >
-                      <div className="relative">
-                        {/* Arrow glow */}
-                        <div className="absolute -inset-2 bg-orange-500/20 rounded-full blur-lg"></div>
+                      {/* Liquid glass card container */}
+                      <div className="relative p-6 rounded-3xl">
+                        {/* Card background glow */}
+                        <div className="absolute -inset-2 bg-orange-500/6 rounded-3xl blur-xl group-hover:bg-orange-500/10 transition-all duration-700"></div>
                         
-                        {/* Arrow container with liquid glass */}
-                        <div className="relative bg-white/10 dark:bg-white/5 backdrop-blur-lg rounded-full p-3 border border-white/20 dark:border-white/10 shadow-lg">
-                          <ArrowRight className="w-6 h-6 text-orange-500" />
+                        {/* Main liquid glass container */}
+                        <div className="absolute inset-0 bg-white/8 dark:bg-white/4 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.1),_inset_0_1px_0_0_rgba(255,255,255,0.2)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.3),_inset_0_1px_0_0_rgba(255,255,255,0.05)] group-hover:bg-white/12 dark:group-hover:bg-white/6 group-hover:border-orange-500/20 transition-all duration-700 ease-out"></div>
+                        
+                        {/* Liquid glass gradient overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-white/12 via-white/3 to-transparent dark:from-white/8 dark:via-white/2 dark:to-transparent rounded-3xl"></div>
+                        
+                        {/* Content */}
+                        <div className="relative z-10 flex flex-col items-center">
+                          {/* Step circle with liquid glass effect */}
+                          <motion.div 
+                            className="bg-orange-500 w-16 h-16 rounded-full flex items-center justify-center mb-4 relative overflow-hidden shadow-lg group-hover:shadow-xl transition-shadow duration-300"
+                            whileHover={prefersReducedMotion ? {} : {
+                              scale: 1.1,
+                              boxShadow: "0 20px 25px -5px rgba(249, 115, 22, 0.3), 0 10px 10px -5px rgba(249, 115, 22, 0.2)"
+                            }}
+                          >
+                            <motion.div
+                              className="absolute inset-0 bg-gradient-to-r from-orange-400 to-orange-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                              initial={{ scale: 0 }}
+                              whileHover={prefersReducedMotion ? {} : { scale: 1 }}
+                              transition={{ duration: 0.3 }}
+                            />
+                            <motion.div
+                              whileHover={prefersReducedMotion ? {} : { rotate: 360 }}
+                              transition={{ duration: 0.6, ease: "easeInOut" }}
+                            >
+                              <Icon className="h-8 w-8 text-white relative z-10" />
+                            </motion.div>
+                          </motion.div>
+                          
+                          {/* Step number with glow effect */}
+                          <motion.div 
+                            className="text-sm font-bold text-orange-500 mb-2 group-hover:text-orange-400 transition-colors duration-300"
+                            whileHover={prefersReducedMotion ? {} : {
+                              textShadow: "0 0 8px rgba(249, 115, 22, 0.6)"
+                            }}
+                          >
+                            {step.step}
+                          </motion.div>
+                          
+                          {/* Content with hover effects */}
+                          <motion.div className="text-center">
+                            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-orange-500 dark:group-hover:text-orange-400 transition-colors duration-300">
+                              {t(step.titleKey)}
+                            </h3>
+                            <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed group-hover:text-gray-700 dark:group-hover:text-gray-200 transition-colors duration-300">
+                              {t(step.descriptionKey)}
+                            </p>
+                          </motion.div>
                         </div>
+                        
+                        {/* Hover glow */}
+                        <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-orange-500/0 via-orange-500/8 to-orange-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-2xl"></div>
                       </div>
                     </motion.div>
-                  )}
-              ))}
+                    
+                    {/* Arrow between steps */}
+                    {index < processSteps.length - 1 && (
+                      <motion.div 
+                        className="flex items-center justify-center mx-4"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
+                        transition={{
+                          duration: prefersReducedMotion ? 0.1 : 0.6,
+                          delay: prefersReducedMotion ? 0 : (index * 0.2 + 0.8),
+                          ease: "easeOut"
+                        }}
+                      >
+                        <div className="relative">
+                          {/* Arrow glow */}
+                          <div className="absolute -inset-2 bg-orange-500/20 rounded-full blur-lg"></div>
+                          
+                          {/* Arrow container with liquid glass */}
+                          <div className="relative bg-white/10 dark:bg-white/5 backdrop-blur-lg rounded-full p-3 border border-white/20 dark:border-white/10 shadow-lg">
+                            <ArrowRight className="w-6 h-6 text-orange-500" />
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </div>
+                )
+              })}
             </motion.div>
           </div>
           
@@ -320,8 +309,6 @@ export function Process() {
                     <p className="text-gray-600 dark:text-gray-300 leading-relaxed group-hover:text-gray-700 dark:group-hover:text-gray-200 transition-colors duration-300">
                       {t(step.descriptionKey)}
                     </p>
-
-
                   </motion.div>
                 </motion.div>
               )

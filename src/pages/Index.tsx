@@ -10,6 +10,7 @@ import { Contact } from '@/components/Contact'
 import { Footer } from '@/components/Footer'
 import { SEOHead } from '@/components/SEOHead'
 import { StructuredData } from '@/components/StructuredData'
+import { SectionTransition } from '@/components/SectionTransition'
 import { pagesSEOData, seoConfig } from '@/lib/seo-config'
 
 import { useLanguage } from '@/contexts/LanguageProvider'
@@ -81,13 +82,17 @@ export default function Index() {
       <Header />
       <main id="main-content" tabIndex={-1}>
         <Hero />
+        <SectionTransition variant="hero-to-about" />
         <About />
+        <SectionTransition variant="about-to-experience" />
         <Experience />
+        <SectionTransition variant="experience-to-expertise" />
         <Expertise />
+        <SectionTransition variant="expertise-to-process" />
         <Process />
-        
-        
+        <SectionTransition variant="process-to-stats" />
         <Stats />
+        <SectionTransition variant="stats-to-contact" />
         <Contact />
       </main>
       <Footer />

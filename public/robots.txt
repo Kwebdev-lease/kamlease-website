@@ -1,63 +1,21 @@
-# Robots.txt for Kamlease - Solutions Mécatroniques et Électroniques
-# https://kamlease.com
-
-# Allow all crawlers to access the site
 User-agent: *
 Allow: /
 
-# Specific rules for major search engines
-User-agent: Googlebot
-Allow: /
-Crawl-delay: 1
-
-User-agent: Bingbot
-Allow: /
-Crawl-delay: 1
-
-User-agent: Slurp
-Allow: /
-Crawl-delay: 2
-
-# Block access to sensitive directories and files
-Disallow: /node_modules/
-Disallow: /src/
-Disallow: /dist/
-Disallow: /.git/
-Disallow: /.vscode/
-Disallow: /.kiro/
-Disallow: /scripts/
-Disallow: /*.json$
-Disallow: /*.config.*
-Disallow: /package*.json
-Disallow: /tsconfig*.json
-Disallow: /vite.config.*
-Disallow: /vitest.config.*
-Disallow: /tailwind.config.*
-Disallow: /postcss.config.*
-Disallow: /eslint.config.*
-
-# Block access to test files and development resources
-Disallow: /*test*
-Disallow: /*__tests__*
-Disallow: /*.test.*
-Disallow: /*.spec.*
-Disallow: /docs/
-
-# Allow access to important assets
-Allow: /assets/
-Allow: /public/
-Allow: /favicon.svg
-Allow: /Logo/
-
-# Block access to private or admin areas (if they exist)
-Disallow: /admin/
-Disallow: /private/
-Disallow: /temp/
-Disallow: /tmp/
-
-# Sitemap location
+# Sitemap
 Sitemap: https://kamlease.com/sitemap.xml
 
-# Additional sitemaps for different languages
-Sitemap: https://kamlease.com/sitemap-fr.xml
-Sitemap: https://kamlease.com/sitemap-en.xml
+# Disallow admin/private areas (if any)
+Disallow: /admin/
+Disallow: /.well-known/
+Disallow: /api/
+
+# Allow important pages
+Allow: /
+Allow: /about
+Allow: /contact
+Allow: /en/
+Allow: /en/about
+Allow: /en/contact
+
+# Crawl delay (optional, helps with server load)
+Crawl-delay: 1

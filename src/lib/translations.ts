@@ -93,6 +93,10 @@ export const translations = {
     process: {
       title: 'Processus',
       description: 'Notre méthodologie éprouvée vous accompagne de l\'idée initiale jusqu\'à la réalisation complète de votre projet.',
+      video: {
+        caption: 'Découvrez notre processus de développement en action',
+        fallback: 'Votre navigateur ne supporte pas la lecture vidéo.'
+      },
       steps: {
         analysis: {
           title: 'Analyse',
@@ -428,6 +432,10 @@ export const translations = {
     process: {
       title: 'Process',
       description: 'Our proven methodology supports you from the initial idea to the complete realization of your project.',
+      video: {
+        caption: 'Discover our development process in action',
+        fallback: 'Your browser does not support video playback.'
+      },
       steps: {
         analysis: {
           title: 'Analysis',

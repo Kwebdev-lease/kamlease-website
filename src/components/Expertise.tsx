@@ -84,89 +84,9 @@ export function Expertise() {
           </div>
         </AnimatedSection>
         
-        {/* Style 1: Current cards */}
-        <AnimatedSection
-          animation="staggerChildren"
-          staggerDelay={0.15}
-          className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16"
-          threshold={0.1}
-        >
-          {expertiseAreas.map((area, index) => {
-            const Icon = area.icon
-            return (
-              <AnimatedItem key={index}>
-                <EnhancedCard
-                  variant="expertise"
-                  hoverEffect="glow"
-                  interactive={true}
-                  focusable={true}
-                  className="bg-white/80 dark:bg-black/80 backdrop-blur-sm p-8 border-gray-200/50 dark:border-gray-800/50 h-full"
-                >
-                  <EnhancedIconContainer
-                    size="xl"
-                    variant="default"
-                    glowColor="orange"
-                    className="bg-orange-100 dark:bg-orange-900/30 mb-6"
-                  >
-                    <Icon className="h-8 w-8 text-orange-500" />
-                  </EnhancedIconContainer>
-                  
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-                    {area.title}
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                    {area.description}
-                  </p>
-                </EnhancedCard>
-              </AnimatedItem>
-            )
-          })}
-        </AnimatedSection>
 
-        {/* Style 2: Gradient cards with inset shadows */}
-        <AnimatedSection
-          animation="staggerChildren"
-          staggerDelay={0.15}
-          className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16"
-          threshold={0.1}
-        >
-          {expertiseAreas.map((area, index) => {
-            const Icon = area.icon
-            const gradients = [
-              'from-orange-500 to-red-600',
-              'from-blue-500 to-purple-600', 
-              'from-green-500 to-teal-600'
-            ]
-            return (
-              <AnimatedItem key={index}>
-                <div className="relative p-10 bg-gradient-to-bl from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-3xl shadow-[inset_-2px_2px_rgba(255,255,255,0.3),_-20px_20px_40px_rgba(0,0,0,0.25)] dark:shadow-[inset_-2px_2px_rgba(255,255,255,0.1),_-20px_20px_40px_rgba(0,0,0,0.4)] h-full">
-                  {/* Layout grid: title icon / content content / bar bar */}
-                  <div className="grid grid-cols-[1fr_auto] grid-rows-[auto_1fr_auto] gap-6 h-full">
-                    {/* Title */}
-                    <h3 className="text-xl font-medium text-gray-800 dark:text-gray-200 uppercase tracking-wide self-end">
-                      {area.title}
-                    </h3>
-                    
-                    {/* Icon */}
-                    <div className="text-5xl self-end">
-                      <Icon className={`h-12 w-12 bg-gradient-to-r ${gradients[index]} bg-clip-text text-transparent`} />
-                    </div>
-                    
-                    {/* Content spanning both columns */}
-                    <div className="col-span-2 text-gray-700 dark:text-gray-300 leading-relaxed">
-                      <p className="mb-0">{area.description}</p>
-                    </div>
-                    
-                    {/* Gradient bar spanning both columns */}
-                    <div className={`col-span-2 h-0.5 bg-gradient-to-r ${gradients[index]} rounded-full`}></div>
-                  </div>
-                </div>
-              </AnimatedItem>
-            )
-          })}
-        </AnimatedSection>
 
-        {/* Style 3: Apple-style Liquid Glass */}
+        {/* Apple-style Liquid Glass Cards */}
         <div className="relative">
           {/* Enhanced orange background lighting */}
           <div className="absolute inset-0 -m-8">

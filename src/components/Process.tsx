@@ -126,12 +126,12 @@ export function Process() {
               initial="hidden"
               animate={isInView ? "visible" : "hidden"}
             >
-              {/* Connection lines container */}
-              <div className="absolute top-8 left-0 right-0 flex justify-between z-0">
+              {/* Connection lines container - positioned above glass cards */}
+              <div className="absolute top-20 left-0 right-0 flex justify-between z-5">
                 {processSteps.slice(0, -1).map((_, index) => (
                   <motion.div 
                     key={index} 
-                    className="h-0.5 bg-orange-200 dark:bg-orange-800 origin-left"
+                    className="h-0.5 bg-orange-300 dark:bg-orange-700 origin-left shadow-lg"
                     style={{ 
                       width: `${100 / (processSteps.length - 1)}%`,
                       marginLeft: index === 0 ? '8%' : '0',

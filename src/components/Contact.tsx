@@ -569,16 +569,33 @@ export function Contact() {
           )}
         </AnimatedSection>
         
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        {/* Background lighting for liquid glass effect */}
+        <div className="absolute inset-0 -m-8">
+          <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-orange-500/12 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-orange-400/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute top-2/3 left-2/3 w-48 h-48 bg-orange-600/8 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        </div>
+
+        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Contact Form */}
           <AnimatedSection animation="slideInLeft" delay={0.2}>
-            <Card className="border-gray-200 dark:border-gray-800 backdrop-blur-sm bg-white/80 dark:bg-gray-900/80">
-              <CardHeader>
-                <CardTitle className="text-2xl text-gray-900 dark:text-white">
-                  {t('contact.form.title')}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
+            <div className="relative">
+              {/* Background glow for contact form */}
+              <div className="absolute -inset-3 bg-orange-500/6 rounded-3xl blur-xl"></div>
+              
+              {/* Main liquid glass container */}
+              <div className="absolute inset-0 bg-white/8 dark:bg-white/4 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.1),_inset_0_1px_0_0_rgba(255,255,255,0.2)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.3),_inset_0_1px_0_0_rgba(255,255,255,0.05)]"></div>
+              
+              {/* Liquid glass gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/12 via-white/3 to-transparent dark:from-white/8 dark:via-white/2 dark:to-transparent rounded-3xl"></div>
+              
+              <Card className="relative z-10 border-transparent bg-transparent shadow-none">
+                <CardHeader>
+                  <CardTitle className="text-2xl text-gray-900 dark:text-white">
+                    {t('contact.form.title')}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
                 {/* Loading Indicator */}
                 <AnimatePresence>
                   {isLoading && (
@@ -1151,18 +1168,29 @@ export function Contact() {
                   )}
                 </AnimatePresence>
               </form>
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
+            </div>
           </AnimatedSection>
           
           {/* Contact Info */}
           <AnimatedSection animation="slideInRight" delay={0.4}>
             <div className="space-y-8">
-              <Card className="border-gray-200 dark:border-gray-800 backdrop-blur-sm bg-white/80 dark:bg-gray-900/80">
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
-                    {t('contact.info.title')}
-                  </h3>
+              <div className="relative">
+                {/* Background glow for contact info */}
+                <div className="absolute -inset-2 bg-orange-500/6 rounded-3xl blur-xl"></div>
+                
+                {/* Main liquid glass container */}
+                <div className="absolute inset-0 bg-white/8 dark:bg-white/4 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.1),_inset_0_1px_0_0_rgba(255,255,255,0.2)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.3),_inset_0_1px_0_0_rgba(255,255,255,0.05)]"></div>
+                
+                {/* Liquid glass gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/12 via-white/3 to-transparent dark:from-white/8 dark:via-white/2 dark:to-transparent rounded-3xl"></div>
+                
+                <Card className="relative z-10 border-transparent bg-transparent shadow-none">
+                  <CardContent className="p-6">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                      {t('contact.info.title')}
+                    </h3>
                   <div className="space-y-4">
                     <AnimatedItem delay={0.1}>
                       <div className="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer group">
@@ -1215,15 +1243,26 @@ export function Contact() {
                         </div>
                       </div>
                     </AnimatedItem>
-                </div>
-              </CardContent>
-            </Card>
+                  </div>
+                  </CardContent>
+                </Card>
+              </div>
             
-            <Card className="border-gray-200 dark:border-gray-800 backdrop-blur-sm bg-white/80 dark:bg-gray-900/80">
-              <CardContent className="p-6">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
-                  {t('contact.info.whyChoose')}
-                </h3>
+            <div className="relative">
+              {/* Background glow for why choose us */}
+              <div className="absolute -inset-2 bg-orange-500/6 rounded-3xl blur-xl"></div>
+              
+              {/* Main liquid glass container */}
+              <div className="absolute inset-0 bg-white/8 dark:bg-white/4 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.1),_inset_0_1px_0_0_rgba(255,255,255,0.2)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.3),_inset_0_1px_0_0_rgba(255,255,255,0.05)]"></div>
+              
+              {/* Liquid glass gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/12 via-white/3 to-transparent dark:from-white/8 dark:via-white/2 dark:to-transparent rounded-3xl"></div>
+              
+              <Card className="relative z-10 border-transparent bg-transparent shadow-none">
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                    {t('contact.info.whyChoose')}
+                  </h3>
                 <ul className="space-y-3 text-gray-600 dark:text-gray-300">
                   <AnimatedItem delay={0.1}>
                     <EnhancedListItem interactive={true} accent={true}>
@@ -1245,9 +1284,10 @@ export function Contact() {
                       <span>{t('contact.features.support')}</span>
                     </EnhancedListItem>
                   </AnimatedItem>
-                </ul>
-              </CardContent>
-            </Card>
+                  </ul>
+                </CardContent>
+              </Card>
+            </div>
             </div>
           </AnimatedSection>
         </div>

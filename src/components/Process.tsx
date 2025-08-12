@@ -248,8 +248,7 @@ export function Process() {
                     </motion.div>
                   )}
                 </>
-              ))
-            })}
+              ))}
             </motion.div>
           </div>
           

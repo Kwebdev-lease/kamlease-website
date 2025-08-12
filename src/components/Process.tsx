@@ -6,6 +6,7 @@ import { motion } from 'framer-motion'
 import { useScrollAnimation } from '@/hooks/use-scroll-animation'
 import { useAccessibilityPreferences } from '@/hooks/use-accessibility-preferences'
 import { ContextualLinks } from './ContextualLinks'
+import { VideoPlayer } from './VideoPlayer'
 
 export function Process() {
   const { t } = useLanguage()
@@ -99,36 +100,10 @@ export function Process() {
           
           {/* Process Video */}
           <AnimatedSection animation="fadeInUp" delay={0.2} className="mb-12">
-            <div className="relative max-w-4xl mx-auto">
-              {/* Video container with liquid glass effect */}
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-                {/* Background glow */}
-                <div className="absolute -inset-4 bg-orange-500/10 rounded-3xl blur-2xl"></div>
-                
-                {/* Liquid glass border */}
-                <div className="absolute inset-0 bg-white/10 dark:bg-white/5 backdrop-blur-sm rounded-2xl border border-white/20 dark:border-white/10"></div>
-                
-                {/* Video */}
-                <div className="relative z-10">
-                  <video
-                    className="w-full h-auto rounded-2xl"
-                    controls
-                    preload="metadata"
-                    poster="/images/gallery/process-poster.jpg"
-                  >
-                    <source src="/images/gallery/ProcessusVideo.mp4" type="video/mp4" />
-                    <p className="text-gray-600 dark:text-gray-300 p-4">
-                      {t('process.video.fallback', 'Votre navigateur ne supporte pas la lecture vidéo.')}
-                    </p>
-                  </video>
-                </div>
-              </div>
-              
-              {/* Video caption */}
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-4 text-center">
-                {t('process.video.caption', 'Découvrez notre processus de développement en action')}
-              </p>
-            </div>
+            <VideoPlayer
+              src="/images/gallery/ProcessusVideo.mp4"
+              className="max-w-4xl mx-auto"
+            />
           </AnimatedSection>
         </AnimatedSection>
 

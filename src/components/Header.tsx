@@ -69,16 +69,17 @@ export function Header() {
             {/* Liquid glass gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-br from-white/15 via-white/5 to-transparent dark:from-white/8 dark:via-white/2 dark:to-transparent rounded-xl"></div>
             
-            <Button 
-              className="relative z-10 !bg-orange-500/90 hover:!bg-orange-600/90 text-white !border-transparent backdrop-blur-sm"
+            <button
               onClick={() => handleNavClick('contact')}
+              className="relative z-10 px-4 py-2 text-sm font-medium text-white rounded-lg transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
               style={{
                 backgroundColor: 'rgba(249, 115, 22, 0.9)',
-                borderColor: 'transparent'
+                borderColor: 'transparent',
+                border: 'none'
               }}
             >
               {t('nav.startProject')}
-            </Button>
+            </button>
           </div>
         </div>
       </nav>
@@ -126,19 +127,20 @@ export function Header() {
               {/* Liquid glass gradient overlay */}
               <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-white/8 to-transparent dark:from-white/12 dark:via-white/4 dark:to-transparent rounded-2xl"></div>
               
-              <Button 
-                className="relative z-10 w-full !bg-orange-500/90 hover:!bg-orange-600/90 text-white py-6 text-xl font-semibold rounded-2xl !border-transparent backdrop-blur-sm"
+              <button
                 onClick={() => {
                   setMobileMenuOpen(false)
                   handleNavClick('contact')
                 }}
+                className="relative z-10 w-full py-6 text-xl font-semibold text-white rounded-2xl transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
                 style={{
                   backgroundColor: 'rgba(249, 115, 22, 0.9)',
-                  borderColor: 'transparent'
+                  borderColor: 'transparent',
+                  border: 'none'
                 }}
               >
                 {t('nav.startProject')}
-              </Button>
+              </button>
             </div>
           </div>
         </div>

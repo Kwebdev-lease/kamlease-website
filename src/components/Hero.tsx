@@ -85,8 +85,12 @@ export function Hero() {
                   hoverEffect="glow"
                   ripple={true}
                   focusRing={true}
-                  className="relative z-10 px-10 py-5 text-lg font-semibold rounded-2xl group bg-orange-500/90 hover:bg-orange-600/90 border-transparent backdrop-blur-sm"
+                  className="relative z-10 px-10 py-5 text-lg font-semibold rounded-2xl group !bg-orange-500/90 hover:!bg-orange-600/90 !border-transparent backdrop-blur-sm"
                   onClick={handleButtonClick}
+                  style={{
+                    backgroundColor: 'rgba(249, 115, 22, 0.9)',
+                    borderColor: 'transparent'
+                  }}
                 >
                   {language === 'fr' ? 'Démarrer un projet' : 'Start a project'}
                   <ArrowRight className="ml-2 h-6 w-6 group-hover:translate-x-2 group-hover:scale-110 transition-all duration-300" />

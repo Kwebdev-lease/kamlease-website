@@ -569,8 +569,9 @@ export function Contact() {
           )}
         </AnimatedSection>
         
-        {/* Background lighting for liquid glass effect */}
+        {/* Enhanced background lighting for liquid glass effect */}
         <div className="absolute inset-0 -m-8">
+          {/* Primary glows */}
           <div 
             className="absolute top-1/4 left-1/4 w-64 h-64 bg-orange-500/18 rounded-full blur-3xl"
             style={{
@@ -587,6 +588,32 @@ export function Contact() {
             className="absolute top-2/3 left-2/3 w-48 h-48 bg-orange-600/12 rounded-full blur-3xl"
             style={{
               animation: 'float 12s ease-in-out infinite 4s'
+            }}
+          ></div>
+          
+          {/* Additional accent glows */}
+          <div 
+            className="absolute top-1/2 left-1/6 w-40 h-40 bg-orange-300/10 rounded-full blur-2xl"
+            style={{
+              animation: 'float 14s ease-in-out infinite 1s'
+            }}
+          ></div>
+          <div 
+            className="absolute bottom-1/3 right-1/6 w-56 h-56 bg-orange-500/8 rounded-full blur-3xl"
+            style={{
+              animation: 'float 16s ease-in-out infinite 3s'
+            }}
+          ></div>
+          <div 
+            className="absolute top-1/6 right-1/3 w-32 h-32 bg-orange-400/12 rounded-full blur-2xl"
+            style={{
+              animation: 'float 11s ease-in-out infinite 5s'
+            }}
+          ></div>
+          <div 
+            className="absolute bottom-1/6 left-1/2 w-44 h-44 bg-orange-600/9 rounded-full blur-3xl"
+            style={{
+              animation: 'float 13s ease-in-out infinite 6s'
             }}
           ></div>
         </div>

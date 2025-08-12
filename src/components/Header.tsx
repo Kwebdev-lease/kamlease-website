@@ -70,8 +70,12 @@ export function Header() {
             <div className="absolute inset-0 bg-gradient-to-br from-white/15 via-white/5 to-transparent dark:from-white/8 dark:via-white/2 dark:to-transparent rounded-xl"></div>
             
             <Button 
-              className="relative z-10 bg-orange-500/90 hover:bg-orange-600/90 text-white border-transparent backdrop-blur-sm"
+              className="relative z-10 !bg-orange-500/90 hover:!bg-orange-600/90 text-white !border-transparent backdrop-blur-sm"
               onClick={() => handleNavClick('contact')}
+              style={{
+                backgroundColor: 'rgba(249, 115, 22, 0.9)',
+                borderColor: 'transparent'
+              }}
             >
               {t('nav.startProject')}
             </Button>
@@ -123,10 +127,14 @@ export function Header() {
               <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-white/8 to-transparent dark:from-white/12 dark:via-white/4 dark:to-transparent rounded-2xl"></div>
               
               <Button 
-                className="relative z-10 w-full bg-orange-500/90 hover:bg-orange-600/90 text-white py-6 text-xl font-semibold rounded-2xl border-transparent backdrop-blur-sm"
+                className="relative z-10 w-full !bg-orange-500/90 hover:!bg-orange-600/90 text-white py-6 text-xl font-semibold rounded-2xl !border-transparent backdrop-blur-sm"
                 onClick={() => {
                   setMobileMenuOpen(false)
                   handleNavClick('contact')
+                }}
+                style={{
+                  backgroundColor: 'rgba(249, 115, 22, 0.9)',
+                  borderColor: 'transparent'
                 }}
               >
                 {t('nav.startProject')}

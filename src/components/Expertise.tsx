@@ -168,10 +168,11 @@ export function Expertise() {
 
         {/* Style 3: Apple-style Liquid Glass */}
         <div className="relative">
-          {/* Subtle orange background lighting */}
-          <div className="absolute inset-0 -m-4">
-            <div className="absolute top-1/3 left-1/3 w-48 h-48 bg-orange-500/8 rounded-full blur-3xl"></div>
-            <div className="absolute bottom-1/3 right-1/3 w-56 h-56 bg-orange-400/6 rounded-full blur-3xl"></div>
+          {/* Enhanced orange background lighting */}
+          <div className="absolute inset-0 -m-8">
+            <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-orange-500/15 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-orange-400/12 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+            <div className="absolute top-2/3 left-2/3 w-48 h-48 bg-orange-600/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
           </div>
           
           <AnimatedSection
@@ -185,8 +186,8 @@ export function Expertise() {
               return (
                 <AnimatedItem key={index}>
                   <div className="relative p-8 h-full group">
-                    {/* Subtle card background glow */}
-                    <div className="absolute -inset-2 bg-orange-500/4 rounded-3xl blur-xl"></div>
+                    {/* Enhanced card background glow */}
+                    <div className="absolute -inset-3 bg-orange-500/8 rounded-3xl blur-2xl group-hover:bg-orange-500/12 transition-all duration-700"></div>
                     
                     {/* Main liquid glass container */}
                     <div className="absolute inset-0 bg-white/8 dark:bg-white/4 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.1),_inset_0_1px_0_0_rgba(255,255,255,0.2)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.3),_inset_0_1px_0_0_rgba(255,255,255,0.05)] group-hover:bg-white/12 dark:group-hover:bg-white/6 group-hover:border-orange-500/20 transition-all duration-700 ease-out"></div>
@@ -213,11 +214,8 @@ export function Expertise() {
                       </p>
                     </div>
                     
-                    {/* Subtle hover glow */}
-                    <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-orange-500/0 via-orange-500/8 to-orange-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-2xl"></div>
-                    
-                    {/* Liquid reflection effect */}
-                    <div className="absolute top-0 left-1/4 right-1/4 h-1/3 bg-gradient-to-b from-white/25 via-white/8 to-transparent dark:from-white/15 dark:via-white/4 rounded-t-3xl opacity-60"></div>
+                    {/* Enhanced hover glow */}
+                    <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-orange-500/0 via-orange-500/10 to-orange-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-2xl"></div>
                   </div>
                 </AnimatedItem>
               )

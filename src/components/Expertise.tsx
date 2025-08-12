@@ -43,7 +43,7 @@ export function Expertise() {
   ]
 
   return (
-    <section id="expertise" className="relative py-20 overflow-hidden">
+    <section id="expertise" className="relative py-20 overflow-hidden bg-gradient-to-br from-gray-50 to-white dark:from-gray-950 dark:to-black">
       {/* Professional gradient background with discrete patterns */}
       <BackgroundPattern
         config={{

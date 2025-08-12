@@ -18,7 +18,7 @@ import { MotionConfig } from 'framer-motion';
 import { MultilingualRouter } from './components/MultilingualRouter';
 import { SkipToContent } from './components/SkipToContent';
 import { GoogleAnalytics } from './components/GoogleAnalytics';
-import './styles/section-transitions.css';
+
 
 const queryClient = new QueryClient({
   defaultOptions: {

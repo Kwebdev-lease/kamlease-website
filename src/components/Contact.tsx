@@ -529,7 +529,7 @@ export function Contact() {
   }
 
   return (
-    <section id="contact" className="relative py-20 overflow-hidden bg-gradient-to-br from-white to-gray-50 dark:from-black dark:to-gray-950">
+    <section id="contact" className="relative py-20 overflow-hidden">
       {/* Background with gradient and particles */}
       <BackgroundPattern
         config={{

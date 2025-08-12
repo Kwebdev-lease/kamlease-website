@@ -77,7 +77,7 @@ export function Process() {
   }
 
   return (
-    <section id="process" className="py-20 bg-gradient-to-br from-white to-gray-50 dark:from-black dark:to-gray-950 relative overflow-hidden" ref={sectionRef}>
+    <section id="process" className="py-20 bg-white dark:bg-black relative overflow-hidden" ref={sectionRef}>
       {/* Background Pattern */}
       <BackgroundPattern
         config={{

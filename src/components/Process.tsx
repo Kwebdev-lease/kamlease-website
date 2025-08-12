@@ -113,10 +113,35 @@ export function Process() {
         <div className="relative">
           {/* Background lighting for liquid glass effect */}
           <div className="absolute inset-0 -m-8">
-            <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-orange-500/12 rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-orange-400/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-            <div className="absolute top-2/3 left-2/3 w-48 h-48 bg-orange-600/8 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+            <div 
+              className="absolute top-1/4 left-1/4 w-64 h-64 bg-orange-500/18 rounded-full blur-3xl"
+              style={{
+                animation: 'float 8s ease-in-out infinite'
+              }}
+            ></div>
+            <div 
+              className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-orange-400/15 rounded-full blur-3xl"
+              style={{
+                animation: 'float 10s ease-in-out infinite 2s'
+              }}
+            ></div>
+            <div 
+              className="absolute top-2/3 left-2/3 w-48 h-48 bg-orange-600/12 rounded-full blur-3xl"
+              style={{
+                animation: 'float 12s ease-in-out infinite 4s'
+              }}
+            ></div>
           </div>
+          
+          {/* CSS Animation Styles */}
+          <style jsx>{`
+            @keyframes float {
+              0%, 100% { transform: translateY(0px) translateX(0px); }
+              25% { transform: translateY(-20px) translateX(10px); }
+              50% { transform: translateY(-10px) translateX(-15px); }
+              75% { transform: translateY(-30px) translateX(5px); }
+            }
+          `}</style>
           
           {/* Desktop layout */}
           <div className="hidden lg:block relative z-10">

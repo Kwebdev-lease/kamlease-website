@@ -59,12 +59,23 @@ export function Header() {
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:items-center lg:gap-4">
           <LanguageToggle />
-          <Button 
-            className="bg-orange-500 hover:bg-orange-600 text-white"
-            onClick={() => handleNavClick('contact')}
-          >
-            {t('nav.startProject')}
-          </Button>
+          <div className="relative">
+            {/* Button background glow */}
+            <div className="absolute -inset-1 bg-orange-500/15 rounded-xl blur-sm"></div>
+            
+            {/* Main liquid glass container for button */}
+            <div className="absolute inset-0 bg-white/10 dark:bg-white/5 backdrop-blur-lg rounded-xl border border-white/20 dark:border-white/10 shadow-[0_4px_16px_0_rgba(0,0,0,0.1),_inset_0_1px_0_0_rgba(255,255,255,0.2)] dark:shadow-[0_4px_16px_0_rgba(0,0,0,0.2),_inset_0_1px_0_0_rgba(255,255,255,0.05)]"></div>
+            
+            {/* Liquid glass gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-br from-white/15 via-white/5 to-transparent dark:from-white/8 dark:via-white/2 dark:to-transparent rounded-xl"></div>
+            
+            <Button 
+              className="relative z-10 bg-orange-500/90 hover:bg-orange-600/90 text-white border-transparent backdrop-blur-sm"
+              onClick={() => handleNavClick('contact')}
+            >
+              {t('nav.startProject')}
+            </Button>
+          </div>
         </div>
       </nav>
       
@@ -99,17 +110,28 @@ export function Header() {
             ))}
           </nav>
           
-          {/* Bouton CTA en bas */}
+          {/* Bouton CTA en bas avec liquid glass */}
           <div className="absolute bottom-12 left-8 right-8">
-            <Button 
-              className="w-full bg-orange-500 hover:bg-orange-600 text-white py-6 text-xl font-semibold rounded-2xl shadow-lg"
-              onClick={() => {
-                setMobileMenuOpen(false)
-                handleNavClick('contact')
-              }}
-            >
-              {t('nav.startProject')}
-            </Button>
+            <div className="relative">
+              {/* Button background glow */}
+              <div className="absolute -inset-2 bg-orange-500/20 rounded-3xl blur-lg"></div>
+              
+              {/* Main liquid glass container for mobile button */}
+              <div className="absolute inset-0 bg-white/10 dark:bg-white/5 backdrop-blur-xl rounded-2xl border border-white/25 dark:border-white/15 shadow-[0_8px_32px_0_rgba(0,0,0,0.2),_inset_0_1px_0_0_rgba(255,255,255,0.3)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.3),_inset_0_1px_0_0_rgba(255,255,255,0.1)]"></div>
+              
+              {/* Liquid glass gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-white/8 to-transparent dark:from-white/12 dark:via-white/4 dark:to-transparent rounded-2xl"></div>
+              
+              <Button 
+                className="relative z-10 w-full bg-orange-500/90 hover:bg-orange-600/90 text-white py-6 text-xl font-semibold rounded-2xl border-transparent backdrop-blur-sm"
+                onClick={() => {
+                  setMobileMenuOpen(false)
+                  handleNavClick('contact')
+                }}
+              >
+                {t('nav.startProject')}
+              </Button>
+            </div>
           </div>
         </div>
       </div>

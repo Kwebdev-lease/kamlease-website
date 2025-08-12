@@ -166,55 +166,76 @@ export function Expertise() {
           })}
         </AnimatedSection>
 
-        {/* Style 3: Frosted glass effect */}
-        <AnimatedSection
-          animation="staggerChildren"
-          staggerDelay={0.15}
-          className="grid grid-cols-1 md:grid-cols-3 gap-8"
-          threshold={0.1}
-        >
-          {expertiseAreas.map((area, index) => {
-            const Icon = area.icon
-            return (
-              <AnimatedItem key={index}>
-                <div className="relative p-8 bg-white/20 dark:bg-white/5 backdrop-blur-2xl border border-white/30 dark:border-white/10 rounded-2xl shadow-2xl hover:shadow-orange-500/20 hover:border-orange-500/50 hover:bg-white/30 dark:hover:bg-white/10 transition-all duration-300 h-full group">
-                  {/* Enhanced frosted glass overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent dark:from-white/5 dark:via-white/2 dark:to-transparent rounded-2xl"></div>
-                  
-                  {/* Noise texture for glass effect */}
-                  <div className="absolute inset-0 opacity-20 dark:opacity-10 rounded-2xl" style={{
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-                    backgroundSize: '256px 256px'
-                  }}></div>
-                  
-                  {/* Content */}
-                  <div className="relative z-10">
-                    {/* Icon with enhanced glow effect */}
-                    <div className="mb-6 inline-flex p-4 bg-orange-500/20 dark:bg-orange-500/10 backdrop-blur-sm rounded-2xl border border-orange-500/30 dark:border-orange-500/20 group-hover:bg-orange-500/30 dark:group-hover:bg-orange-500/20 group-hover:border-orange-500/50 dark:group-hover:border-orange-500/40 transition-all duration-300 shadow-lg shadow-orange-500/10">
-                      <Icon className="h-8 w-8 text-orange-500 group-hover:text-orange-400 transition-colors duration-300 drop-shadow-lg" />
+        {/* Style 3: True Glassmorphism with background lighting */}
+        <div className="relative">
+          {/* Background lighting to enhance glass effect */}
+          <div className="absolute inset-0 -m-8">
+            <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-orange-500/20 rounded-full blur-3xl"></div>
+            <div className="absolute top-3/4 right-1/4 w-40 h-40 bg-blue-500/15 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-1/4 left-1/2 w-36 h-36 bg-purple-500/10 rounded-full blur-3xl"></div>
+          </div>
+          
+          <AnimatedSection
+            animation="staggerChildren"
+            staggerDelay={0.15}
+            className="relative grid grid-cols-1 md:grid-cols-3 gap-8"
+            threshold={0.1}
+          >
+            {expertiseAreas.map((area, index) => {
+              const Icon = area.icon
+              return (
+                <AnimatedItem key={index}>
+                  <div className="relative p-8 h-full group">
+                    {/* Background glow for each card */}
+                    <div className="absolute -inset-4 bg-gradient-to-br from-orange-500/10 via-transparent to-blue-500/10 rounded-3xl blur-2xl opacity-50"></div>
+                    
+                    {/* Main glass container with enhanced effect */}
+                    <div className="absolute inset-0 bg-white/15 dark:bg-white/8 backdrop-blur-2xl rounded-3xl border border-white/30 dark:border-white/20 shadow-[0_8px_32px_0_rgba(31,38,135,0.4),_inset_0_1px_0_0_rgba(255,255,255,0.5)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.6),_inset_0_1px_0_0_rgba(255,255,255,0.1)] group-hover:bg-white/20 dark:group-hover:bg-white/12 group-hover:border-orange-500/40 transition-all duration-500"></div>
+                    
+                    {/* Multiple glass layers for realistic depth */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/25 via-white/5 to-transparent dark:from-white/15 dark:via-white/3 dark:to-transparent rounded-3xl"></div>
+                    <div className="absolute inset-0 bg-gradient-to-tl from-white/15 via-transparent to-white/25 dark:from-white/8 dark:to-white/15 rounded-3xl"></div>
+                    
+                    {/* Enhanced frosted texture */}
+                    <div className="absolute inset-0 opacity-40 dark:opacity-25 rounded-3xl" style={{
+                      backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.6'/%3E%3C/svg%3E")`,
+                      backgroundSize: '100px 100px',
+                      mixBlendMode: 'overlay'
+                    }}></div>
+                    
+                    {/* Strong inner highlight for glass effect */}
+                    <div className="absolute inset-[1px] bg-gradient-to-br from-white/40 via-transparent to-transparent dark:from-white/25 rounded-3xl"></div>
+                    
+                    {/* Subtle inner shadow */}
+                    <div className="absolute inset-[1px] bg-gradient-to-tl from-black/5 via-transparent to-transparent dark:from-black/10 rounded-3xl"></div>
+                    
+                    {/* Content */}
+                    <div className="relative z-10 h-full flex flex-col">
+                      {/* Icon with enhanced glass container */}
+                      <div className="mb-6 inline-flex p-4 bg-white/25 dark:bg-white/15 backdrop-blur-xl rounded-2xl border border-white/40 dark:border-white/25 shadow-[0_4px_16px_0_rgba(31,38,135,0.3),_inset_0_1px_0_0_rgba(255,255,255,0.6)] dark:shadow-[0_4px_16px_0_rgba(0,0,0,0.4),_inset_0_1px_0_0_rgba(255,255,255,0.2)] group-hover:bg-orange-500/25 dark:group-hover:bg-orange-500/15 group-hover:border-orange-500/50 group-hover:shadow-orange-500/30 transition-all duration-500 w-fit">
+                        <Icon className="h-8 w-8 text-orange-500 group-hover:text-orange-400 transition-colors duration-300 filter drop-shadow-lg" />
+                      </div>
+                      
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 group-hover:text-orange-500 dark:group-hover:text-orange-400 transition-colors duration-300 filter drop-shadow-sm">
+                        {area.title}
+                      </h3>
+                      
+                      <p className="text-gray-800 dark:text-gray-100 leading-relaxed filter drop-shadow-sm flex-grow">
+                        {area.description}
+                      </p>
                     </div>
                     
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 group-hover:text-orange-500 dark:group-hover:text-orange-400 transition-colors duration-300 drop-shadow-sm">
-                      {area.title}
-                    </h3>
+                    {/* Enhanced hover glow */}
+                    <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-orange-500/0 via-orange-500/15 to-orange-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-xl"></div>
                     
-                    <p className="text-gray-700 dark:text-gray-200 leading-relaxed drop-shadow-sm">
-                      {area.description}
-                    </p>
+                    {/* Reflection effect - always visible */}
+                    <div className="absolute top-0 left-1/4 right-1/4 h-1/2 bg-gradient-to-b from-white/50 via-white/20 to-transparent dark:from-white/30 dark:via-white/10 rounded-t-3xl opacity-70 group-hover:opacity-90 transition-opacity duration-500"></div>
                   </div>
-                  
-                  {/* Enhanced glow effect on hover */}
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-orange-500/0 via-orange-500/10 to-orange-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
-                  
-                  {/* Rim light effect */}
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-white/20 dark:via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{
-                    background: 'linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%)'
-                  }}></div>
-                </div>
-              </AnimatedItem>
-            )
-          })}
-        </AnimatedSection>
+                </AnimatedItem>
+              )
+            })}
+          </AnimatedSection>
+        </div>
       </div>
     </section>
   )

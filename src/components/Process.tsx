@@ -1,4 +1,4 @@
-import { Search, Lightbulb, Cog, Factory, TrendingUp } from 'lucide-react'
+import { Search, Lightbulb, Cog, Factory, TrendingUp, ArrowRight } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageProvider'
 import { AnimatedSection } from './AnimatedSection'
 import { BackgroundPattern } from './BackgroundPattern'
@@ -146,32 +146,11 @@ export function Process() {
           {/* Desktop layout */}
           <div className="hidden lg:block relative z-10">
             <motion.div 
-              className="flex justify-between items-start relative"
+              className="flex items-start relative gap-8"
               variants={containerVariants}
               initial="hidden"
               animate={isInView ? "visible" : "hidden"}
             >
-              {/* Connection lines container - positioned above glass cards */}
-              <div className="absolute top-20 left-0 right-0 flex justify-between z-5">
-                {processSteps.slice(0, -1).map((_, index) => (
-                  <motion.div 
-                    key={index} 
-                    className="h-0.5 bg-orange-300 dark:bg-orange-700 origin-left shadow-lg"
-                    style={{ 
-                      width: `${100 / (processSteps.length - 1)}%`,
-                      marginLeft: index === 0 ? '8%' : '0',
-                      marginRight: index === processSteps.length - 2 ? '8%' : '0'
-                    }}
-                    variants={lineVariants}
-                    initial="hidden"
-                    animate={isInView ? "visible" : "hidden"}
-                    transition={{
-                      delay: prefersReducedMotion ? 0 : (index * 0.2 + 0.5)
-                    }}
-                  />
-                ))}
-              </div>
-              
               {processSteps.map((step, index) => {
                 const Icon = step.icon
                 return (
@@ -244,6 +223,30 @@ export function Process() {
                       <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-orange-500/0 via-orange-500/8 to-orange-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-2xl"></div>
                     </div>
                   </motion.div>
+                  
+                  {/* Arrow between steps */}
+                  {index < processSteps.length - 1 && (
+                    <motion.div 
+                      className="flex items-center justify-center mt-20 mx-4"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
+                      transition={{
+                        duration: prefersReducedMotion ? 0.1 : 0.6,
+                        delay: prefersReducedMotion ? 0 : (index * 0.2 + 0.8),
+                        ease: "easeOut"
+                      }}
+                    >
+                      <div className="relative">
+                        {/* Arrow glow */}
+                        <div className="absolute -inset-2 bg-orange-500/20 rounded-full blur-lg"></div>
+                        
+                        {/* Arrow container with liquid glass */}
+                        <div className="relative bg-white/10 dark:bg-white/5 backdrop-blur-lg rounded-full p-3 border border-white/20 dark:border-white/10 shadow-lg">
+                          <ArrowRight className="w-6 h-6 text-orange-500" />
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
                 )
               })}
             </motion.div>

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Play, Pause } from 'lucide-react'
+import { Play } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageProvider'
 
 interface VideoPlayerProps {
@@ -12,10 +12,7 @@ export function VideoPlayer({ src, title, className = '' }: VideoPlayerProps) {
   const { language } = useLanguage()
   const videoRef = useRef<HTMLVideoElement>(null)
   const [isPlaying, setIsPlaying] = useState(false)
-  const [showControls, setShowControls] = useState(true)
-  const [isHovered, setIsHovered] = useState(false)
-  const [progress, setProgress] = useState(0)
-  const hideControlsTimeoutRef = useRef<NodeJS.Timeout>()
+  const [hasStarted, setHasStarted] = useState(false)
 
   // Observer pour détecter quand la vidéo entre dans le viewport
   useEffect(() => {
@@ -37,88 +34,27 @@ export function VideoPlayer({ src, title, className = '' }: VideoPlayerProps) {
     return () => observer.disconnect()
   }, [isPlaying])
 
-  // Gestion de l'auto-hide des contrôles
-  useEffect(() => {
-    if (isPlaying && !isHovered) {
-      // Masquer les contrôles après 3 secondes si la vidéo joue
-      hideControlsTimeoutRef.current = setTimeout(() => {
-        setShowControls(false)
-      }, 3000)
-    } else {
-      // Annuler le timer si on hover ou si la vidéo est en pause
-      if (hideControlsTimeoutRef.current) {
-        clearTimeout(hideControlsTimeoutRef.current)
-      }
-      setShowControls(true)
-    }
-
-    return () => {
-      if (hideControlsTimeoutRef.current) {
-        clearTimeout(hideControlsTimeoutRef.current)
-      }
-    }
-  }, [isPlaying, isHovered])
-
-  const togglePlay = () => {
+  const handlePlay = () => {
     if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause()
-        setIsPlaying(false)
-      } else {
-        videoRef.current.play()
-        setIsPlaying(true)
-      }
+      videoRef.current.play()
+      setIsPlaying(true)
+      setHasStarted(true)
     }
   }
 
   const handleVideoClick = () => {
-    togglePlay()
+    if (!isPlaying) {
+      handlePlay()
+    } else {
+      // Si la vidéo joue, on peut la mettre en pause
+      videoRef.current?.pause()
+      setIsPlaying(false)
+    }
   }
 
   const handleVideoEnd = () => {
     setIsPlaying(false)
-    setShowControls(true)
-    setProgress(0)
-  }
-
-  const updateProgress = () => {
-    if (videoRef.current) {
-      const currentTime = videoRef.current.currentTime
-      const duration = videoRef.current.duration
-      setProgress(duration > 0 ? (currentTime / duration) * 100 : 0)
-    }
-  }
-
-  // Mettre à jour la progression
-  useEffect(() => {
-    const video = videoRef.current
-    if (video) {
-      video.addEventListener('timeupdate', updateProgress)
-      return () => video.removeEventListener('timeupdate', updateProgress)
-    }
-  }, [])
-
-  const handleMouseEnter = () => {
-    setIsHovered(true)
-  }
-
-  const handleMouseLeave = () => {
-    setIsHovered(false)
-  }
-
-  const handleMouseMove = () => {
-    if (isPlaying) {
-      setShowControls(true)
-      // Redémarrer le timer d'auto-hide
-      if (hideControlsTimeoutRef.current) {
-        clearTimeout(hideControlsTimeoutRef.current)
-      }
-      hideControlsTimeoutRef.current = setTimeout(() => {
-        if (!isHovered) {
-          setShowControls(false)
-        }
-      }, 3000)
-    }
+    setHasStarted(false)
   }
 
   return (
@@ -129,74 +65,52 @@ export function VideoPlayer({ src, title, className = '' }: VideoPlayerProps) {
         </h3>
       )}
 
-      <div 
-        className="relative rounded-2xl overflow-hidden shadow-2xl bg-black cursor-pointer"
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        onMouseMove={handleMouseMove}
-        onClick={handleVideoClick}
-      >
+      <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-black">
         <video
           ref={videoRef}
           src={src}
-          className="w-full h-auto"
+          className="w-full h-auto cursor-pointer"
           onEnded={handleVideoEnd}
           onPlay={() => setIsPlaying(true)}
           onPause={() => setIsPlaying(false)}
+          onClick={handleVideoClick}
           muted
           playsInline
         />
 
-        {/* Overlay avec contrôles qui disparaissent */}
-        <div className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${
-          showControls || !isPlaying 
-            ? 'bg-black/20 opacity-100' 
-            : 'bg-transparent opacity-0 pointer-events-none'
-        }`}>
-          {/* Bouton play/pause central */}
-          <div className={`transition-all duration-300 ${
-            showControls || !isPlaying 
-              ? 'opacity-100 scale-100' 
-              : 'opacity-0 scale-75'
-          }`}>
+        {/* Overlay avec bouton play - visible seulement si pas encore démarrée */}
+        {!hasStarted && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/30">
             <button
-              onClick={(e) => {
-                e.stopPropagation()
-                togglePlay()
-              }}
-              className="bg-white/90 hover:bg-white text-gray-900 rounded-full p-4 transition-all duration-300 hover:scale-110 shadow-lg backdrop-blur-sm"
-              aria-label={isPlaying ?
-                (language === 'fr' ? 'Mettre en pause' : 'Pause') :
-                (language === 'fr' ? 'Lire la vidéo' : 'Play video')
-              }
+              onClick={handlePlay}
+              className="bg-white/90 hover:bg-white text-gray-900 rounded-full p-6 transition-all duration-300 hover:scale-110 shadow-xl backdrop-blur-sm group"
+              aria-label={language === 'fr' ? 'Lire la vidéo' : 'Play video'}
             >
-              {isPlaying ? (
-                <Pause className="h-8 w-8" />
-              ) : (
-                <Play className="h-8 w-8 ml-1" />
-              )}
+              <Play className="h-12 w-12 ml-1 group-hover:scale-110 transition-transform duration-200" />
             </button>
           </div>
-        </div>
+        )}
 
         {/* Indicateur de lecture discret */}
-        <div className={`absolute bottom-4 right-4 transition-opacity duration-300 ${
-          isPlaying && !showControls ? 'opacity-60' : 'opacity-100'
-        }`}>
-          <div className={`w-2 h-2 rounded-full transition-all duration-300 ${
-            isPlaying ? 'bg-red-500 animate-pulse' : 'bg-gray-400'
-          }`}></div>
-        </div>
+        {hasStarted && (
+          <div className="absolute bottom-4 right-4">
+            <div className={`w-3 h-3 rounded-full transition-all duration-300 ${
+              isPlaying ? 'bg-red-500 animate-pulse' : 'bg-gray-400'
+            }`}></div>
+          </div>
+        )}
 
-        {/* Barre de progression subtile */}
-        <div className={`absolute bottom-0 left-0 right-0 h-1 bg-black/20 transition-opacity duration-300 ${
-          showControls && isPlaying ? 'opacity-100' : 'opacity-0'
-        }`}>
-          <div 
-            className="h-full bg-orange-500/80 transition-all duration-100" 
-            style={{ width: `${progress}%` }}
-          ></div>
-        </div>
+        {/* Message subtil pour indiquer qu'on peut cliquer */}
+        {hasStarted && (
+          <div className="absolute bottom-4 left-4 opacity-0 hover:opacity-100 transition-opacity duration-300">
+            <span className="text-white/70 text-sm bg-black/50 px-2 py-1 rounded backdrop-blur-sm">
+              {isPlaying 
+                ? (language === 'fr' ? 'Cliquer pour pause' : 'Click to pause')
+                : (language === 'fr' ? 'Cliquer pour reprendre' : 'Click to resume')
+              }
+            </span>
+          </div>
+        )}
       </div>
     </div>
   )

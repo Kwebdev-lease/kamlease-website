@@ -1,4 +1,4 @@
-import { Facebook, Linkedin, Twitter } from 'lucide-react'
+import { Linkedin } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageProvider'
 import { Logo } from './Logo'
 import { scrollToElement } from '@/lib/scroll-utils'
@@ -25,25 +25,13 @@ export function Footer() {
             </p>
             <div className="flex space-x-4">
               <a
-                href="#"
-                className="bg-gray-800 hover:bg-orange-500 p-2 rounded-full transition-colors"
-                aria-label="Facebook"
-              >
-                <Facebook className="h-5 w-5" />
-              </a>
-              <a
-                href="#"
+                href="https://www.linkedin.com/company/kamlease/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="bg-gray-800 hover:bg-orange-500 p-2 rounded-full transition-colors"
                 aria-label="LinkedIn"
               >
                 <Linkedin className="h-5 w-5" />
-              </a>
-              <a
-                href="#"
-                className="bg-gray-800 hover:bg-orange-500 p-2 rounded-full transition-colors"
-                aria-label="X (Twitter)"
-              >
-                <Twitter className="h-5 w-5" />
               </a>
             </div>
           </div>

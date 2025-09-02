@@ -4,12 +4,19 @@ Allow: /
 # Sitemap
 Sitemap: https://kamlease.com/sitemap.xml
 
-# Disallow admin/private areas (if any)
+# Disallow admin/private areas
 Disallow: /admin/
 Disallow: /.well-known/
 Disallow: /api/
+Disallow: /functions/
 
-# Allow important pages
+# Disallow legal pages (they have noindex anyway)
+Disallow: /mentions-legales
+Disallow: /politique-confidentialite
+Disallow: /en/legal-notice
+Disallow: /en/privacy-policy
+
+# Allow important pages explicitly
 Allow: /
 Allow: /about
 Allow: /contact
@@ -17,5 +24,5 @@ Allow: /en/
 Allow: /en/about
 Allow: /en/contact
 
-# Crawl delay (optional, helps with server load)
+# Crawl delay
 Crawl-delay: 1

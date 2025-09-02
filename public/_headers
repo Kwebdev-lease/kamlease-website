@@ -1,26 +1,24 @@
-# Headers for all pages
+# Headers pour Cloudflare Pages
+
 /*
+  # Security headers
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
-  Referrer-Policy: strict-origin-when-cross-origin
   X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin
+  
+  # Cache headers for static assets
+  Cache-Control: public, max-age=31536000, immutable
 
 # Specific headers for HTML files
 /*.html
   Cache-Control: public, max-age=0, must-revalidate
+  
+# Sitemap and robots
+/sitemap.xml
+  Content-Type: application/xml
+  Cache-Control: public, max-age=3600
 
-# Headers for static assets
-/assets/*
-  Cache-Control: public, max-age=31536000, immutable
-
-# Headers for images
-/images/*
-  Cache-Control: public, max-age=31536000, immutable
-
-# Headers for API routes
-/api/*
-  Cache-Control: no-cache, no-store, must-revalidate
-
-# Yandex verification file
-/yandex_b678e235ad56d5f0.html
-  Cache-Control: public, max-age=86400
+/robots.txt
+  Content-Type: text/plain
+  Cache-Control: public, max-age=3600

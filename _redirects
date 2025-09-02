@@ -1,7 +1,11 @@
 # Redirections pour Cloudflare Pages
 
-# Redirection de l'apex vers www (sera géré par OVH)
-# kamlease.com/* https://www.kamlease.com/:splat 301!
+# Redirection www vers apex (canonicalisation)
+https://www.kamlease.com/* https://kamlease.com/:splat 301!
+
+# Redirections pour les anciennes URLs ou variations
+/home /  301
+/accueil /  301
 
 # SPA fallback - toutes les routes vers index.html
 /*    /index.html   200

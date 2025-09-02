@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { Play, Pause, AlertCircle, RefreshCw } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageProvider'
 import { VideoDiagnostics } from '@/lib/video-diagnostics'
+import { remoteLog } from '@/lib/remote-debug'
 
 interface VideoPlayerProps {
   src: string
@@ -19,6 +20,8 @@ export function VideoPlayer({ src, title, className = '', poster }: VideoPlayerP
   const [hasError, setHasError] = useState(false)
   const [canPlay, setCanPlay] = useState(false)
   const [userAgent, setUserAgent] = useState('')
+  const [debugInfo, setDebugInfo] = useState<string[]>([])
+  const [loadTimeout, setLoadTimeout] = useState<NodeJS.Timeout | null>(null)
 
   // Détecter le type d'appareil et navigateur
   useEffect(() => {
@@ -56,44 +59,109 @@ export function VideoPlayer({ src, title, className = '', poster }: VideoPlayerP
     return () => observer.disconnect()
   }, [isPlaying])
 
-  // Gestion des événements vidéo
+  // Fonction pour ajouter des infos de debug
+  const addDebugInfo = (info: string, level: 'info' | 'warn' | 'error' = 'info') => {
+    const timestamp = new Date().toLocaleTimeString()
+    const message = `${timestamp}: ${info}`
+    setDebugInfo(prev => [...prev.slice(-4), message])
+    
+    // Log to remote debugger for mobile debugging
+    remoteLog[level]('VideoPlayer', info, {
+      src,
+      isIOS,
+      isSafari,
+      isMobile,
+      canPlay,
+      hasError,
+      isLoading
+    })
+  }
+
+  // Gestion des événements vidéo avec debugging amélioré
   useEffect(() => {
     const video = videoRef.current
     if (!video) return
 
+    addDebugInfo('Video element initialized')
+
     const handleLoadStart = () => {
+      addDebugInfo('Load started')
       setIsLoading(true)
       setHasError(false)
+      
+      // Timeout de sécurité pour éviter le chargement infini
+      const timeout = setTimeout(() => {
+        addDebugInfo('Load timeout - switching to fallback', 'warn')
+        setIsLoading(false)
+        setHasError(true)
+      }, 15000) // 15 secondes max
+      
+      setLoadTimeout(timeout)
     }
 
     const handleCanPlay = () => {
+      addDebugInfo('Can play - video ready')
       setIsLoading(false)
       setCanPlay(true)
       setHasError(false)
+      if (loadTimeout) {
+        clearTimeout(loadTimeout)
+        setLoadTimeout(null)
+      }
     }
 
     const handleError = (e: Event) => {
-      console.error('Video error:', e)
+      const error = video.error
+      const errorMsg = error ? `Error ${error.code}: ${error.message}` : 'Unknown error'
+      addDebugInfo(`Video error: ${errorMsg}`, 'error')
+      console.error('Video error:', e, error)
       setIsLoading(false)
       setHasError(true)
       setCanPlay(false)
+      if (loadTimeout) {
+        clearTimeout(loadTimeout)
+        setLoadTimeout(null)
+      }
     }
 
     const handleLoadedData = () => {
+      addDebugInfo('Data loaded successfully')
       setIsLoading(false)
       setCanPlay(true)
+      if (loadTimeout) {
+        clearTimeout(loadTimeout)
+        setLoadTimeout(null)
+      }
+    }
+
+    const handleLoadedMetadata = () => {
+      addDebugInfo(`Metadata loaded: ${video.videoWidth}x${video.videoHeight}, ${video.duration}s`)
+    }
+
+    const handleProgress = () => {
+      if (video.buffered.length > 0) {
+        const buffered = (video.buffered.end(0) / video.duration) * 100
+        addDebugInfo(`Buffered: ${buffered.toFixed(1)}%`)
+      }
     }
 
     video.addEventListener('loadstart', handleLoadStart)
     video.addEventListener('canplay', handleCanPlay)
     video.addEventListener('error', handleError)
     video.addEventListener('loadeddata', handleLoadedData)
+    video.addEventListener('loadedmetadata', handleLoadedMetadata)
+    video.addEventListener('progress', handleProgress)
 
     return () => {
+      if (loadTimeout) {
+        clearTimeout(loadTimeout)
+      }
       video.removeEventListener('loadstart', handleLoadStart)
       video.removeEventListener('canplay', handleCanPlay)
       video.removeEventListener('error', handleError)
       video.removeEventListener('loadeddata', handleLoadedData)
+      video.removeEventListener('loadedmetadata', handleLoadedMetadata)
+      video.removeEventListener('progress', handleProgress)
     }
   }, [])
 
@@ -208,17 +276,16 @@ export function VideoPlayer({ src, title, className = '', poster }: VideoPlayerP
           poster={posterImage}
           muted
           playsInline
-          preload="metadata"
+          preload={isMobile ? "none" : "metadata"}
           controls={false}
           webkit-playsinline="true"
           x5-playsinline="true"
           x5-video-player-type="h5"
           x5-video-player-fullscreen="true"
+          crossOrigin="anonymous"
         >
-          {/* Sources multiples pour compatibilité */}
+          {/* Source principale */}
           <source src={src} type="video/mp4" />
-          <source src={src.replace('.mp4', '.webm')} type="video/webm" />
-          <source src={src.replace('.mp4', '.ogg')} type="video/ogg" />
           
           {/* Fallback pour navigateurs très anciens */}
           <p className="text-white p-4">
@@ -313,15 +380,28 @@ export function VideoPlayer({ src, title, className = '', poster }: VideoPlayerP
             <div>Safari: {isSafari ? 'Yes' : 'No'}</div>
             <div>Can Play: {canPlay ? 'Yes' : 'No'}</div>
             <div>Error: {hasError ? 'Yes' : 'No'}</div>
-            <button
-              onClick={() => {
-                const diagnostics = VideoDiagnostics.getInstance()
-                diagnostics.logDiagnostics(src)
-              }}
-              className="mt-1 bg-orange-500 text-white px-2 py-1 rounded text-xs hover:bg-orange-600 transition-colors"
-            >
-              🔍 Run Diagnostics
-            </button>
+            <div className="space-y-1">
+              <button
+                onClick={() => {
+                  const diagnostics = VideoDiagnostics.getInstance()
+                  diagnostics.logDiagnostics(src)
+                }}
+                className="block w-full bg-orange-500 text-white px-2 py-1 rounded text-xs hover:bg-orange-600 transition-colors"
+              >
+                🔍 Run Diagnostics
+              </button>
+              <button
+                onClick={() => {
+                  const { RemoteDebugger } = window as any
+                  if (RemoteDebugger) {
+                    RemoteDebugger.getInstance().dumpToConsole()
+                  }
+                }}
+                className="block w-full bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600 transition-colors"
+              >
+                📱 Show Mobile Logs
+              </button>
+            </div>
           </div>
         )}
 
@@ -336,26 +416,82 @@ export function VideoPlayer({ src, title, className = '', poster }: VideoPlayerP
             </p>
           </div>
         )}
+
+        {/* Debug info pour mobile (visible sur tous les appareils si problème) */}
+        {(isMobile || hasError || isLoading) && debugInfo.length > 0 && (
+          <div className="absolute bottom-4 right-4 bg-red-900/80 text-white text-xs p-2 rounded backdrop-blur-sm max-w-xs max-h-32 overflow-y-auto">
+            <div className="font-bold mb-1">Debug Info:</div>
+            {debugInfo.map((info, index) => (
+              <div key={index} className="mb-1">{info}</div>
+            ))}
+            <div className="mt-2 text-yellow-200">
+              Device: {isIOS ? 'iOS' : isAndroid ? 'Android' : 'Desktop'} | 
+              Browser: {isSafari ? 'Safari' : 'Other'}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Contrôles natifs en fallback pour certains appareils */}
       {hasError && (
-        <div className="mt-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-            {language === 'fr' 
-              ? 'Problème avec le lecteur personnalisé ? Essayez le lecteur natif :'
-              : 'Issues with custom player? Try the native player:'
-            }
-          </p>
-          <video
-            src={src}
-            controls
-            className="w-full rounded"
-            playsInline
-            muted
-          >
-            <source src={src} type="video/mp4" />
-          </video>
+        <div className="mt-4 space-y-4">
+          <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+              {language === 'fr' 
+                ? 'Problème avec le lecteur personnalisé ? Essayez le lecteur natif :'
+                : 'Issues with custom player? Try the native player:'
+              }
+            </p>
+            <video
+              src={src}
+              controls
+              className="w-full rounded"
+              playsInline
+              muted
+              poster={posterImage}
+            >
+              <source src={src} type="video/mp4" />
+            </video>
+          </div>
+
+          {/* Lecteur alternatif pour iOS */}
+          {isIOS && (
+            <div className="p-4 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
+              <p className="text-sm text-blue-700 dark:text-blue-300 mb-2">
+                {language === 'fr' 
+                  ? 'Lecteur optimisé iOS :'
+                  : 'iOS optimized player:'
+                }
+              </p>
+              <video
+                controls
+                className="w-full rounded"
+                playsInline
+                webkit-playsinline="true"
+                preload="none"
+                poster={posterImage}
+              >
+                <source src={src} type="video/mp4" />
+              </video>
+            </div>
+          )}
+
+          {/* Lien de téléchargement direct */}
+          <div className="p-4 bg-orange-100 dark:bg-orange-900/20 rounded-lg text-center">
+            <p className="text-sm text-orange-700 dark:text-orange-300 mb-2">
+              {language === 'fr' 
+                ? 'Toujours des problèmes ? Téléchargez la vidéo :'
+                : 'Still having issues? Download the video:'
+              }
+            </p>
+            <a
+              href={src}
+              download
+              className="inline-flex items-center px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+            >
+              {language === 'fr' ? '📥 Télécharger' : '📥 Download'}
+            </a>
+          </div>
         </div>
       )}
     </div>

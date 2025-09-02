@@ -102,6 +102,8 @@ export function Process() {
           <AnimatedSection animation="fadeInUp" delay={0.2} className="mb-12">
             <VideoPlayer
               src="/images/gallery/ProcessusVideo.mp4"
+              poster="/images/gallery/ProcessusVideo-poster.jpg"
+              title={t('process.video.title')}
               className="max-w-4xl mx-auto"
             />
           </AnimatedSection>

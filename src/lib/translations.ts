@@ -93,6 +93,9 @@ export const translations = {
     process: {
       title: 'Processus',
       description: 'Notre méthodologie éprouvée vous accompagne de l\'idée initiale jusqu\'à la réalisation complète de votre projet.',
+      video: {
+        title: 'Notre processus en action'
+      },
       steps: {
         analysis: {
           title: 'Analyse',
@@ -428,6 +431,9 @@ export const translations = {
     process: {
       title: 'Process',
       description: 'Our proven methodology supports you from the initial idea to the complete realization of your project.',
+      video: {
+        title: 'Our process in action'
+      },
       steps: {
         analysis: {
           title: 'Analysis',

@@ -208,28 +208,48 @@ export class AppointmentBookingService {
 
   /**
    * Create appointment data for Microsoft Graph API
+   * Fixed timezone handling to prevent 1-hour offset issues
    */
   private createAppointmentData(formData: AppointmentFormData): AppointmentData {
     const { appointmentDate, appointmentTime, prenom, nom, societe, message } = formData;
 
-    // Create start datetime
+    // Parse the selected time
     const [hours, minutes] = appointmentTime.split(':').map(Number);
-    const startDateTime = new Date(appointmentDate);
-    startDateTime.setHours(hours, minutes, 0, 0);
+    
+    // Create datetime in Europe/Paris timezone (business timezone)
+    // This prevents DST/timezone conversion issues
+    const businessTimezone = 'Europe/Paris';
+    
+    // Create the date string in YYYY-MM-DD format
+    const dateStr = appointmentDate.toISOString().split('T')[0];
+    
+    // Create datetime strings in the business timezone format
+    // Microsoft Graph expects: YYYY-MM-DDTHH:mm:ss.sss
+    const timeStr = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00.000`;
+    const startDateTimeLocal = `${dateStr}T${timeStr}`;
+    
+    // Calculate end time (30 minutes later)
+    const endMinutes = minutes + 30;
+    const endHours = endMinutes >= 60 ? hours + 1 : hours;
+    const adjustedEndMinutes = endMinutes >= 60 ? endMinutes - 60 : endMinutes;
+    
+    const endTimeStr = `${endHours.toString().padStart(2, '0')}:${adjustedEndMinutes.toString().padStart(2, '0')}:00.000`;
+    const endDateTimeLocal = `${dateStr}T${endTimeStr}`;
 
-    // Create end datetime (30 minutes later)
-    const endDateTime = new Date(startDateTime);
-    endDateTime.setMinutes(endDateTime.getMinutes() + 30);
-
-    // Format datetimes for Microsoft Graph (ISO 8601)
-    const startDateTimeISO = startDateTime.toISOString();
-    const endDateTimeISO = endDateTime.toISOString();
+    console.log('🕐 Appointment timezone handling:', {
+      selectedDate: appointmentDate.toISOString().split('T')[0],
+      selectedTime: appointmentTime,
+      businessTimezone,
+      startDateTime: startDateTimeLocal,
+      endDateTime: endDateTimeLocal,
+      userTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+    });
 
     return {
       subject: 'RDV via le site',
-      startDateTime: startDateTimeISO,
-      endDateTime: endDateTimeISO,
-      timeZone: 'Europe/Paris',
+      startDateTime: startDateTimeLocal,
+      endDateTime: endDateTimeLocal,
+      timeZone: businessTimezone,
       attendeeInfo: {
         prenom,
         nom,

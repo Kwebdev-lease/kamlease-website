@@ -7,6 +7,7 @@ import { useLanguage } from '@/contexts/LanguageProvider'
 import { BusinessHoursValidator } from '@/lib/business-hours-validator'
 import { useAppointmentValidation, getValidationErrorMessage } from '@/hooks/use-appointment-validation'
 import { useAvailability, isTimeSlotAvailable, getAvailableTimesForDate, hasAvailableSlots } from '@/hooks/use-availability'
+import { TimezoneDebugger } from '@/lib/timezone-debug'
 import { cn } from '@/lib/utils'
 
 interface DateTimePickerProps {
@@ -343,27 +344,46 @@ export function DateTimePicker({
                 
                 {/* Show current time in business timezone */}
                 <div className="text-xs mt-2 p-2 bg-blue-100 dark:bg-blue-800/30 rounded">
-                  <p className="font-medium mb-1">Heure actuelle:</p>
-                  <p>
-                    {businessHours.timezone}: {new Date().toLocaleString('fr-FR', {
+                  <p className="font-medium mb-1">🕐 Informations horaires:</p>
+                  <p className="mb-1">
+                    <strong>Heure de bureau ({businessHours.timezone}):</strong><br />
+                    {new Date().toLocaleString('fr-FR', {
                       timeZone: businessHours.timezone,
                       hour: '2-digit',
                       minute: '2-digit',
                       day: '2-digit',
                       month: '2-digit',
-                      year: 'numeric'
+                      year: 'numeric',
+                      weekday: 'short'
                     })}
                   </p>
                   {businessHours.timezone !== Intl.DateTimeFormat().resolvedOptions().timeZone && (
-                    <p className="mt-1">
-                      Votre heure locale: {new Date().toLocaleString('fr-FR', {
+                    <p className="mb-1">
+                      <strong>Votre heure locale:</strong><br />
+                      {new Date().toLocaleString('fr-FR', {
                         hour: '2-digit',
                         minute: '2-digit',
                         day: '2-digit',
                         month: '2-digit',
-                        year: 'numeric'
-                      })}
+                        year: 'numeric',
+                        weekday: 'short'
+                      })} ({Intl.DateTimeFormat().resolvedOptions().timeZone})
                     </p>
+                  )}
+                  <p className="text-xs mt-2 opacity-75 bg-yellow-50 dark:bg-yellow-900/20 p-1 rounded">
+                    ⚠️ Les rendez-vous sont programmés en heure française (Europe/Paris)
+                  </p>
+                  
+                  {/* Debug button for development */}
+                  {import.meta.env.DEV && (
+                    <button
+                      type="button"
+                      onClick={() => TimezoneDebugger.logDebugInfo(selectedTime || '14:00')}
+                      className="mt-2 text-xs bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                      title="Debug timezone information (dev only)"
+                    >
+                      🐛 Debug Timezone
+                    </button>
                   )}
                 </div>
                 

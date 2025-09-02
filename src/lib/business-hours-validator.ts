@@ -201,6 +201,7 @@ export class BusinessHoursValidator {
 
   /**
    * Convert date to specified timezone
+   * Enhanced to handle DST transitions properly
    */
   private convertToTimezone(date: Date, timezone: string): Date {
     try {
@@ -209,8 +210,9 @@ export class BusinessHoursValidator {
         throw new Error('Invalid date provided');
       }
 
-      // Use Intl.DateTimeFormat to handle timezone conversion
-      const formatter = new Intl.DateTimeFormat('en-CA', {
+      // Use Intl.DateTimeFormat to handle timezone conversion properly
+      // This method correctly handles DST transitions
+      const formatter = new Intl.DateTimeFormat('sv-SE', {
         timeZone: timezone,
         year: 'numeric',
         month: '2-digit',
@@ -221,20 +223,22 @@ export class BusinessHoursValidator {
         hour12: false
       });
 
-      const parts = formatter.formatToParts(date);
-      const partsObj = parts.reduce((acc, part) => {
-        acc[part.type] = part.value;
-        return acc;
-      }, {} as Record<string, string>);
+      const dateTimeString = formatter.format(date);
+      const [datePart, timePart] = dateTimeString.split(' ');
+      const [year, month, day] = datePart.split('-').map(Number);
+      const [hour, minute, second] = timePart.split(':').map(Number);
 
-      return new Date(
-        parseInt(partsObj.year),
-        parseInt(partsObj.month) - 1, // Month is 0-indexed
-        parseInt(partsObj.day),
-        parseInt(partsObj.hour),
-        parseInt(partsObj.minute),
-        parseInt(partsObj.second)
-      );
+      // Create new date in the target timezone
+      const convertedDate = new Date(year, month - 1, day, hour, minute, second);
+      
+      console.log('🌍 Timezone conversion:', {
+        original: date.toISOString(),
+        timezone,
+        converted: convertedDate.toISOString(),
+        formatted: dateTimeString
+      });
+
+      return convertedDate;
     } catch (error) {
       console.error('Error converting timezone:', error);
       return new Date(NaN); // Return invalid date to maintain error state

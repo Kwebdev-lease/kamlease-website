@@ -1,5 +1,5 @@
 /**
- * Timezone debugging utilities
+ * Timezone utilities for debugging and testing
  * Helps identify and fix timezone-related issues
  */
 
@@ -18,13 +18,13 @@ export interface TimezoneDebugInfo {
   };
 }
 
-export class TimezoneDebugger {
+export class TimezoneUtils {
   private static readonly BUSINESS_TIMEZONE = 'Europe/Paris';
 
   /**
    * Get comprehensive timezone debugging information
    */
-  public static getDebugInfo(testTime = '14:00'): TimezoneDebugInfo {
+  public static getDebugInfo(testTime = '16:00'): TimezoneDebugInfo {
     const now = new Date();
     const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const businessTimezone = this.BUSINESS_TIMEZONE;
@@ -68,49 +68,79 @@ export class TimezoneDebugger {
   }
 
   /**
+   * Create a properly formatted appointment for Microsoft Graph
+   */
+  public static createAppointmentForGraph(date: Date, time: string): {
+    startDateTime: string;
+    endDateTime: string;
+    timeZone: string;
+    debugInfo: any;
+  } {
+    const [hours, minutes] = time.split(':').map(Number);
+    
+    // Create the appointment date in the business timezone
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const day = date.getDate();
+    
+    // Create start datetime
+    const startDateTime = new Date();
+    startDateTime.setFullYear(year, month, day);
+    startDateTime.setHours(hours, minutes, 0, 0);
+    
+    // Create end datetime (30 minutes later)
+    const endDateTime = new Date(startDateTime);
+    endDateTime.setMinutes(endDateTime.getMinutes() + 30);
+    
+    // Format for Microsoft Graph
+    const formatForGraph = (date: Date): string => {
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      const hours = date.getHours().toString().padStart(2, '0');
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      const seconds = date.getSeconds().toString().padStart(2, '0');
+      
+      return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.000`;
+    };
+
+    const startFormatted = formatForGraph(startDateTime);
+    const endFormatted = formatForGraph(endDateTime);
+
+    return {
+      startDateTime: startFormatted,
+      endDateTime: endFormatted,
+      timeZone: this.BUSINESS_TIMEZONE,
+      debugInfo: {
+        originalDate: date.toDateString(),
+        originalTime: time,
+        businessTimezone: this.BUSINESS_TIMEZONE,
+        startDateTimeObject: startDateTime.toISOString(),
+        endDateTimeObject: endDateTime.toISOString(),
+        userTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        parisTime: new Date().toLocaleString('fr-FR', { timeZone: this.BUSINESS_TIMEZONE }),
+        whatOutlookWillShow: {
+          start: startDateTime.toLocaleString('fr-FR', { timeZone: this.BUSINESS_TIMEZONE }),
+          end: endDateTime.toLocaleString('fr-FR', { timeZone: this.BUSINESS_TIMEZONE })
+        }
+      }
+    };
+  }
+
+  /**
    * Simulate an appointment booking to show timezone handling
    */
   private static simulateAppointment(date: Date, time: string) {
     const [hours, minutes] = time.split(':').map(Number);
     
-    // How user sees it (local time)
-    const userDate = new Date(date);
-    userDate.setHours(hours, minutes, 0, 0);
+    // Create the appointment as it would be created
+    const appointmentData = this.createAppointmentForGraph(date, time);
     
-    // How business timezone interprets it
-    const businessDate = new Date(date);
-    businessDate.setHours(hours, minutes, 0, 0);
-    
-    // How it should appear in Outlook (business timezone)
-    const outlookDate = new Date(date);
-    outlookDate.setHours(hours, minutes, 0, 0);
-
     return {
       selectedTime: time,
-      userInterpretation: userDate.toLocaleString('fr-FR', {
-        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        hour: '2-digit',
-        minute: '2-digit',
-        day: '2-digit',
-        month: '2-digit',
-        weekday: 'short'
-      }),
-      businessInterpretation: businessDate.toLocaleString('fr-FR', {
-        timeZone: this.BUSINESS_TIMEZONE,
-        hour: '2-digit',
-        minute: '2-digit',
-        day: '2-digit',
-        month: '2-digit',
-        weekday: 'short'
-      }),
-      outlookWillShow: outlookDate.toLocaleString('fr-FR', {
-        timeZone: this.BUSINESS_TIMEZONE,
-        hour: '2-digit',
-        minute: '2-digit',
-        day: '2-digit',
-        month: '2-digit',
-        weekday: 'short'
-      })
+      userInterpretation: `${time} (votre heure locale)`,
+      businessInterpretation: `${time} (heure de Paris)`,
+      outlookWillShow: appointmentData.debugInfo.whatOutlookWillShow.start
     };
   }
 
@@ -150,10 +180,10 @@ export class TimezoneDebugger {
   /**
    * Log timezone debug information to console
    */
-  public static logDebugInfo(testTime = '14:00'): void {
+  public static logDebugInfo(testTime = '16:00'): void {
     const debugInfo = this.getDebugInfo(testTime);
     
-    console.group('🌍 Timezone Debug Information');
+    console.group('🌍 Timezone Debug Information (FIXED)');
     console.log('User Timezone:', debugInfo.userTimezone);
     console.log('Business Timezone:', debugInfo.businessTimezone);
     console.log('Current Time (User):', debugInfo.currentTimeUser);
@@ -168,48 +198,25 @@ export class TimezoneDebugger {
     console.log('Outlook Shows:', debugInfo.testAppointment.outlookWillShow);
     console.groupEnd();
     
+    // Test the actual appointment creation
+    const testDate = new Date();
+    testDate.setDate(testDate.getDate() + 1);
+    const appointmentTest = this.createAppointmentForGraph(testDate, testTime);
+    
+    console.group('Appointment Creation Test');
+    console.log('Graph API Format:', {
+      startDateTime: appointmentTest.startDateTime,
+      endDateTime: appointmentTest.endDateTime,
+      timeZone: appointmentTest.timeZone
+    });
+    console.log('Debug Info:', appointmentTest.debugInfo);
     console.groupEnd();
-  }
-
-  /**
-   * Create a test appointment with proper timezone handling
-   */
-  public static createTestAppointment(date: Date, time: string) {
-    const [hours, minutes] = time.split(':').map(Number);
     
-    // Create date string in YYYY-MM-DD format
-    const dateStr = date.toISOString().split('T')[0];
-    
-    // Create time string with proper formatting
-    const timeStr = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00.000`;
-    
-    // Combine date and time in business timezone format
-    const startDateTime = `${dateStr}T${timeStr}`;
-    
-    // Calculate end time (30 minutes later)
-    const endMinutes = minutes + 30;
-    const endHours = endMinutes >= 60 ? hours + 1 : hours;
-    const adjustedEndMinutes = endMinutes >= 60 ? endMinutes - 60 : endMinutes;
-    
-    const endTimeStr = `${endHours.toString().padStart(2, '0')}:${adjustedEndMinutes.toString().padStart(2, '0')}:00.000`;
-    const endDateTime = `${dateStr}T${endTimeStr}`;
-
-    return {
-      startDateTime,
-      endDateTime,
-      timeZone: this.BUSINESS_TIMEZONE,
-      debugInfo: {
-        originalDate: date.toISOString(),
-        originalTime: time,
-        businessTimezone: this.BUSINESS_TIMEZONE,
-        formattedStart: startDateTime,
-        formattedEnd: endDateTime
-      }
-    };
+    console.groupEnd();
   }
 }
 
 // Export for console debugging
 if (typeof window !== 'undefined') {
-  (window as any).TimezoneDebugger = TimezoneDebugger;
+  (window as any).TimezoneUtils = TimezoneUtils;
 }

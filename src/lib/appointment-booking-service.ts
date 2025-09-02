@@ -208,7 +208,7 @@ export class AppointmentBookingService {
 
   /**
    * Create appointment data for Microsoft Graph API
-   * Fixed timezone handling to prevent 1-hour offset issues
+   * Fixed timezone handling to prevent offset issues
    */
   private createAppointmentData(formData: AppointmentFormData): AppointmentData {
     const { appointmentDate, appointmentTime, prenom, nom, societe, message } = formData;
@@ -216,39 +216,57 @@ export class AppointmentBookingService {
     // Parse the selected time
     const [hours, minutes] = appointmentTime.split(':').map(Number);
     
-    // Create datetime in Europe/Paris timezone (business timezone)
-    // This prevents DST/timezone conversion issues
+    // Business timezone
     const businessTimezone = 'Europe/Paris';
     
-    // Create the date string in YYYY-MM-DD format
-    const dateStr = appointmentDate.toISOString().split('T')[0];
+    // Create a proper date in the business timezone
+    // We need to create the date as if it's already in Europe/Paris timezone
+    const year = appointmentDate.getFullYear();
+    const month = appointmentDate.getMonth();
+    const day = appointmentDate.getDate();
     
-    // Create datetime strings in the business timezone format
-    // Microsoft Graph expects: YYYY-MM-DDTHH:mm:ss.sss
-    const timeStr = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00.000`;
-    const startDateTimeLocal = `${dateStr}T${timeStr}`;
+    // Create the start datetime in business timezone
+    // This creates a date that represents the exact time in Paris
+    const startDateTime = new Date();
+    startDateTime.setFullYear(year, month, day);
+    startDateTime.setHours(hours, minutes, 0, 0);
     
     // Calculate end time (30 minutes later)
-    const endMinutes = minutes + 30;
-    const endHours = endMinutes >= 60 ? hours + 1 : hours;
-    const adjustedEndMinutes = endMinutes >= 60 ? endMinutes - 60 : endMinutes;
+    const endDateTime = new Date(startDateTime);
+    endDateTime.setMinutes(endDateTime.getMinutes() + 30);
     
-    const endTimeStr = `${endHours.toString().padStart(2, '0')}:${adjustedEndMinutes.toString().padStart(2, '0')}:00.000`;
-    const endDateTimeLocal = `${dateStr}T${endTimeStr}`;
+    // Format for Microsoft Graph API
+    // Microsoft Graph expects ISO format but interprets it in the specified timezone
+    const formatForGraph = (date: Date): string => {
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      const hours = date.getHours().toString().padStart(2, '0');
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      const seconds = date.getSeconds().toString().padStart(2, '0');
+      
+      return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.000`;
+    };
 
-    console.log('🕐 Appointment timezone handling:', {
-      selectedDate: appointmentDate.toISOString().split('T')[0],
+    const startDateTimeFormatted = formatForGraph(startDateTime);
+    const endDateTimeFormatted = formatForGraph(endDateTime);
+
+    console.log('🕐 Appointment timezone handling (FIXED):', {
+      selectedDate: appointmentDate.toDateString(),
       selectedTime: appointmentTime,
       businessTimezone,
-      startDateTime: startDateTimeLocal,
-      endDateTime: endDateTimeLocal,
-      userTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+      startDateTime: startDateTimeFormatted,
+      endDateTime: endDateTimeFormatted,
+      startDateTimeObject: startDateTime.toISOString(),
+      endDateTimeObject: endDateTime.toISOString(),
+      userTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      parisTime: new Date().toLocaleString('fr-FR', { timeZone: businessTimezone })
     });
 
     return {
       subject: 'RDV via le site',
-      startDateTime: startDateTimeLocal,
-      endDateTime: endDateTimeLocal,
+      startDateTime: startDateTimeFormatted,
+      endDateTime: endDateTimeFormatted,
       timeZone: businessTimezone,
       attendeeInfo: {
         prenom,

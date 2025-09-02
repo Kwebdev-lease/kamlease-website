@@ -10,19 +10,25 @@ Disallow: /.well-known/
 Disallow: /api/
 Disallow: /functions/
 
-# Disallow legal pages (they have noindex anyway)
-Disallow: /mentions-legales
-Disallow: /politique-confidentialite
-Disallow: /en/legal-notice
-Disallow: /en/privacy-policy
-
-# Allow important pages explicitly
+# Allow important pages explicitly (priorité au français)
 Allow: /
-Allow: /about
+Allow: /fr
 Allow: /contact
 Allow: /en/
-Allow: /en/about
 Allow: /en/contact
 
 # Crawl delay
 Crawl-delay: 1
+
+# Priorité pour les moteurs de recherche français
+User-agent: Googlebot
+Allow: /
+Allow: /fr
+Allow: /contact
+Crawl-delay: 1
+
+# Spécifique pour les moteurs français
+User-agent: Qwantbot
+Allow: /
+Allow: /fr
+Allow: /contact

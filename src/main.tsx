@@ -13,6 +13,11 @@ import NotFound from '@/pages/NotFound';
 import { LegalNotice } from '@/pages/LegalNotice';
 import { PrivacyPolicy } from '@/pages/PrivacyPolicy';
 
+// Import des tests de timezone en développement
+if (import.meta.env.DEV) {
+  import('@/test/timezone-fix-test').catch(console.error);
+}
+
 // App simplifiée sans les features complexes qui causaient des problèmes
 const App = () => {
   return (

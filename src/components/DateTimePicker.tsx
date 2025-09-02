@@ -7,7 +7,6 @@ import { useLanguage } from '@/contexts/LanguageProvider'
 import { BusinessHoursValidator } from '@/lib/business-hours-validator'
 import { useAppointmentValidation, getValidationErrorMessage } from '@/hooks/use-appointment-validation'
 import { useAvailability, isTimeSlotAvailable, getAvailableTimesForDate, hasAvailableSlots } from '@/hooks/use-availability'
-import { TimezoneDebugger } from '@/lib/timezone-debug'
 import { cn } from '@/lib/utils'
 
 interface DateTimePickerProps {
@@ -378,13 +377,19 @@ export function DateTimePicker({
                   {import.meta.env.DEV && (
                     <button
                       type="button"
-                      onClick={() => TimezoneDebugger.logDebugInfo(selectedTime || '14:00')}
+                      onClick={() => {
+                        // Import dynamically to avoid build issues
+                        import('@/lib/timezone-utils').then(({ TimezoneUtils }) => {
+                          TimezoneUtils.logDebugInfo(selectedTime || '16:00')
+                        })
+                      }}
                       className="mt-2 text-xs bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                       title="Debug timezone information (dev only)"
                     >
-                      🐛 Debug Timezone
+                      🐛 Debug Timezone (FIXED)
                     </button>
                   )}
+
                 </div>
                 
                 <p className="text-xs mt-2 opacity-75">

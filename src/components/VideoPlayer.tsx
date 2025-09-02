@@ -1,8 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { Play, Pause, AlertCircle, RefreshCw } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageProvider'
-import { VideoDiagnostics } from '@/lib/video-diagnostics'
-import { remoteLog } from '@/lib/remote-debug'
 
 interface VideoPlayerProps {
   src: string
@@ -26,12 +24,6 @@ export function VideoPlayer({ src, title, className = '', poster }: VideoPlayerP
   // Détecter le type d'appareil et navigateur
   useEffect(() => {
     setUserAgent(navigator.userAgent)
-    
-    // Run diagnostics in development mode
-    if (import.meta.env.DEV && src) {
-      const diagnostics = VideoDiagnostics.getInstance()
-      diagnostics.logDiagnostics(src).catch(console.error)
-    }
   }, [src])
 
   const isIOS = /iPad|iPhone|iPod/.test(userAgent)
@@ -65,8 +57,9 @@ export function VideoPlayer({ src, title, className = '', poster }: VideoPlayerP
     const message = `${timestamp}: ${info}`
     setDebugInfo(prev => [...prev.slice(-4), message])
     
-    // Log to remote debugger for mobile debugging
-    remoteLog[level]('VideoPlayer', info, {
+    // Log to console for debugging
+    const consoleMethod = level === 'error' ? console.error : level === 'warn' ? console.warn : console.log
+    consoleMethod(`[VideoPlayer] ${info}`, {
       src,
       isIOS,
       isSafari,
@@ -383,23 +376,20 @@ export function VideoPlayer({ src, title, className = '', poster }: VideoPlayerP
             <div className="space-y-1">
               <button
                 onClick={() => {
-                  const diagnostics = VideoDiagnostics.getInstance()
-                  diagnostics.logDiagnostics(src)
+                  console.log('Video debug info:', {
+                    src,
+                    isIOS,
+                    isSafari,
+                    isMobile,
+                    canPlay,
+                    hasError,
+                    isLoading,
+                    userAgent
+                  })
                 }}
                 className="block w-full bg-orange-500 text-white px-2 py-1 rounded text-xs hover:bg-orange-600 transition-colors"
               >
-                🔍 Run Diagnostics
-              </button>
-              <button
-                onClick={() => {
-                  const { RemoteDebugger } = window as any
-                  if (RemoteDebugger) {
-                    RemoteDebugger.getInstance().dumpToConsole()
-                  }
-                }}
-                className="block w-full bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600 transition-colors"
-              >
-                📱 Show Mobile Logs
+                🔍 Log Debug Info
               </button>
             </div>
           </div>

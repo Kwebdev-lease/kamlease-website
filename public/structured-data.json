@@ -1,0 +1,44 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Kamlease",
+  "description": "Kamlease transforme vos idées en solutions industrielles. 30+ ans d'expertise en mécatronique, électronique et auto-staging.",
+  "url": "https://kamlease.com",
+  "logo": "https://kamlease.com/favicon.png",
+  "image": "https://kamlease.com/favicon.png",
+  "foundingDate": "1990",
+  "address": {
+    "@type": "PostalAddress",
+    "addressCountry": "FR",
+    "addressLocality": "France"
+  },
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "customer service",
+    "availableLanguage": ["French", "English"],
+    "url": "https://kamlease.com/contact"
+  },
+  "sameAs": [
+    "https://kamlease.com"
+  ],
+  "areaServed": {
+    "@type": "Country",
+    "name": "France"
+  },
+  "knowsAbout": [
+    "Mécatronique",
+    "Électronique industrielle",
+    "Auto-staging",
+    "Ingénierie mécatronique",
+    "Innovation industrielle",
+    "Solutions industrielles"
+  ],
+  "serviceType": [
+    "Solutions mécatroniques",
+    "Électronique industrielle",
+    "Auto-staging",
+    "Ingénierie",
+    "Conseil technique"
+  ],
+  "inLanguage": "fr"
+}

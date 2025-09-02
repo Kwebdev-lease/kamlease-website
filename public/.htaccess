@@ -1,0 +1,30 @@
+# Configuration pour Apache (si utilisé)
+# Force le français comme langue par défaut
+
+# Headers pour indiquer la langue
+<IfModule mod_headers.c>
+    Header set Content-Language "fr"
+    Header set X-Content-Language "fr"
+</IfModule>
+
+# Redirection basée sur la langue du navigateur
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Si pas de langue spécifiée et navigateur français, rester sur /
+    RewriteCond %{HTTP:Accept-Language} ^fr [NC]
+    RewriteCond %{REQUEST_URI} ^/$
+    RewriteRule ^(.*)$ / [L]
+    
+    # Si pas de langue spécifiée et navigateur anglais, rediriger vers /en
+    RewriteCond %{HTTP:Accept-Language} ^en [NC]
+    RewriteCond %{REQUEST_URI} ^/$
+    RewriteRule ^(.*)$ /en [R=302,L]
+</IfModule>
+
+# Cache pour les favicons
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/x-icon "access plus 1 month"
+</IfModule>

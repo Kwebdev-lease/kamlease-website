@@ -59,14 +59,35 @@ export function VideoPlayer({ src, title, className = '' }: VideoPlayerProps) {
         </h3>
       )}
 
+      {/* Container avec protection contre les overlays d'antivirus */}
       <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-gray-900">
+        {/* Couche de protection contre les overlays invisibles */}
+        <div 
+          className="absolute inset-0 z-10 pointer-events-none"
+          style={{ 
+            background: 'transparent',
+            mixBlendMode: 'normal'
+          }}
+        ></div>
+        
         <video
-          className="w-full h-auto"
+          className="w-full h-auto relative z-0"
           controls
+          controlsList="nodownload noremoteplayback"
           playsInline
           preload="metadata"
           poster={posterImage}
-          style={{ maxHeight: '70vh' }}
+          style={{ 
+            maxHeight: '70vh',
+            position: 'relative',
+            zIndex: 1
+          }}
+          // Attributs pour contourner les bloqueurs
+          data-setup="{}"
+          webkit-playsinline="true"
+          x5-playsinline="true"
+          // Force le focus sur le lecteur
+          tabIndex={0}
         >
           <source src={src} type="video/mp4" />
           
@@ -81,6 +102,43 @@ export function VideoPlayer({ src, title, className = '' }: VideoPlayerProps) {
             </a>
           </p>
         </video>
+
+        {/* Message d'aide pour les utilisateurs avec des problèmes */}
+        <div className="absolute bottom-2 right-2 z-20">
+          <div className="bg-black/70 text-white text-xs px-2 py-1 rounded opacity-75 hover:opacity-100 transition-opacity">
+            {language === 'fr' 
+              ? 'Problème de lecture ? Clic droit → Ouvrir dans un nouvel onglet'
+              : 'Playback issue? Right-click → Open in new tab'
+            }
+          </div>
+        </div>
+      </div>
+
+      {/* Lecteur alternatif en cas de problème */}
+      <div className="mt-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+          {language === 'fr' 
+            ? 'Le lecteur ne fonctionne pas ? Essayez ces alternatives :'
+            : 'Player not working? Try these alternatives:'
+          }
+        </p>
+        <div className="flex flex-wrap gap-2">
+          <a 
+            href={src} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="inline-flex items-center px-3 py-1 bg-orange-500 text-white text-sm rounded hover:bg-orange-600 transition-colors"
+          >
+            {language === 'fr' ? '🎬 Ouvrir dans un nouvel onglet' : '🎬 Open in new tab'}
+          </a>
+          <a 
+            href={src} 
+            download
+            className="inline-flex items-center px-3 py-1 bg-gray-500 text-white text-sm rounded hover:bg-gray-600 transition-colors"
+          >
+            {language === 'fr' ? '📥 Télécharger' : '📥 Download'}
+          </a>
+        </div>
       </div>
     </div>
   )

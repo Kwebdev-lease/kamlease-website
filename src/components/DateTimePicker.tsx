@@ -372,23 +372,6 @@ export function DateTimePicker({
                   <p className="text-xs mt-2 opacity-75 bg-yellow-50 dark:bg-yellow-900/20 p-1 rounded">
                     ⚠️ Les rendez-vous sont programmés en heure française (Europe/Paris)
                   </p>
-                  
-                  {/* Debug button for development */}
-                  {import.meta.env.DEV && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        // Import dynamically to avoid build issues
-                        import('@/lib/timezone-utils').then(({ TimezoneUtils }) => {
-                          TimezoneUtils.logDebugInfo(selectedTime || '16:00')
-                        })
-                      }}
-                      className="mt-2 text-xs bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                      title="Debug timezone information (dev only)"
-                    >
-                      🐛 Debug Timezone (FIXED)
-                    </button>
-                  )}
 
                 </div>
                 

@@ -25,8 +25,8 @@ export const translations = {
     // About
     about: {
       title: 'Qui sommes nous ?',
-      description: 'Kamlease intervient dans les secteurs automobile et non-automobile, en se concentrant sur la mécatronique, l\'électronique et la mécanique. Grâce à notre expertise en auto-staging, nous adaptons les produits automobiles aux besoins variés d\'autres industries.',
-      description2: 'Grâce à notre expertise en "auto-staging", nous adaptons des produits issus du secteur automobile pour répondre aux besoins variés de diverses industries. Cette polyvalence nous permet d\'offrir des solutions parfaitement adaptées à vos exigences.',
+      description: 'Kamlease intervient dans les secteurs automobile et non-automobile, mobilisant un savoir-faire en mécatronique, électronique et mécanique. En exploitant notre expertise en auto-staging, nous repensons des produits issus de l\'automobile afin de les adapter à des usages variés dans d\'autres industries.',
+      description2: 'Grâce à cette approche transversale, nous offrons des solutions flexibles et sur-mesure, parfaitement alignées aux contraintes et exigences spécifiques de chaque domaine. Notre capacité à revisiter des composants automobiles pour des applications diversifiées fait la force de notre accompagnement client.',
       values: {
         innovation: {
           title: 'Innovation',

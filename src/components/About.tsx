@@ -65,7 +65,7 @@ export function About() {
             >
               <p className="text-xl md:text-2xl text-brand-neutral-600 dark:text-brand-neutral-300 leading-relaxed">
                 {language === 'fr'
-                  ? 'Kamlease intervient dans les secteurs automobile et non-automobile, en se concentrant sur la mécatronique, l\'électronique et la mécanique. Grâce à notre expertise en auto-staging, nous adaptons les produits automobiles aux besoins variés d\'autres industries.'
+                  ? 'Kamlease intervient dans les secteurs automobile et non-automobile, mobilisant un savoir-faire en mécatronique, électronique et mécanique. En exploitant notre expertise en auto-staging, nous repensons des produits issus de l\'automobile afin de les adapter à des usages variés dans d\'autres industries.'
                   : 'Kamlease operates in automotive and non-automotive sectors, focusing on mechatronics, electronics and mechanics. Thanks to our auto-staging expertise, we adapt automotive products to the varied needs of other industries.'
                 }
               </p>
@@ -79,7 +79,7 @@ export function About() {
             >
               <p className="text-xl md:text-2xl text-brand-neutral-600 dark:text-brand-neutral-300 leading-relaxed">
                 {language === 'fr'
-                  ? 'Grâce à notre expertise en "auto-staging", nous adaptons des produits issus du secteur automobile pour répondre aux besoins variés de diverses industries. Cette polyvalence nous permet d\'offrir des solutions parfaitement adaptées à vos exigences.'
+                  ? 'Grâce à cette approche transversale, nous offrons des solutions flexibles et sur-mesure, parfaitement alignées aux contraintes et exigences spécifiques de chaque domaine. Notre capacité à revisiter des composants automobiles pour des applications diversifiées fait la force de notre accompagnement client.'
                   : 'Thanks to our "auto-staging" expertise, we adapt products from the automotive sector to meet the varied needs of various industries. This versatility allows us to offer perfectly adapted solutions to your requirements.'
                 }
               </p>

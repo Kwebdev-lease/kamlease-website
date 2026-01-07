@@ -265,7 +265,7 @@ export const translations = {
     // Footer
     footer: {
       description: 'Kamlease - Des idées innovantes, des résultats concrets. 30+ ans d\'expertise en mécatronique, électronique et auto-staging.',
-      copyright: '© 2025 Copyright Kamlease. Tous droits réservés.',
+      copyright: '© 2026 Copyright Kamlease. Tous droits réservés.',
       legalNotice: 'Mentions légales',
       privacyPolicy: 'Politique de confidentialité',
       contact: 'Contact'
@@ -603,7 +603,7 @@ export const translations = {
     // Footer
     footer: {
       description: 'Kamlease - Innovative ideas, concrete results. 30+ years of expertise in mechatronics, electronics and auto-staging.',
-      copyright: '© 2025 Copyright Kamlease. All rights reserved.',
+      copyright: '© 2026 Copyright Kamlease. All rights reserved.',
       legalNotice: 'Legal Notice',
       privacyPolicy: 'Privacy Policy',
       contact: 'Contact'

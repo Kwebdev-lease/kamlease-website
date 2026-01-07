@@ -79,7 +79,14 @@ export function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-4">{t('footer.contact')}</h3>
             <ul className="space-y-2 text-gray-400">
-              <li>contact@kamlease.com</li>
+              <li>
+                <a 
+                  href="mailto:contact@kamlease.com" 
+                  className="hover:text-orange-500 transition-colors"
+                >
+                  contact@kamlease.com
+                </a>
+              </li>
               <li>+33 6 73 71 05 86</li>
               <li>
                 109 Rue Maréchal Joffre<br />
